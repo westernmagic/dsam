@@ -772,7 +772,7 @@ Calc_Analysis_SpikeRegularity(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, inSignal);
+	GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, data);
 	outSignal = _OutSig_EarObject(data);
 	countEarObj = _OutSig_EarObject(p->countEarObj);
 	/* Add additional sums. */

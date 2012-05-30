@@ -572,7 +572,7 @@ Calc_Analysis_SAC(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, inSignal);
+	GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, data);
 	outSignal = _OutSig_EarObject(data);
 	binScale = inSignal->dt / p->binWidth;
 	/*binScale = (Float) p->maxIntervalIndex / inSignal->length;*/

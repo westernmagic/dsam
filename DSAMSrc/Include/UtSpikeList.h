@@ -36,9 +36,6 @@
 #ifndef _UTSPIKELIST_H
 #define _UTSPIKELIST_H 1
 
-#include "GeCommon.h"
-#include "GeSignalData.h"
-
 /******************************************************************************/
 /****************************** Constant definitions **************************/
 /******************************************************************************/
@@ -87,7 +84,7 @@ void	Free_SpikeList(SpikeSpecPtr *head);
 void	FreeListSpec_SpikeList(SpikeListSpecPtr *p);
 
 BOOLN	GenerateList_SpikeList(SpikeListSpecPtr listSpec, Float eventThreshold,
-		  SignalDataPtr signal);
+		  EarObjectPtr process);
 
 SpikeListSpecPtr	InitListSpec_SpikeList(int numChannels);
 

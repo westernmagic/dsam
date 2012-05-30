@@ -496,7 +496,7 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, inSignal);
+	GenerateList_SpikeList(p->spikeListSpec, p->eventThreshold, data);
 	outSignal = _OutSig_EarObject(data);
 	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
 		outPtr = outSignal->channel[chan];

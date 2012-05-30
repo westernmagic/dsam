@@ -837,7 +837,7 @@ static struct InitData {
 	// free it when doing cleanup to avoid memory leaks
 	wchar_t **argv;
 #endif // wxUSE_UNICODE
-DECLARE_NO_COPY_CLASS(InitData)
+	DECLARE_NO_COPY_CLASS(InitData)
 } gs_initData;
 
 static void ConvertArgsToUnicode(int argc, char **argv) {
@@ -849,9 +849,10 @@ static void ConvertArgsToUnicode(int argc, char **argv) {
 			wxLogWarning(
 					_("Command line argument %d couldn't be converted to Unicode and will be ignored."),
 					i);
-		} else // converted ok
-		{
+		} else { // converted ok
 			gs_initData.argv[wargc++] = wxStrdup(buf);
+			wprintf(wxT("ConvertArgsToUnicode: Debug: argv[%d] = '%S' (%d)\n"), i, gs_initData.argv[i],
+			 DSAM_strlen(gs_initData.argv[i]));
 		}
 	}
 

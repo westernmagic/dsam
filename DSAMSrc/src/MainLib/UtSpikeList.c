@@ -41,6 +41,9 @@
 #	include "DSAMSetup.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "GeCommon.h"
+#include "GeSignalData.h"
+#include "GeEarObject.h"
 #include "UtSpikeList.h"
 
 /******************************************************************************/
@@ -270,7 +273,9 @@ SetTimeContinuity_SpikeList(SpikeListSpecPtr listSpec, SignalDataPtr signal)
 /**************************** GenerateList ************************************/
 
 /*
- * This routine produces a spike list for each channel of a signal.
+ * This routine produces a spike list for each channel of an input signal.
+ * It uses a process so that it can utilise the channel offsets and channel count
+ * when used in threaded processing mode.
  * It assumes that the 'head' and 'current' pointer arrays have been correctly
  * initialised.
  * No allowances are made for flat-topped spikes.
@@ -278,27 +283,29 @@ SetTimeContinuity_SpikeList(SpikeListSpecPtr listSpec, SignalDataPtr signal)
 
 BOOLN
 GenerateList_SpikeList(SpikeListSpecPtr listSpec, Float eventThreshold,
-  SignalDataPtr signal)
+  EarObjectPtr process)
 {
 	static WChar	*funcName = wxT("GenerateList_SpikeList");
 	register	BOOLN		*riseDetected;
 	register	ChanData	*inPtr, *lastValue;
 	uShort		chan;
 	ChanLen	i, startTime, *timeIndex;
+	SignalDataPtr	signal = _InSig_EarObject(process, 0);
 
 	if (listSpec == NULL) {
 		NotifyError(wxT("%s: Attempt to use NULL list specification."),
 		  funcName);
 		return(FALSE);
 	}
-	for (chan = signal->offset; chan < signal->numChannels; chan++) {
+	for (chan = _OutSig_EarObject(process)->offset; chan <
+	  _OutSig_EarObject(process)->numChannels; chan++) {
 		inPtr = signal->channel[chan];
 		riseDetected = listSpec->riseDetected + chan;
 		lastValue = listSpec->lastValue + chan;
 		timeIndex = listSpec->timeIndex + chan;
 		if (*timeIndex == PROCESS_START_TIME) {
 			startTime = 1;
-			listSpec->riseDetected[chan] = FALSE;
+			*riseDetected = FALSE;
 			*lastValue = *(inPtr++);
 			listSpec->lastSpikeTimeIndex[chan] = 0;
 		} else {
