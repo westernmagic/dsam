@@ -234,10 +234,14 @@ InsertSpikeSpec_SpikeList(SpikeListSpecPtr listSpec, uShort channel,
  * This routine resets the lists in the list specification by setting the
  * current pointer back to the head of the list, it is not set to NULL.
  * This is carried out at the start of the "GenerateList" routine.
+ * The offset and numChannels arguments are dependent upon what section of the
+ * signal is being worked on.  They are passed explicitly rather than using a
+ * pointer to the signal, to help to make this clear, especially for thread
+ * processing.
  */
 
 BOOLN
-ResetListSpec_SpikeList(SpikeListSpecPtr listSpec, SignalDataPtr signal)
+ResetListSpec_SpikeList(SpikeListSpecPtr listSpec, int offset, int numChannels)
 {
 	static const WChar *funcName = wxT("ResetListSpec_SpikeList");
 	int		chan;
@@ -247,7 +251,7 @@ ResetListSpec_SpikeList(SpikeListSpecPtr listSpec, SignalDataPtr signal)
 		  funcName);
 		return(FALSE);
 	}
-	for (chan = signal->offset; chan < signal->numChannels; chan++)
+	for (chan = offset; chan < numChannels; chan++)
 		listSpec->timeIndex[chan] = PROCESS_START_TIME;
 	return(TRUE);
 
@@ -257,16 +261,21 @@ ResetListSpec_SpikeList(SpikeListSpecPtr listSpec, SignalDataPtr signal)
 
 /*
  * This routine sets the time continuity for the spike list generation.
-  * It assumes that the spike list has been correctly initialised.
+ * It assumes that the spike list has been correctly initialised.
+ * The offset and numChannels arguments are dependent upon what section of the
+ * signal is being worked on.  They are passed explicitly rather than using a
+ * pointer to the signal, to help to make this clear, especially for thread
+ * processing.
  */
 
 void
-SetTimeContinuity_SpikeList(SpikeListSpecPtr listSpec, SignalDataPtr signal)
+SetTimeContinuity_SpikeList(SpikeListSpecPtr listSpec, int offset,
+  int numChannels, ChanLen signalLength)
 {
 	int		chan;
 
-	for (chan = signal->offset; chan < signal->numChannels; chan++)
-		listSpec->timeIndex[chan] += signal->length;
+	for (chan = offset; chan < numChannels; chan++)
+		listSpec->timeIndex[chan] += signalLength;
 
 }
 
@@ -274,8 +283,8 @@ SetTimeContinuity_SpikeList(SpikeListSpecPtr listSpec, SignalDataPtr signal)
 
 /*
  * This routine produces a spike list for each channel of an input signal.
- * It uses a process so that it can utilise the channel offsets and channel count
- * when used in threaded processing mode.
+ * It uses an EarObject so that it can utilise the channel offsets and channel
+ * count when used in threaded processing mode.
  * It assumes that the 'head' and 'current' pointer arrays have been correctly
  * initialised.
  * No allowances are made for flat-topped spikes.
@@ -345,12 +354,19 @@ GenerateList_SpikeList(SpikeListSpecPtr listSpec, Float eventThreshold,
  */
 
 void
-PrintList_SpikeList(SpikeListSpecPtr listSpec)
+PrintList_SpikeList(SpikeListSpecPtr listSpec, int offset, int numChannels)
 {
+	static const WChar	*funcName = wxT("PrintList_SpikeList");
 	int		chan;
 	SpikeSpecPtr	p;
 
-	for (chan = 0; chan < listSpec->numChannels; chan++) {
+	if ((numChannels > listSpec->numChannels) || (offset >
+			listSpec->numChannels) || (offset < 0)) {
+		NotifyError(wxT("%s: Illegal offset (%d) or numChannels (%d)."),
+		  offset, numChannels);
+		return;
+	}
+	for (chan = offset; chan < numChannels; chan++) {
 		if (!listSpec->current[chan])
 			continue;
 		p = listSpec->head[chan];
@@ -361,4 +377,48 @@ PrintList_SpikeList(SpikeListSpecPtr listSpec)
 		}
 	}
 	DPrint(wxT("\n"));
+}
+
+/**************************** FPrintList ************************************/
+
+/*
+ * This routine prints the spike list to a file for testing purposes.
+ * This allows the files to be written in a thread-safe way.
+ * It assumes that the spike list has been correctly initialised.
+ */
+
+void
+FPrintList_SpikeList(SpikeListSpecPtr listSpec, int offset, int numChannels)
+{
+	static const WChar	*funcName = wxT("FPrintList_SpikeList");
+	const WChar 	fileName[MAXLINE];
+	int		chan;
+	SpikeSpecPtr	p;
+	FILE	*fp;
+
+	if ((numChannels > listSpec->numChannels) || (offset >
+			listSpec->numChannels) || (offset < 0)) {
+		NotifyError(wxT("%s: Illegal offset (%d) or numChannels (%d)."),
+		  offset, numChannels);
+		return;
+	}
+	DSAM_snprintf(fileName, MAXLINE, wxT("SpikeList%d-%d.txt"), offset,
+	  numChannels);
+	if ((fp = DSAM_fopen(fileName, "w")) == NULL) {
+		NotifyError(wxT("%s: could not open file '%s'."), fileName);
+		return;
+	}
+	for (chan = offset; chan < numChannels; chan++) {
+		if (!listSpec->current[chan])
+			continue;
+		p = listSpec->head[chan];
+		while (p != listSpec->current[chan]->next) {
+			DSAM_fprintf(fp, wxT("Channel[%2d], No. [%2d] = %lu\n"), chan,
+			  p->number, p->timeIndex);
+			p = p->next;
+		}
+	}
+	DSAM_fprintf(fp, wxT("\n"));
+	fclose(fp);
+
 }

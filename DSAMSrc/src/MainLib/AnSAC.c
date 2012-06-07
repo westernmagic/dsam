@@ -457,13 +457,18 @@ CheckData_Analysis_SAC(EarObjectPtr data)
 
 /*
  * This routine resets the process variables.
+ * During the reset process the input signal will have the same
+ * offset and numChannels as the output signal.
  */
 
 void
 ResetProcess_Analysis_SAC(EarObjectPtr data)
 {
+	SignalDataPtr	outSignal = _OutSig_EarObject(data);
+
 	ResetOutSignal_EarObject(data);
-	ResetListSpec_SpikeList(sACPtr->spikeListSpec, _InSig_EarObject(data, 0));
+	ResetListSpec_SpikeList(sACPtr->spikeListSpec, outSignal->offset,
+	  outSignal->numChannels);
 	sACPtr->lastNormalisationFactor = 1.0;
 }
 
@@ -610,6 +615,8 @@ Calc_Analysis_SAC(EarObjectPtr data)
 		for (i = 0; i < outSignal->length; i++)
 			*outPtr++ *= normalisationFactor;
 	}
+	SetTimeContinuity_SpikeList(sL, outSignal->offset, outSignal->numChannels,
+	  inSignal->length);
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

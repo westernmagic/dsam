@@ -385,14 +385,18 @@ CheckData_Analysis_ISIH(EarObjectPtr data)
 
 /*
  * This routine resets the process variables.
+ * During the reset process the input signal will have the same
+ * offset and numChannels as the output signal.
  */
 
 void
 ResetProcess_Analysis_ISIH(EarObjectPtr data)
 {
+	SignalDataPtr	outSignal = _OutSig_EarObject(data);
+
 	ResetOutSignal_EarObject(data);
-	ResetListSpec_SpikeList(interSIHPtr->spikeListSpec, _OutSig_EarObject(
-	  data));
+	ResetListSpec_SpikeList(interSIHPtr->spikeListSpec, outSignal->offset,
+	  outSignal->numChannels);
 
 }
 
@@ -509,6 +513,8 @@ Calc_Analysis_ISIH(EarObjectPtr data)
 				  p->maxIntervalIndex)
 					outPtr[spikeIntervalIndex - 1]++;
 	}
+	SetTimeContinuity_SpikeList(p->spikeListSpec, outSignal->offset,
+	  outSignal->numChannels, inSignal->length);
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

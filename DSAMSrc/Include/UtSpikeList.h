@@ -91,11 +91,11 @@ SpikeListSpecPtr	InitListSpec_SpikeList(int numChannels);
 BOOLN	InsertSpikeSpec_SpikeList(SpikeListSpecPtr listSpec, uShort channel,
 		  ChanLen timeIndex);
 
-BOOLN	ResetListSpec_SpikeList(SpikeListSpecPtr listSpec,
-		  SignalDataPtr signal);
+BOOLN	ResetListSpec_SpikeList(SpikeListSpecPtr listSpec, int offset,
+		  int numChannels);
 
-void	SetTimeContinuity_SpikeList(SpikeListSpecPtr listSpec,
-		  SignalDataPtr signal);
+void	SetTimeContinuity_SpikeList(SpikeListSpecPtr listSpec, int offset,
+		  int numChannels, ChanLen signalLength);
 
 __END_DECLS
 
