@@ -48,6 +48,7 @@
 #define	APP_MAX_AUTHORS				5
 #define	APP_MAX_HELP_BOOKS			4
 #define APP_PARLIST_NAME			wxT("app_specific")
+#define APP_DEFAULT_NUM_THREADS		-1
 
 #if defined(USE_GUI) || defined(LIBRARY_COMPILE) || defined(EXTENSIONS_SUPPORT)
 #	define	MAIN_ARGS	void

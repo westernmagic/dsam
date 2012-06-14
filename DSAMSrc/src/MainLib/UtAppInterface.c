@@ -215,7 +215,7 @@ Init_AppInterface(ParameterSpecifier parSpec)
 	appInterfacePtr->argv = NULL;
 	appInterfacePtr->argc = 0;
 	appInterfacePtr->initialCommand = 0;
-	appInterfacePtr->numThreads = -1;
+	appInterfacePtr->numThreads = APP_DEFAULT_NUM_THREADS;
 	appInterfacePtr->threadMode = APP_INT_THREAD_MODE_PROCESS;
 	appInterfacePtr->segmentModeSpecifier = GENERAL_BOOLEAN_OFF;
 	appInterfacePtr->diagModeSpecifier = GENERAL_DIAGNOSTIC_OFF_MODE;
