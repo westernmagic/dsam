@@ -506,7 +506,8 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 			return(TRUE);
 	}
 	outSignal = _OutSig_EarObject(data);
-	for (chan = outSignal->offset; chan < outSignal->numChannels; chan++) {
+	for (chan = outSignal->offset * p->numOutChans; chan < outSignal->numChannels; chan +=
+	  p->numOutChans) {
 		outChan = chan * p->numOutChans;
 		fT = p->fT[data->threadIndex];
 		CMPLX_PTR_RE(fT) = CMPLX_PTR_IM(fT) = 0.0;
