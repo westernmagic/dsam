@@ -372,7 +372,6 @@ InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 	static const WChar *funcName = wxT(
 	  "InitProcessVariables_Analysis_FourierT");
 	int		i;
-	ChanLen	arrayLen;
 	FourierTPtr	p = fourierTPtr;
 
 	if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
@@ -386,12 +385,12 @@ InitProcessVariables_Analysis_FourierT(EarObjectPtr data)
 			return(FALSE);
 		}
 #		if HAVE_FFTW3
-		arrayLen = (p->fTLength << 1) + 2;
+		p->arrayLen = (p->fTLength << 1) + 2;
 #		else
-		arrayLen = p->fTLength;
+		p->arrayLen = p->fTLength;
 #		endif
 		for (i = 0; i < p->numThreads; i++) {
-			if ((p->fT[i] = (Complx *) CMPLX_MALLOC(arrayLen * sizeof(
+			if ((p->fT[i] = (Complx *) CMPLX_MALLOC(p->arrayLen * sizeof(
 			  Complx))) == NULL) {
 				NotifyError(wxT("%s: Couldn't allocate memory for complex ")
 				  wxT("data array (%d)."), funcName, i);
@@ -517,7 +516,7 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 			Float	*fTIn = (Float *) fT++;
 			for (i = 1; i < outSignal->length; i++)
 				*fTIn++ = *inPtr++;
-			for (; i < p->fTLength; i++)
+			for (; i < p->arrayLen; i++)
 				*fTIn++ = 0.0;
 		}
 #		else

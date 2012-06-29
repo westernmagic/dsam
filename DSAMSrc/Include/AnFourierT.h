@@ -77,6 +77,7 @@ typedef struct {
 	int		numOutChans;
 	Float	dBSPLFactor;
 	ChanLen	fTLength;
+	ChanLen	arrayLen;
 	ComplxPtr	*fT;
 #	if HAVE_FFTW3
 	DSAM_FFTW_NAME(plan)	plan;
