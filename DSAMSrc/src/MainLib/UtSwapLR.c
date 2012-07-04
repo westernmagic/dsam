@@ -80,7 +80,7 @@ InitModule_Utility_SwapLR(ModulePtr theModule)
 	/* static const WChar	*funcName = wxT("InitModule_Utility_SwapLR"); */
 
 	SetDefault_ModuleMgr(theModule, TrueFunction_ModuleMgr);
-	theModule->threadMode = MODULE_THREAD_MODE_SIMPLE;
+	theModule->threadMode = MODULE_THREAD_MODE_NONE;
 	theModule->RunProcess = Process_Utility_SwapLR;
 	theModule->SetParsPointer = SetParsPointer_Utility_SwapLR;
 	return(TRUE);
