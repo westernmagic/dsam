@@ -291,8 +291,8 @@ else
 		MAT_INC=""
 		DLLDIRNAME=matlab/dsam
 	else
-		EXEEXT=".mex"
-		DLLCOMPILE="mkoctfile"
+		EXEEXT=""
+		DLLCOMPILE="mkoctfile --mex"
 		MAT_INC="`mkoctfile -p CPPFLAGS` `mkoctfile -p CXXPICFLAG` `mkoctfile -p ALL_CXXFLAGS`"
 		MAT_LDFLAGS="`mkoctfile -p LFLAGS` `mkoctfile -p OCTAVE_LIBS`"
 		MAT_LDFLAGS=" $MAT_LDFLAGS `mkoctfile -p LDFLAGS` `mkoctfile -p BLAS_LIBS`"
@@ -342,6 +342,7 @@ if test x$javaSupport = xyes ; then
 	JAVA_HOST=`echo $host_os | $AWK -F- '{ split($0, s); print s[[1]] }'`
 	JAVA_INC="-I$JAVA_HOME/include -I$JAVA_HOME/include/$JAVA_HOST"
 	AC_SUBST(JAVA_INC)
+	echo LPO $JAVACFLAGS
 fi
 AM_CONDITIONAL(USE_JAVA_SUPPORT, test x$javaSupport = xyes)
 
