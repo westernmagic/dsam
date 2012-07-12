@@ -678,6 +678,7 @@ InitProcessVariables_ANSpikeGen_Meddis02(EarObjectPtr data)
 		if (p->updateProcessVariablesFlag || data->updateProcessFlag) {
 			FreeProcessVariables_ANSpikeGen_Meddis02();
 			outSignal = _OutSig_EarObject(data);
+			p->dt = outSignal->dt;
 			if (!SetRandPars_EarObject(data, p->ranSeed, funcName))
 				return(FALSE);
 			if (!SetFibres_ANSGUtils(&p->aNDist, p->distribution, outSignal->info.cFArray,
@@ -819,7 +820,6 @@ RunModel_ANSpikeGen_Meddis02(EarObjectPtr data)
 			  _OutSig_EarObject(data)->info.cFArray, p->aNDist->numChannels);
 			CloseDiagnostics_NSpecLists(&p->fp);
 		}
-		p->dt = inSignal->dt;
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
