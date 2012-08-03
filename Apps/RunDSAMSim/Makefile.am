@@ -26,6 +26,10 @@ if USE_RUNDSAMSIMGEN
   SUBDIRS += src/LibRunDSAMSimGen
 endif
 
+if USE_PYTHON_SUPPORT
+  SUBDIRS += src/python
+endif
+
 RunDSAMSim.spec: RunDSAMSim.spec.in
 
 dist-hook: RunDSAMSim.spec

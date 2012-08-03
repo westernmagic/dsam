@@ -213,6 +213,12 @@ AC_ARG_ENABLE(java_support,
    [javaSupport="no"]
 )
 
+AC_ARG_ENABLE(python_support,
+   [  --enable-python-support  Install RunDSAMSim python interface],
+   [pythonSupport="$enableval"],
+   [pythonSupport="no"]
+)
+
 AC_ARG_ENABLE(generic_support,
    [  --enable-generic-support  Produce LibRunDSAMSimGen generic DLL interface],
    [genericDLLSupport="$enableval"],
@@ -316,6 +322,17 @@ MATLIB_DIR="../MatLib"
 AC_SUBST(MATLIB_DIR)
 
 dnl ----------------------------------------------------------------------------
+dnl python setup
+dnl ----------------------------------------------------------------------------
+
+if test x$pythonSupport = xyes ; then
+	use_rundsamsimgen=yes
+	enable_shared=yes
+	AM_PATH_PYTHON
+fi
+AM_CONDITIONAL(USE_PYTHON_SUPPORT, test x$pythonSupport = xyes)
+
+dnl ----------------------------------------------------------------------------
 dnl Generic DLL library setup
 dnl ----------------------------------------------------------------------------
 
@@ -367,6 +384,8 @@ AC_CONFIG_FILES(
 	src/java/Makefile
 	src/LibRunDSAMSim/Makefile
 	src/LibRunDSAMSimGen/Makefile
+	src/python/Makefile
+	src/python/dsam/Makefile
 )
 AC_OUTPUT
 
