@@ -47,3 +47,11 @@ def as_array(sig):
     """
     data = np.ctypeslib.as_array(sig.block, (sig.length, sig.numChannels))
     return data
+def DataXAxis(sig):
+    """Calculate the time range for a signal.
+    
+    """
+    x = np.arange(sig.outputTimeOffset, sig.outputTimeOffset + sig.dt * sig.length,
+            sig.dt)
+    return x
+
