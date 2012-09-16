@@ -384,7 +384,7 @@ SetUniParList_BasilarM_GammaChirp_Dyn(void)
 	  UNIPAR_REAL,
 	  &bMDGammaCPtr->gC_b1, NULL,
 	  (void * (*)) SetGC_b1_BasilarM_GammaChirp_Dyn);
-	SetPar_UniParMgr(&pars[BM_GC_DYN_GC_C1], wxT("COEFF|C"),
+	SetPar_UniParMgr(&pars[BM_GC_DYN_GC_C1], wxT("COEFF_C"),
 	  wxT("Coeficient C -> exp(j*2*pi*Frs + C*ln(t))"),
 	  UNIPAR_REAL,
 	  &bMDGammaCPtr->gC_c1, NULL,
