@@ -138,11 +138,13 @@ FreeChannels_SignalData(SignalDataPtr theData)
 			theData->block = NULL;
 		}
 		if (theData->info.chanLabel != NULL) {
-			free(theData->info.chanLabel);
+			if (!theData->externalDataFlag)
+				free(theData->info.chanLabel);
 			theData->info.chanLabel = NULL;
 		}
 		if (theData->info.cFArray != NULL) {
-			free(theData->info.cFArray);
+			if (!theData->externalDataFlag)
+				free(theData->info.cFArray);
 			theData->info.cFArray = NULL;
 		}
 	}
@@ -546,7 +548,7 @@ SetLength_SignalData(SignalDataPtr theData, ChanLen theLength)
  * a binaural signal has an interleave level of 2.
  */
 
-void
+DSAM_API void
 SetInterleaveLevel_SignalData(SignalDataPtr theData, uShort theInterleaveLevel)
 {
 	static const WChar *funcName = wxT("SetInterleaveLevel_SignalData");
@@ -586,7 +588,7 @@ SetNumWindowFrames_SignalData(SignalDataPtr theData, uShort theNumWindowFrames)
  * This routine sets the local info flag for the signal's info structure.
  */
 
-void
+DSAM_API void
 SetLocalInfoFlag_SignalData(SignalDataPtr theData, BOOLN flag)
 {
 	if (!CheckInit_SignalData(theData, wxT("SetLocalInfoFlag_SignalData")))
@@ -1040,7 +1042,7 @@ Delay_SignalData(SignalDataPtr signal, Float delay)
  * mode..
  */
 
-void
+DSAM_API void
 SetStaticTimeFlag_SignalData(SignalDataPtr signal, BOOLN flag)
 {
 	signal->staticTimeFlag = flag;

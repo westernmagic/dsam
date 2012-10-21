@@ -286,7 +286,7 @@ WChar *	FormatArrayString_UniParMgr(UniParPtr p, int index, WChar *suffix);
 
 DSAM_API WChar *	FormatPar_UniParMgr(UniParPtr p, WChar *suffix);
 
-void	FreeList_UniParMgr(UniParListPtr *list);
+DSAM_API void	FreeList_UniParMgr(UniParListPtr *list);
 
 DSAM_API WChar *	GetParString_UniParMgr(UniParPtr p);
 

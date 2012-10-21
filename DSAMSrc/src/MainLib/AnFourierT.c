@@ -458,7 +458,7 @@ BOOLN
 Calc_Analysis_FourierT(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("Calc_Analysis_FourierT");
-	register	ChanData	 *inPtr, *outPtr;
+	register	ChanData	 *inPtr, *outPtr, modulus;
 	int		chan, outChan;
 	Float	dF;
 	ChanLen	i;
@@ -556,9 +556,11 @@ Calc_Analysis_FourierT(EarObjectPtr data)
 				*outPtr++ = (ChanData) CMPLX_PTR_IM(fT);
 			break;
 		case ANALYSIS_FOURIERT_DB_SPL_OUTPUTMODE:
-			for (i = 0; i < outSignal->length; i++, fT++)
-				*outPtr++ = (ChanData) DB_SPL(CMPLX_MODULUS(*fT) *
-				  p->dBSPLFactor);
+			for (i = 0; i < outSignal->length; i++, fT++) {
+				modulus = CMPLX_MODULUS(*fT);
+				*outPtr++ = (ChanData) DB_SPL(((modulus < DBL_EPSILON)? 0.0002: modulus *
+				  p->dBSPLFactor));
+			}
 			break;
 		default:
 			;

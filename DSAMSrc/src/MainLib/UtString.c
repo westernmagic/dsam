@@ -507,7 +507,7 @@ Vsnprintf_Utility_String(WChar *str, size_t size,  const WChar *format, va_list 
  * to the string '%s' format in UNICODE mode.
  */
 
-int
+DSAM_API int
 Snprintf_Utility_String(WChar *str, size_t size, const WChar *format, ...)
 {
 	int		result = 0;

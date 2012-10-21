@@ -205,7 +205,7 @@ DSAM_API DatumPtr	GetSimulation_AppInterface(void);
 
 UniParPtr	GetUniParPtr_AppInterface(WChar *parName);
 
-BOOLN	Init_AppInterface(ParameterSpecifier parSpec);
+DSAM_API BOOLN	Init_AppInterface(ParameterSpecifier parSpec);
 
 DSAM_API BOOLN	InitProcessVariables_AppInterface(BOOLN (* Init)(void), int theArgc,
 		  WChar **theArgv);

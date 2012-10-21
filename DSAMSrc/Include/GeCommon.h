@@ -565,7 +565,7 @@ __BEGIN_DECLS
 
 void	CheckInitErrorsFile_Common(void);
 
-void	CheckInitParsFile_Common(void);
+DSAM_API void	CheckInitParsFile_Common(void);
 
 void	CheckInitWarningsFile_Common(void);
 

@@ -153,7 +153,7 @@ InitList_UniParMgr(UniParModeSpecifier mode, int numPars, void *handlePtr)
  * It also sets the pointer, passed by reference, to NULL;
  */
 
-void
+DSAM_API void
 FreeList_UniParMgr(UniParListPtr *list)
 {
 	if (*list == NULL)

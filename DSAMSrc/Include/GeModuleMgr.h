@@ -252,7 +252,7 @@ void *	NoFunction_ModuleMgr(void);
 
 void *	NullFunction_ModuleMgr(void);
 
-BOOLN	PrintPars_ModuleMgr(EarObjectPtr data);
+DSAM_API BOOLN	PrintPars_ModuleMgr(EarObjectPtr data);
 
 BOOLN	PrintSimFile_ModuleMgr(WChar *fileName, EarObjectPtr data);
 

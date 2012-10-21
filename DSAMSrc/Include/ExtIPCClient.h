@@ -58,7 +58,7 @@ class wxFileName;
 
 /*************************** IPCClient ****************************************/
 
-class IPCClient: public wxSocketClient {
+class DSAMEXT_API IPCClient: public wxSocketClient {
 
 	bool	ok;
 	IPCUtils	iPCUtils;

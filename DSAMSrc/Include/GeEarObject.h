@@ -195,14 +195,14 @@ DSAM_API void	Free_EarObject(EarObjectPtr *theObject);
 
 DSAM_API EarObjectPtr	Init_EarObject(const WChar *moduleName);
 
-void	InitOutDataFromInSignal_EarObject(EarObjectPtr data);
+DSAM_API void	InitOutDataFromInSignal_EarObject(EarObjectPtr data);
 
 BOOLN	InitOutFromInSignal_EarObject(EarObjectPtr data, uShort numChannels);
 
-BOOLN	InitOutTypeFromInSignal_EarObject(EarObjectPtr data, uShort
+DSAM_API BOOLN	InitOutTypeFromInSignal_EarObject(EarObjectPtr data, uShort
 		  numChannels);
 
-BOOLN	InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels,
+DSAM_API BOOLN	InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels,
 		  ChanLen length, Float samplingInterval);
 
 void	InitThreadRandPars_EarObject(EarObjectPtr p, EarObjectPtr baseP);
@@ -245,7 +245,7 @@ DSAM_API void	SetResetProcess_EarObject(BOOLN (* Func)(EarObjectPtr));
 DSAM_API void	SetThreadRunFlag_EarObject(EarObjectPtr theObject,
 				  BOOLN setting);
 
-void	SetTimeContinuity_EarObject(EarObjectPtr data);
+DSAM_API void	SetTimeContinuity_EarObject(EarObjectPtr data);
 
 DSAM_API void	SetUpdateProcessFlag_EarObject(EarObjectPtr theObject,
 				  BOOLN setting);

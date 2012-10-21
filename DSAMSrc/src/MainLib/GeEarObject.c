@@ -483,7 +483,7 @@ ResetSignalContinuity_EarObject(EarObjectPtr data, SignalDataPtr oldOutSignal)
  * zero, unless the updateProcessFlag is set.
  */
 
-BOOLN
+DSAM_API BOOLN
 InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels, ChanLen length,
   Float samplingInterval)
 {
@@ -589,7 +589,7 @@ InitOutFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
  * of the 'InitOutFromInSignal_EarObject' routine.
  */
 
-void
+DSAM_API void
 InitOutDataFromInSignal_EarObject(EarObjectPtr data)
 {
 	SetChannelsFromSignal_SignalData(_OutSig_EarObject(data), _InSig_EarObject(
@@ -614,7 +614,7 @@ InitOutDataFromInSignal_EarObject(EarObjectPtr data)
  * used within the pre-thread initialisation section of a process.
  */
 
-BOOLN
+DSAM_API BOOLN
 InitOutTypeFromInSignal_EarObject(EarObjectPtr data, uShort numChannels)
 {
 	static const WChar *funcName = wxT("InitOutTypeFromInSignal_EarObject");
@@ -906,7 +906,7 @@ RemoveEarObjRefs_EarObject(EarObjectPtr theObject)
  * It expects the EarObject to be correctly initialised.
  */
 
-void
+DSAM_API void
 SetTimeContinuity_EarObject(EarObjectPtr data)
 {
 	if (!GetDSAMPtr_Common()->segmentedMode)

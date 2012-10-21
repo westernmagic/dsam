@@ -745,7 +745,7 @@ CheckInitErrorsFile_Common(void)
  * It will set the pointer to the default value if it is unset.
  */
 
-void
+DSAM_API void
 CheckInitParsFile_Common(void)
 {
 	if (dSAM.parsFile == UNSET_FILE_PTR)

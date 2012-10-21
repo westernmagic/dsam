@@ -624,7 +624,7 @@ GetUniParListPtr_ModuleMgr(EarObjectPtr data)
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 PrintPars_ModuleMgr(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("PrintPars_ModuleMgr");

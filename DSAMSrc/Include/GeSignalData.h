@@ -190,12 +190,12 @@ void	SetInfoChannelTitle_SignalData(SignalDataPtr theData, WChar *title);
 
 void	SetInfoSampleTitle_SignalData(SignalDataPtr theData, WChar *title);
 
-void	SetInterleaveLevel_SignalData(SignalDataPtr theData,
+DSAM_API void	SetInterleaveLevel_SignalData(SignalDataPtr theData,
 		  uShort theInterleaveLevel);
 
 void	SetLength_SignalData(SignalDataPtr theData, ChanLen theLength);
 
-void	SetLocalInfoFlag_SignalData(SignalDataPtr theData, BOOLN flag);
+DSAM_API void	SetLocalInfoFlag_SignalData(SignalDataPtr theData, BOOLN flag);
 
 void	SetNumWindowFrames_SignalData(SignalDataPtr theData,
 		  uShort theNumWindowFrames);
@@ -206,7 +206,7 @@ void	SetOutputTimeOffset_SignalData(SignalDataPtr theData,
 void	SetSamplingInterval_SignalData(SignalDataPtr theData,
 		  Float theSamplingInterval);
 
-void	SetStaticTimeFlag_SignalData(SignalDataPtr signal, BOOLN flag);
+DSAM_API void	SetStaticTimeFlag_SignalData(SignalDataPtr signal, BOOLN flag);
 
 void	SetTimeIndex_SignalData(SignalDataPtr theData, ChanLen theTimeIndex);
 

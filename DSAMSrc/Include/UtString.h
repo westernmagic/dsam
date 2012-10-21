@@ -84,7 +84,8 @@ void	ToUpper_Utility_String(WChar *upperCaseString, const WChar *string);
 
 WChar *	RemoveChar_Utility_String(WChar *string, WChar c);
 
-int		Snprintf_Utility_String(WChar *str, size_t size,  const WChar *format, ...);
+DSAM_API int		Snprintf_Utility_String(WChar *str, size_t size,  const WChar *format,
+						...);
 
 int		StrCmpNoCase_Utility_String(WChar *s1, WChar *s2);
 

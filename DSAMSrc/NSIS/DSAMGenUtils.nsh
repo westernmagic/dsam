@@ -33,7 +33,7 @@
 !define DSAM_APP_RKEY	"${DSAMRKEY}\Applications"
 !define DSAM_APP_COUNT	"AppCount"
 !define INSTALL_DIR	"Install_Dir"
-!define DSAMDIR		"lib"
+!define DSAMDIR		"..\dsam2838\lib"
 
 !define WX_VERSION	"2.8.12"
 !define WXWINDIR	"..\SupportLibs\wxWidgets-${WX_VERSION}"
