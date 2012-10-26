@@ -86,6 +86,8 @@ Function InstallMSVCRedist
     Pop $0
     !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
       "c:\windows\system32\msvcr100.dll" ${DLL32DIR}\msvcr100.dll ${DLL32DIR}  
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+      "c:\windows\system32\msvcp100.dll" ${DLL32DIR}\msvcp100.dll ${DLL32DIR}  
   ${Else}
     DetailPrint "Installing 64-bit MSVCRT Support"
     SetOutPath ${DLL64DIR}
@@ -95,6 +97,9 @@ Function InstallMSVCRedist
     !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
       "C:\Program Files\Microsoft Visual Studio 10.0\Common7\Packages\Debugger\X64\msvcr100.dll" \
 	  ${DLL64DIR}\msvcr100.dll ${DLL64DIR}  
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+      "C:\Users\lowel\Documents\Work\dsam\SupportLibs\Microsoft Windows\x64\msvcp100.dll" \
+	  ${DLL64DIR}\msvcp100.dll ${DLL64DIR}  
   ${EndIf}
 
   Pop $0
@@ -122,8 +127,10 @@ Function un.SetInstallMSVCRedist
     Pop $R0
     ${If} $R0 = 32
       !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL32DIR}\msvcr100.dll
+      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL32DIR}\msvcp100.dll
     ${Else}
       !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL64DIR}\msvcr100.dll
+      !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL64DIR}\msvcp100.dll
     ${EndIf}
   ${EndIf}
 
@@ -226,3 +233,55 @@ Function un.SetEnvPathVar
   Pop $0
 
 FunctionEnd
+
+###################################################################################
+#
+# Set the PYTHON_PATH environment variable
+#
+# Example:
+#
+# Call SetEnvPythonPathVar
+#
+
+Function SetEnvPythonPathVar
+
+  Exch $1
+  Push $0
+  GetVersion::WindowsPlatformArchitecture
+  Pop $platformArch 
+  ${iF} $platformArch = 32
+  	${EnvVarUpdate} $0 "PYTHONPATH" "A" "HKLM" "$1" ; Append  
+  ${Else}
+  	${EnvVarUpdate} $0 "PYTHONPATH" "A" "HKLM" "$1" ; Append  
+  ${EndIf}
+  Pop $0
+  Pop $1
+ 
+FunctionEnd
+
+###################################################################################
+#
+# Unset the PYTHON_PATH environment variable
+#
+# Example:
+#
+# Call un.SetEnvPythonPathVar
+#
+
+Function un.SetEnvPythonPathVar
+
+  Exch $1
+  Pop $0
+  ; Remove DLLs
+  GetVersion::WindowsPlatformArchitecture
+  Pop $platformArch 
+  ${iF} $platformArch = 32
+    ${un.EnvVarUpdate} $0 "PYTHONPATH" "R" "HKLM" "$1"
+  ${Else}
+    ${un.EnvVarUpdate} $0 "PYTHONPATH" "R" "HKLM" "$1"  
+  ${EndIf}
+  Pop $0
+  Pop $1 
+
+FunctionEnd
+

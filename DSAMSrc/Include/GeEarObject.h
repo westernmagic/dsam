@@ -235,7 +235,7 @@ DSAM_API void	SetProcessContinuity_EarObject(EarObjectPtr data);
 
 void	SetProcessForReset_EarObject(EarObjectPtr theObject);
 
-void	SetProcessName_EarObject(EarObjectPtr theObject, const WChar *format, ...);
+DSAM_API void	SetProcessName_EarObject(EarObjectPtr theObject, const WChar *format, ...);
 
 BOOLN	SetRandPars_EarObject(EarObjectPtr p, long ranSeed,
 		  const WChar *callingFunc);

@@ -33,7 +33,8 @@
 !define DSAM_APP_RKEY	"${DSAMRKEY}\Applications"
 !define DSAM_APP_COUNT	"AppCount"
 !define INSTALL_DIR	"Install_Dir"
-!define DSAMDIR		"..\dsam2838\lib"
+!define DLL_PATH_ENV	"DSAM_DLL_PATH"
+!define DSAMDIR		"..\dsam2840\lib"
 
 !define WX_VERSION	"2.8.12"
 !define WXWINDIR	"..\SupportLibs\wxWidgets-${WX_VERSION}"
@@ -152,6 +153,15 @@ Function InstallDSAMDLLs
     !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
      ${DSAMDIR}\DSAM_g_x64.dll ${DLL64DIR}\DSAM_g_x64.dll ${DLL64DIR}
   ${EndIf}
+
+  ; Set Environment variable
+  Push "${DLL_PATH_ENV}"
+  ${If} $platformArch = 32
+    Push "${DLL32DIR}"
+  ${Else}
+    Push "${DLL64DIR}"
+  ${EndIf}
+  Call WriteEnvStr
 
 FunctionEnd
 
@@ -336,6 +346,11 @@ Function un.SetDLLUnInstall
       !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED ${DLL64DIR}\libfftw3-3.dll
       RMDIR /REBOOTOK "${DLL64DIR}"
     ${EndIf}
+    ; Remove environment variables
+    # remove the variable
+    Push "${DLL_PATH_ENV}"
+    Call un.DeleteEnvStr
+
   ${EndIf}
   Pop $0
 

@@ -325,7 +325,7 @@ FreeAll_EarObject(void)
  * This routine uses the variable argument format - like 'printf' does.
  */
 
-void
+DSAM_API void
 SetProcessName_EarObject(EarObjectPtr theObject, const WChar *format, ...)
 {
 	static const WChar *funcName = wxT("SetProcessName_EarObject");
