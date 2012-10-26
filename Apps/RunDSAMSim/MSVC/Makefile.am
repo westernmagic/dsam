@@ -3,5 +3,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST	= RunDSAMSim.sln RunDSAMSim.vcproj LibRunDSAMSim.vcproj MatLib.vcproj
+EXTRA_DIST	= RunDSAMSim.sln
+
+SUBDIRS		= MatLib LibRunDSAMSim LibRunDSAMSimGen
 

@@ -32,6 +32,7 @@
 #	include "RunDSAMSimSetup.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "MatLib.h"
 #include "MatInSignal.h"
 #include "MatMainApp.h"
 
@@ -248,8 +249,9 @@ MatMainApp::RunSimulationLocal(void)
 		ResetSim_AppInterface();
 		if (inputSignal)
 			ResetProcess_EarObject(inputSignal->GetInputProcess());
+
 		for (i = 0; i < numberOfRuns; i++) {
-			if (inputSignal)
+			if (inputSignal && !inputSignal->GetExternalInSignalFlag())
 				inputSignal->SetInputProcessData(segmentLength);
 			if (!RunSim_AppInterface()) {
 				ok = false;
@@ -632,7 +634,7 @@ ChangeStringFormats_MatMainApp(wxString &str)
  * This is the standard version for ANSI C.
  */
 
-void
+MATLIB_API void
 DPrint_MatMainApp(const WChar *format, va_list args)
 {
 	CheckInitParsFile_Common();
@@ -661,7 +663,7 @@ DPrint_MatMainApp(const WChar *format, va_list args)
  * This list is reset when the noficiationCount is zero.
  */
 
-void
+MATLIB_API void
 Notify_MatMainApp(const wxChar *message, CommonDiagSpecifier type)
 {
 	FILE	*fp;

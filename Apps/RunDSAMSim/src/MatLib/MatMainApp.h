@@ -70,7 +70,7 @@ class MainApp;
 
 /*************************** MatMainApp ***************************************/
 
-class MatMainApp: public MainApp {
+class MATLIB_API MatMainApp: public MainApp {
 
 	UniParListPtr	parList;
 	wxInitializer initializer;
@@ -117,11 +117,11 @@ class MatMainApp: public MainApp {
  */
 __BEGIN_DECLS
 
-void	DPrint_MatMainApp(const WChar *format, va_list args);
+MATLIB_API void	DPrint_MatMainApp(const WChar *format, va_list args);
 
 BOOLN	InitApp_MatMainApp(void);
 
-void	Notify_MatMainApp(const wxChar *message, CommonDiagSpecifier type);
+MATLIB_API void	Notify_MatMainApp(const wxChar *message, CommonDiagSpecifier type);
 
 BOOLN	RegisterUserModules_MatMainApp(void);
 

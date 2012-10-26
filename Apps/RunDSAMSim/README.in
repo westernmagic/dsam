@@ -1,51 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
-<article id="article">
-<articleinfo>
+
+<article id="article"
+		xmlns="http://docbook.org/ns/docbook" version="5.0">
 <title>General Information</title>
-<releaseinfo></releaseinfo>
-<authorgroup>
+
+<info>
 <author>
+   <personname>
 	<honorific>Dr</honorific>
 	<firstname>Lowel</firstname>
 	<surname>O'Mard</surname>
-	<othername role='mi'>P.</othername>
+	<othername role='mi'>P</othername>
+	</personname>
 	<affiliation>
 	<address><email>lowel.omard@gmail.com</email></address>
 	</affiliation>
 </author>
-</authorgroup>
-</articleinfo>
+</info>
 
 <sect1><title>General Information</title>
+
+<sect2><title>Introduction</title>
 <para>
-This is @PACKAGE@ version @VERSION@.  The @PACKAGE@ application provides an
-interface to Matlab(tm) (also Octave and java) which allows users to run and evaluate
-auditory models writing using development system for auditory modelling (DSAM)
-simulation scripts. DSAM provides access to an extensive collection of published
-and new models, as well as a wide variety of analysis and utility functions.
+This is @PACKAGE@ version @VERSION@.  The @PACKAGE@ application provides
+interfaces to Matlab(tm), via Java; Python and also Octave.  The interfaces
+allow users to run and evaluate auditory models written using development
+system for auditory modelling (DSAM) simulation scripts. DSAM provides access
+to an extensive collection of published and other auditory models, as well as
+a wide variety of analysis and utility functions.  Examples scripts showing how the
+interfaces can be used are included in the installation.
 </para>
 
 <para>
-The @PACKAGE@ currently has two interfaces which provide direct access to
-DSAM simulations: (1) "RunDSAMSimJ" - java interface and (2) The "RunDSAMSim.mex"
-mex file.
-</para>
-<para>
-The "RunDSAMSimJ" java interface has been tested with Matlab 2007b, 2009a and
-should work with any version of Matlab.  It uses a java application which is
-supported by a dynamic link library.  Octave users should use the original
-RunDSAMSim.mex interface as octave currently has no java support.
+The @PACKAGE@ currently has three interfaces which provide direct access to
+DSAM simulations:
 </para>
 
-<para>
-A python interface is also under consideration.
-</para>
-
-<para>
-To use this application on UNIX the DSAM library must be installed.
-</para>
+<orderedlist numeration="lowerroman">
+	<listitem>
+		<para>RunDSAMSimJ - java interface (Matlab etc));</para>
+	</listitem>
+	<listitem>
+		<para>PyRunDSAMSim - python interface;</para>
+	</listitem>
+	<listitem>
+		<para>RunDSAMSim.mex - mex file (Octave)</para>
+	</listitem>
+</orderedlist>
 
 <para>
 The official web site is:
@@ -60,6 +61,40 @@ To subscribe: visit the web site at:
 
 	http://www.jiscmail.ac.uk/dsam
 </para>
+
+</sect2>
+
+<sect2><title>Java interface (MatLab)</title>
+<para>
+The "RunDSAMSimJ" java interface has been tested with Matlab 2007b, 2009a and
+should work with any version of Matlab.  It uses a java application which is
+supported by a dynamic link library (DLL).  Octave users should use the 
+RunDSAMSim.mex interface as octave currently has no java support.
+</para>
+
+</sect2>
+
+<sect2><title>Python interface</title>
+
+<para>
+The python interface uses the Python <emphasis>ctypes</emphasis> foreign
+function library which allows python to connect directly to a DSAM DLL.
+Under Microsoft Windows the RunDSAMSim package will install all the necessary
+support files and update the environment variables, i.e
+<emphasis>PYTHONPATH</emphasis>.
+</para>
+
+</sect2>
+
+<sect2><title>Octave interface</title>
+<para>
+Octave currently has no java support so the (original) RunDSAMSim.mex can be
+used. This will come ready compiled with binary installations, but can also
+be compiled using the package's auto-configuration setup.
+This interface requires that the DSAM library be installed.
+</para>
+
+</sect2>
 
 </sect1>
 
@@ -129,7 +164,72 @@ C:\Program Files\Common Files\dsam
 
 </sect1>
 
+<sect1><title>Python environment</title>
+<para>
+Many scientists today are turning to Python as a fast prototyping, but
+nonetheless powerful programming language for scientific computing.  This is
+especially so since the development of the Numpy and SciPy python libraries
+which provide array processing and a collection of mathematical algorithms
+that rival systems such as MatLab, Octave, R-lab and SciLab.  There is also the
+Matplotlib module which allows the easy production of publish quality plots.
+</para>
+
+<para>
+Following a suggestion from a DSAM user (thank you Marek Rudniki) python is
+now the platform of choice for interfacing with DSAM and for testing and
+analysis of the DSAM library.
+</para>
+
+<para>
+The python environment that the interface expects uses only modules which are
+freely available and the interface has been tested on both Linux and windows
+ 32-/64-bit platforms.  The minimum python modules required are:
+</para>
+
+<itemizedlist>
+	<listitem>
+		<para>Numpy - Array processing library (numeric.scipy.org)</para>
+	</listitem>
+	<listitem>
+		<para>SciPy - collection of mathematical algorithms(www.scipy.org);</para>
+	</listitem>
+	<listitem>
+		<para>MatPlotlib - data analysis and visualisation library
+		(sourceforge.net/projects/matplotlib).</para>
+	</listitem>
+</itemizedlist>
+
+<para>
+These modules are available in 32-bit and 64-bit for Microsoft Windows and are
+among the base packages of Linux distributions such as Ubuntu or Fedora.
+There are also integrated development environments (IDEs) for python such as
+<emphasis>Spyder</emphasis> the scientific Python development envronment
+(spyderlib.googlecode.com).  
+</para>
+</sect1>
+
 <sect1><title>Testing/Examples</title>
+
+<sect2><title>Before you start</title>
+<para>
+You should make a copy of the <emphasis>Examples</emphasis> directory to use as the
+basis of your own code.  You should also do this so that the original code
+can be kept as a reference.
+</para>
+
+<para>
+The demonstration calculates the post-stimulus time histogram and rate-intensity
+curves for a model VCN Onset-C cell.  This is a moderately complex simulation
+including a ten-channel basilar membrane configuration and incorporating a
+Hodgkin-Huxley neural cell model innervated by low-, medium- and high-spontaneous
+rate auditory nerve fibres.
+On an Intel(R) Core (TM) Duo 2.33 GHz system the demonstration takes
+approximately three minutes to run and produce both figures.
+</para>
+
+</sect2>
+
+<sect2><title>Matlab/Octave</title>
 
 <para>
 Start Matlab and change the current directory to the <emphasis>Examples</emphasis>
@@ -146,19 +246,71 @@ Run the <emphasis>MatlabDemoRunDSAMSim.m</emphasis> script using the command:
 </para>
 
 <para>
-On an Intel(R) Core (TM) Duo 2.33 GHz system this takes approximately 3 minutes to run.
-The demonstration calculates the post-stimulus time histogram and rate-intensity
-curves for a model VCN Onset-C cell. 
+Octave users should omit the second argument: "java" to run the demonstration
+using the RunDSAMSim.mex interface file.
+</para>
+
+</sect2>
+
+<sect2><title>Python</title>
+
+<para>
+The <emphasis>DemoRunDSAMSim.py</emphasis> script, as is common with python
+scripts, can by run in several ways.  Using the command line you can change to
+the RunDSAMSim Examples directory (you should have made a copy of this
+directory in your own work space) and issue the command:
 </para>
 
 <para>
-You can make a copy of the <emphasis>Examples</emphasis> directory to use as the
-basis of your own code.
+python DemoRunDSAMSim.py
 </para>
+
+<para>
+This will run the default main statements and produce both the post-stimulus
+time histogram (PSTH) and the rate-intensity function (RIF).
+</para>
+
+<para>
+Alternatively you can start python and change to the RunDSAMSim Examples
+directory; if you are not using Spyder, where you can set the working directory,
+nor using an interactive python shell such as <emphasis>ipython</emphasis> which
+provides a "cd" command, then issue the statements
+</para>
+
+<para>
+>>>import os
+</para>
+<para>
+>>>os.chdir("&lt;Path to RunDSAMSim&gt;/Examples")
+</para>
+
+<para>
+The ">>>" characters is the python prompt.  Now import the DemoRunDSAMSim
+module using the command:
+</para>
+
+<para>
+>>>from DemoRunDSAMSim import *
+</para>
+
+<para>
+You can now run the demonstration script using the command:
+</para>
+
+<para>
+>>>RunDemo(["psth", "rif"])
+</para>
+
+<para>
+You can produce the <emphasis>psth</emphasis> or <emphasis>rif</emphasis>
+individually by omitting the other in the list.
+</para>
+
+</sect2>
 
 </sect1>
 
-<sect1><title>DSAM Library Documentation &amp; Supporting DSAM</title>
+<sect1><title>DSAM Library Documentation and Supporting DSAM</title>
 
 <para>
 If you find @PACKAGE@ useful you can help provide support for the project by
@@ -166,7 +318,8 @@ purchasing the DSAM Library Documentation.  DSAM Library Documentation is the
 definitive guide to using the development system for auditory modelling (DSAM).
 It provides the missing documentation to realize the full potential of running
 simulations using DSAM, including example scripts and parameter settings showing
-how to use each module.
+how to use each module.  In particular details are provided to harness the
+full features of DSAM simulation scripting.
 </para>
 
 <para>

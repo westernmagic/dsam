@@ -8,6 +8,6 @@ lib_LTLIBRARIES	= libRunDSAMSimGen.la
 
 libRunDSAMSimGen_la_CPPFLAGS= -DLIBRARY_COMPILE -DINTERFACE_DLL $(DSAMINC) -I$(MATLIB_DIR)
 
-libRunDSAMSimGen_la_SOURCES	= libRunDSAMSimGen.cpp
+libRunDSAMSimGen_la_SOURCES	= libRunDSAMSimGen.h libRunDSAMSimGen.cpp
 
-libRunDSAMSimGen_la_LDFLAGS= $(MATLIB_DIR)/libdsam_matlib.a $(DSAMLDFLAGS) -rpath $(libdir) -export-dynamic
+libRunDSAMSimGen_la_LDFLAGS= $(DSAMLDFLAGS) -L$(MATLIB_DIR)/.libs -ldsam_matlib -rpath $(libdir) -export-dynamic

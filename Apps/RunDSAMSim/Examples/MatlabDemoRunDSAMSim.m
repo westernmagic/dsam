@@ -22,7 +22,6 @@ mainPars = [ ...
 
 bF = 8018.0;
 
-
 tic();
 for fig = figRange
 	figure(fig)
@@ -31,7 +30,7 @@ for fig = figRange
 		PlotPSTH(simFilePath, mainPars, bF, 80, mode);
 		title('VCN Onset-C Cell PSTH'); 
 	case 2
-		PlotRateIntensity('GPDRNL57_AN057_OC039.spf', mainPars, bF, 0, 90, 10, mode)
+		PlotRateIntensity(simFilePath, mainPars, bF, 0, 90, 10, mode)
 		title('VCN Onset-C Cell Rate-Intensity Function'); 
 	otherwise
 		error(['Unknown figure requested: ' num2str(fig)]);

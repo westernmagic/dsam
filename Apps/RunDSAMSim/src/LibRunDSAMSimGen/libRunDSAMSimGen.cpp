@@ -33,6 +33,7 @@ using namespace std;
 #include <UtDatum.h>
 #include <UtAppInterface.h>
 
+#include "MatLib.h"
 #include "MatInSignal.h"
 #include "MatMainApp.h"
 #include "libRunDSAMSimGen.h"
@@ -69,21 +70,20 @@ EarObjectPtr	outProcess = NULL;
 /*************************** Main routine *************************************/
 /******************************************************************************/
 
-SignalDataPtr
+LIBRUNDSAMSIMGEN_API SignalDataPtr
 RunDSAMSim(WChar *simFile, WChar *parameterOptions, SignalDataPtr inSignal)
 {
 	bool	staticTimeFlag = false;
 	int		numChannels = 0, interleaveLevel = 1;
 	ChanLen	length = 0;
-	EarObjectPtr	audModel, outProcess;
+	EarObjectPtr	audModel, outProcess = NULL;
 	MatInSignal		*inputSignal = NULL;
 
 	SetDiagMode(COMMON_DIALOG_DIAG_MODE);
 	SetErrorsFile_Common(wxT("screen"), OVERWRITE);
 	SetDPrintFunc(DPrint_MatMainApp);
 	SetNotifyFunc(Notify_MatMainApp);
-	if (inSignal && ((inputSignal = new MatInSignal(inSignal, (outSignal &&
-	  (outSignal == inSignal)))) == NULL)) {
+	if (inSignal && ((inputSignal = new MatInSignal(inSignal)) == NULL)) {
 		NotifyError(wxT("%s: Failed to initialise input signal."), PROGRAM_NAME);
 		return(NULL);
 	}
@@ -106,6 +106,7 @@ RunDSAMSim(WChar *simFile, WChar *parameterOptions, SignalDataPtr inSignal)
 			NotifyError(wxT("%s: Could not initialise output process."), PROGRAM_NAME);
 			return(NULL);
 		}
+		SetProcessName_EarObject(outProcess, wxT("RunDSAMSim out process"));
 		ConnectOutSignalToIn_EarObject(audModel, outProcess);
 		if (!InitOutTypeFromInSignal_EarObject(outProcess, 0)) {
 			NotifyError(wxT("%s: Cannot initialise output channel."), PROGRAM_NAME);

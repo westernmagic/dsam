@@ -13,6 +13,6 @@ RunDSAMSim_DEPENDENCIES = $(MATLIB_DIR)/libdsam_matlib.a
 
 CXXLINK = $(DLLCOMPILE) -o RunDSAMSim$(EXEEXT)
 
-LDADD	= $(MATLIB_DIR)/libdsam_matlib.a $(DSAMLDFLAGS)
+LDADD	= $(DSAMLDFLAGS) -L$(MATLIB_DIR)/.libs -ldsam_matlib
 
 EXTRA_DIST			= RunDSAMSim.rc RunDSAMSim.def RunDSAMSim.m

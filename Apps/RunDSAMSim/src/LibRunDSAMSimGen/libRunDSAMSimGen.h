@@ -13,6 +13,49 @@
 #ifndef _LIBRUNDSAMSIMGEN_H
 #define _LIBRUNDSAMSIMGEN_H
 
+/******************************************************************************/
+/*************************** Constant Definitions *****************************/
+/******************************************************************************/
+
+/* ----------------------------------------------------------------------------
+ * Making or using LIBRUNDSAMSIMGEN as a Windows DLL
+ * ----------------------------------------------------------------------------
+ */
+
+#if defined(_WINDOWS)
+
+	/* __declspec works in BC++ 5 and later, as well as VC++ and gcc */
+#if defined(__MSVISUALC__) || defined(__BORLANDC__) || defined(__GNUC__)
+#  ifdef LIBRUNDSAMSIMGEN_MAKING_DLL
+#    define LIBRUNDSAMSIMGEN_API __declspec( dllexport )
+#  else
+#    define LIBRUNDSAMSIMGEN_API
+#  endif
+#else
+#    define LIBRUNDSAMSIMGEN_API
+#endif
+
+#elif defined(__PM__)
+
+#  if (!(defined(__VISAGECPP__) && (__IBMCPP__ < 400 || __IBMC__ < 400 )))
+
+#    ifdef LIBRUNDSAMSIMGEN_MAKING_DLL
+#      define LIBRUNDSAMSIMGEN_API _Export
+#    else
+#      define LIBRUNDSAMSIMGEN_API
+#    endif
+
+#  else
+
+#    define LIBRUNDSAMSIMGEN_API
+
+#  endif
+
+#else  /* !(MSW or OS2) */
+
+#  define LIBRUNDSAMSIMGEN_API
+
+#endif /* __WINDOWS */
 
 /******************************************************************************/
 /****************************** Type definitions ******************************/
@@ -34,8 +77,9 @@ extern SignalDataPtr	outSignal;
  */
 __BEGIN_DECLS
 
-SignalDataPtr	RunDSAMSim(WChar *simFile, WChar *parameterOptions = wxT(""),
-				  SignalDataPtr inSignal = NULL);
+LIBRUNDSAMSIMGEN_API SignalDataPtr	RunDSAMSim(WChar *simFile,
+										WChar *parameterOptions = wxT(""),
+										SignalDataPtr inSignal = NULL);
 
 __END_DECLS
 

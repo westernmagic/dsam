@@ -4,7 +4,7 @@ dnl Put in a check for 'bool' for CC and CXX.
 
 AC_REVISION($Revision: 2.13)
 
-AC_INIT(RunDSAMSim, 2.0.1)
+AC_INIT(RunDSAMSim, 2.1.1)
 AC_CONFIG_AUX_DIR(CfgTools)
 AC_CONFIG_MACRO_DIR(m4)
 
@@ -359,7 +359,8 @@ if test x$javaSupport = xyes ; then
 	JAVA_HOST=`echo $host_os | $AWK -F- '{ split($0, s); print s[[1]] }'`
 	JAVA_INC="-I$JAVA_HOME/include -I$JAVA_HOME/include/$JAVA_HOST"
 	AC_SUBST(JAVA_INC)
-	echo LPO $JAVACFLAGS
+	AM_JAVACFLAGS="-target 1.5 -source 1.5"
+	AC_SUBST(AM_JAVACFLAGS)
 fi
 AM_CONDITIONAL(USE_JAVA_SUPPORT, test x$javaSupport = xyes)
 
@@ -378,6 +379,9 @@ AC_CONFIG_FILES(
 	RunDSAMSim.spec
 	CfgTools/Makefile
 	MSVC/Makefile
+	MSVC/MatLib/Makefile
+	MSVC/LibRunDSAMSim/Makefile
+	MSVC/LibRunDSAMSimGen/Makefile
 	Examples/Makefile
 	src/MatLib/Makefile
 	src/cpp/Makefile

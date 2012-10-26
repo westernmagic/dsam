@@ -134,7 +134,7 @@ public class RunDSAMSimJ {
 		inSignal = null;
 	}
 	static {
-		System.loadLibrary("RunDSAMSim");
+		System.loadLibrary("LibRunDSAMSim");
 	}
 
 }

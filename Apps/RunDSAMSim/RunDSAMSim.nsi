@@ -26,7 +26,7 @@
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
-!addincludedir "..\dsam2830\NSIS"
+!addincludedir "..\dsam2840\NSIS"
 
 ;!include "LogicLib.nsh"
 !include "Library.nsh"
@@ -39,16 +39,22 @@
 !include "DSAMAppUtils.nsh"
 
 !define APP_NAME		"RunDSAMSim"
-!define VERSION			"2.0.0"
-!define INST_VERSION		"1"
-!define MY_APP			"${APP_NAME}.dll"
-!define MY_APP2			"${APP_NAME}jni-${VERSION}.jar"
-!define REL32DIR		"MSVC\Release (SDK)"
-!define REL64DIR		"MSVC\x64\Release"
+!define VERSION			"2.1.0"
+!define INST_VERSION		"2"
+!define MATLIB			"MatLib"
+!define MATLIBDLL		"${MATLIB}.dll"
+!define JAVALIB			"Lib${APP_NAME}"
+!define JAVALIBDLL		"${JAVALIB}.dll"
+!define GENLIB			"Lib${APP_NAME}Gen"
+!define GENLIBDLL		"${GENLIB}.dll"
+!define JARPGK			"${APP_NAME}jni-${VERSION}.jar"
+!define REL32DIR		"DLL Release"
+!define REL64DIR		"x64\DLL Release"
 !define APP_RKEY		"${DSAM_APP_RKEY}\${APP_NAME}"
 !define README			"ReadMe"
 !define README_FILE		"${README}.rtf"
 !define README_SHORTCUT		"${README}.lnk"
+!define PYTHON_MODULE_PATH	"$INSTDIR\python"
 
 ;--------------------------------
 ; Global variables
@@ -67,7 +73,7 @@ InstallDir "$PROGRAMFILES64\${COMPANY_DIR}\${APP_NAME}"
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
-InstallDirRegKey HKLM "${APP_RKEY}" "${INSTALL_DIR}"
+InstallDirRegKey HKLM "${APP_RKEY}" "${INSTALL_DIR}"	
 
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
@@ -142,33 +148,69 @@ Section "${APP_NAME} ${VERSION}"
 
 SectionEnd
 
-Section "LibRunDSAMSim DLL"
+Section "MatLib DLL"
 
   SectionIn RO
   
   ; Set output path to the DLL directory for side-by-side installation
   Call SetDLLOutPath
 
-  ; Put file there
+  ; Put files there
   ${if} $platformArch = 32
     DetailPrint "Installing 32-bit DLL Support"
     !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-      "${REL32DIR}\${MY_APP}" "${DLL32DIR}\${MY_APP}" "${DLL32DIR}"
+      "MSVC\${MATLIB}\${REL32DIR}\${MATLIBDLL}" "${DLL32DIR}\${MATLIBDLL}" "${DLL32DIR}"
   ${else}
     DetailPrint "Installing 64-bit DLL Support"
     !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
-      "${REL64DIR}\${MY_APP}" "${DLL64DIR}\${MY_APP}" "${DLL64DIR}"
+      "MSVC\${MATLIB}\${REL64DIR}\${MATLIBDLL}" "${DLL64DIR}\${MATLIBDLL}" "${DLL64DIR}"
   ${EndIf}
   
 SectionEnd
 
-Section "Java Support - RunDSAMSimJ"
+Section "Java interface"
+  
+  ; Set output path to the DLL directory for side-by-side installation
+  Call SetDLLOutPath
 
-  SectionIn RO
+  ; Put files there
+  ${if} $platformArch = 32
+    DetailPrint "Installing 32-bit DLL Support"
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+      "MSVC\${JAVALIB}\${REL32DIR}\${JAVALIBDLL}" "${DLL32DIR}\${JAVALIBDLL}" "${DLL32DIR}"
+  ${else}
+    DetailPrint "Installing 64-bit DLL Support"
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+      "MSVC\${JAVALIB}\${REL64DIR}\${JAVALIBDLL}" "${DLL64DIR}\${JAVALIBDLL}" "${DLL64DIR}"
+  ${EndIf}
+  
+  File src\java\${JARPGK}
+
+SectionEnd
+
+Section "Python interface"
+  
+  ; Set output path to the DLL directory for side-by-side installation
+  Call SetDLLOutPath
+
+  ; Put files there
+  ${if} $platformArch = 32
+    DetailPrint "Installing 32-bit DLL Support"
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+      "MSVC\${GENLIB}\${REL32DIR}\${GENLIBDLL}" "${DLL32DIR}\${GENLIBDLL}" "${DLL32DIR}"
+  ${else}
+    DetailPrint "Installing 64-bit DLL Support"
+    !insertmacro InstallLib DLL $0 REBOOT_NOTPROTECTED \
+      "MSVC\${GENLIB}\${REL64DIR}\${GENLIBDLL}" "${DLL64DIR}\${GENLIBDLL}" "${DLL64DIR}"
+  ${EndIf}
   
   ; Set output path to the installation directory.
-  Call SetDLLOutPath
-  File src\java\${MY_APP2}
+  SetOutPath "${PYTHON_MODULE_PATH}\dsam"
+  File src\python\dsam\*.py
+
+  ; Set Environment variable
+  Push "${PYTHON_MODULE_PATH}"
+  Call SetEnvPythonPathVar
 
 SectionEnd
 
@@ -276,9 +318,9 @@ Section "Uninstall"
 
   ; Remove files and uninstaller
   ${If} $platformArch = 32
-    Delete ${DLL32DIR}\${MY_APP2}
+    Delete ${DLL32DIR}\${JARPGK}
   ${Else}
-    Delete ${DLL64DIR}\${MY_APP2}
+    Delete ${DLL64DIR}\${JARPGK}
   ${EndIf}
   Delete $INSTDIR\${README_FILE}
   Delete $INSTDIR\uninstall.exe
@@ -289,9 +331,13 @@ Section "Uninstall"
 
   ; Remove DLLs
   ${If} $platformArch = 32
-   !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED "${DLL32DIR}\${MY_APP}"
+   !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED "${DLL32DIR}\${MATLIBDLL}"
+   !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED "${DLL32DIR}\${JAVALIBDLL}"
+   !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED "${DLL32DIR}\${GENLIBDLL}"
   ${Else}
-   !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED "${DLL64DIR}\${MY_APP}"
+   !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED "${DLL64DIR}\${MATLIBDLL}"
+   !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED "${DLL64DIR}\${JAVALIBDLL}"
+   !insertmacro UninstallLib DLL SHARED REBOOT_NOTPROTECTED "${DLL64DIR}\${GENLIBDLL}"
   ${EndIf}
   Call un.SetDLLUnInstall
   Call un.SetInstallMSVCRedist
@@ -299,6 +345,11 @@ Section "Uninstall"
   ; Remove directories used
   RMDir /r /REBOOTOK "$INSTDIR\Examples"
   RMDir /REBOOTOK "$INSTDIR"	; Remove dir if empty
+
+  ; Remove environment variables
+  # remove the python path variable
+  Push "${PYTHON_MODULE_PATH}"
+  Call un.SetEnvPythonPathVar
  
 SectionEnd
 

@@ -16,6 +16,9 @@ MatlabFiles	= DataXAxis.m DataXAxis2.m MatlabDemoRunDSAMSim.m readDatFile.m \
 				DBSPL2MicroPascals.m DataXAxis2.m TimeReport.m \
 				PlotRateIntensity.m GetRunDSAMSimJInfo.m
 
+PythonFiles	= DemoRunDSAMSim.py
+
 DataFiles	= 
 
-EXTRA_DIST	= $(SimScripts) $(ParFiles) $(DataFiles) $(SPFFiles) $(MatlabFiles)
+EXTRA_DIST	= $(SimScripts) $(ParFiles) $(DataFiles) $(SPFFiles) \
+				$(MatlabFiles) $(PythonFiles)

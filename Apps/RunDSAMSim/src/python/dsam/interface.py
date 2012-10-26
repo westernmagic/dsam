@@ -1,6 +1,6 @@
 from ctypes import c_wchar_p
 from ctypes import POINTER
-from os import environ
+import os 
 import numpy as np
 import dsam
 
@@ -16,11 +16,12 @@ class info:
         self.interleaveLevel = sig.interleaveLevel
         self.wordSize = 2.0
 
-interfacePathEnvVar = "DSAM_GEN_INTERFACE_PATH"
+interfacePathEnvVar = "DSAM_DLL_PATH"
+baseInterfaceName = "libRunDSAMSimGen"
 
-interfaceName = "libRunDSAMSimGen.so"
+interfaceName = baseInterfaceName + ".so" if (os.name == "posix") else baseInterfaceName
 try:
-    interfacePath = environ[interfacePathEnvVar]
+    interfacePath = os.environ[interfacePathEnvVar]
 except KeyError:
     print "The '" + interfacePathEnvVar + "' environment variable must be set."
     raise

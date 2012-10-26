@@ -39,7 +39,7 @@
 
 /*************************** InputSignal **************************************/
 
-class MatInSignal {
+class MATLIB_API MatInSignal {
 
 	bool	vectorModeFlag;
 	bool	staticTimeFlag;
@@ -59,10 +59,11 @@ public:
 		ChanLen length, Float dt, bool staticTimeFlag, Float outputTimeOffset);
 	MatInSignal(Float **inPtrs, int numChannels, int interleaveLevel,
 		ChanLen length, Float dt, bool staticTimeFlag, Float outputTimeOffset);
-	MatInSignal(SignalDataPtr inSignal, bool copyInSignalFlag = false);
+	MatInSignal(SignalDataPtr inSignal);
 	~MatInSignal(void);
 
 	Float	GetDt(void)	{ return dt; }
+	bool	GetExternalInSignalFlag(void)	{ return externalInSignalFlag; }
 	EarObjectPtr	GetInputProcess(void)	{ return inputProcess; }
 	ChanLen	GetLength(void)	{ return length; }
 	void	Init(void)	{ inSignal = NULL; inputProcess = NULL; vectorModeFlag = false;

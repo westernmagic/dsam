@@ -18,6 +18,7 @@
 
 #include <DSAM.h>
 
+#include "MatLib.h"
 #include "MatInSignal.h"
 
 /******************************************************************************/
@@ -69,7 +70,7 @@ MatInSignal::MatInSignal(Float **inPtrs, int numChannels, int interleaveLevel,
  *  External Signal mode constructor.
  */
 
-MatInSignal::MatInSignal(SignalDataPtr inSignal, bool copyInSignalFlag)
+MatInSignal::MatInSignal(SignalDataPtr inSignal)
 {
 
 	Init();
@@ -77,13 +78,10 @@ MatInSignal::MatInSignal(SignalDataPtr inSignal, bool copyInSignalFlag)
 	SetSignalPars(inSignal->numChannels, inSignal->interleaveLevel,
 	  inSignal->length, inSignal->dt, inSignal->staticTimeFlag,
 	  inSignal->outputTimeOffset);
-	if (copyInSignalFlag)
-		inPtrs = inSignal->channel;
-	else {
-		this->inSignal = inSignal;
-		inVector = inSignal->block;
-		vectorModeFlag = true;
-	}
+	this->inSignal = inSignal;
+	inVector = inSignal->block;
+	vectorModeFlag = true;
+	this->inSignal->externalDataFlag = TRUE;
 }
 
 /****************************** Destructor ************************************/
@@ -94,8 +92,8 @@ MatInSignal::MatInSignal(SignalDataPtr inSignal, bool copyInSignalFlag)
 
 MatInSignal::~MatInSignal(void)
 {
-	if (inputProcess)
-		Free_EarObject(&inputProcess);
+//	if (inputProcess)
+//		Free_EarObject(&inputProcess);
 
 }
 
@@ -147,16 +145,19 @@ MatInSignal::InitInputEarObject(ChanLen segmentLength)
 		NotifyError(wxT("%s: Cannot initialise input process"), funcName);
 		return(false);
 	}
+	SetProcessName_EarObject(inputProcess, wxT("MatInSignal input process"));
+	SignalDataPtr	outSignal = _OutSig_EarObject(inputProcess);
 	if (inSignal) { // Use existing signal.
 		inputProcess->outSignal = inSignal;
-		return(true);
+		inputProcess->localOutSignalFlag = FALSE;
+		//return(true);
+	} else {
+		SetInterleaveLevel_SignalData(outSignal, interleaveLevel);
+		SetLocalInfoFlag_SignalData(outSignal, TRUE);
+		SetStaticTimeFlag_SignalData(outSignal, staticTimeFlag);
+		outSignal->rampFlag = TRUE;
+		SetInputProcessData(segmentLength);
 	}
-	SignalDataPtr	outSignal = _OutSig_EarObject(inputProcess);
-	SetStaticTimeFlag_SignalData(outSignal, staticTimeFlag);
-	SetLocalInfoFlag_SignalData(outSignal, TRUE);
-	SetInterleaveLevel_SignalData(outSignal, interleaveLevel);
-	outSignal->rampFlag = TRUE;
-	SetInputProcessData(segmentLength);
 	return(true);
 
 }

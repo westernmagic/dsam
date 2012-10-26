@@ -29,6 +29,7 @@
 #include <UtDatum.h>
 #include <UtAppInterface.h>
 
+#include "MatLib.h"
 #include "MatInSignal.h"
 #include "MatMainApp.h"
 

@@ -13,7 +13,7 @@ EXTRA_DIST		= libRunDSAMSim.def
 
 libRunDSAMSim_la_SOURCES= libRunDSAMSim.cpp
 
-libRunDSAMSim_la_LIBADD	= $(MATLIB_DIR)/libdsam_matlib.a
+libRunDSAMSim_la_LIBADD	= -L$(MATLIB_DIR)/.libs -ldsam_matlib
 
 #libRunDSAMSim_la_LDFLAGS= $(DSAMLDFLAGS) -rpath $(libdir) $(LaVersionInfo) -export-dynamic
 libRunDSAMSim_la_LDFLAGS= $(DSAMLDFLAGS) -rpath $(libdir) -export-dynamic
