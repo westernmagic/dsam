@@ -344,8 +344,6 @@ void MainApp::CheckOptions(void) {
 		switch (c) {
 		case 'R':
 			DSAM_strcpy(serverHost, argument);
-			wprintf(wxT("MainApp::CheckOptions: Debug: serverHost = '%S'\n"),
-					serverHost);
 			MarkIgnore_Options(argc, argv, wxT("-R"), OPTIONS_WITH_ARG);
 			break;
 		case 'S':
@@ -851,8 +849,6 @@ static void ConvertArgsToUnicode(int argc, char **argv) {
 					i);
 		} else { // converted ok
 			gs_initData.argv[wargc++] = wxStrdup(buf);
-			wprintf(wxT("ConvertArgsToUnicode: Debug: argv[%d] = '%S' (%d)\n"), i, gs_initData.argv[i],
-			 DSAM_strlen(gs_initData.argv[i]));
 		}
 	}
 
@@ -945,7 +941,7 @@ void DPrintSysLog_MainApp(const wxChar *format, va_list args) {
 #	if DSAM_USE_UNICODE
 	wxChar src[LONG_STRING];
 	vswprintf(src, LONG_STRING, format, args);
-	syslog(LOG_INFO, ConvUTF8_Utility_String(src));
+	syslog(LOG_INFO, "%s", ConvUTF8_Utility_String(src));
 #	else
 	vsyslog(LOG_INFO, format, args);
 #	endif

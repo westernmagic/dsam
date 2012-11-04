@@ -391,7 +391,7 @@ void
 FPrintList_SpikeList(SpikeListSpecPtr listSpec, int offset, int numChannels)
 {
 	static const WChar	*funcName = wxT("FPrintList_SpikeList");
-	const WChar 	fileName[MAXLINE];
+	WChar 	fileName[MAXLINE];
 	int		chan;
 	SpikeSpecPtr	p;
 	FILE	*fp;

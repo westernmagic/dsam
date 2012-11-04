@@ -14,13 +14,13 @@ include /usr/share/cdbs/1/class/autotools.mk
 
 # The following CFLAGS are required for Ubunutu 1.04 (Natty Narwhale) because
 # of problems with gcc version 4.5.2 compilation produces run errors when the
-# optimisation is set using the "-O2" flag.  Errors do not occure when the
+# optimisation is set using the "-O2" flag.  Errors do not occur when the
 # "-O0" flag is used and the additional optimisations are added to bring it up
 # to exactly the same optimisation options as for "-O2".
 
 CFLAGS += -O0 -falign-functions -falign-jumps -falign-labels -fno-align-loops \
  -fcaller-saves -fcprop-registers -fcrossjumping -fcse-follow-jumps -fdefer-pop \
- -fexpensive-optimizations -fextension-elimination -fforward-propagate -fgcse \
+ -fexpensive-optimizations -fforward-propagate -fgcse \
  -fguess-branch-probability -fif-conversion -fif-conversion2 \
  -finline-small-functions -fipa-cp -fipa-pure-const -fipa-reference -fipa-sra \
  -fmerge-constants  -fomit-frame-pointer -foptimize-register-move \
@@ -28,7 +28,7 @@ CFLAGS += -O0 -falign-functions -falign-jumps -falign-labels -fno-align-loops \
  -freorder-functions -frerun-cse-after-loop -fschedule-insns2 \
  -fsplit-wide-types -fstrict-aliasing -fthread-jumps -ftree-builtin-call-dce \
  -ftree-ccp  -ftree-ch -ftree-copy-prop -ftree-copyrename -ftree-dce \
- -ftree-dominator-opts -ftree-dse  -ftree-fre -ftree-if-to-switch-conversion \
+ -ftree-dominator-opts -ftree-dse  -ftree-fre \
  -ftree-pre  -ftree-sink -ftree-sra -ftree-switch-conversion -ftree-ter \
  -ftree-vrp
 

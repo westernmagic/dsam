@@ -1,3 +1,9 @@
+dsam (2.8.41-0ubuntu1) UNRELEASED; urgency=low
+
+  * Several bug fixes have been made in addition to the code being re-configured  * to allow Windows(tm) DLLs to be created.
+
+ -- Dr. Lowel P. O'Mard (One Word) <lowel.omard@gmail.com>  Thu, 01 Nov 2012 11:20:09 +0000
+
 dsam (2.8.35-0ubuntu1) natty; urgency=low
 
   * Added xmlto to the dependencies in the debian/control file. It is required
