@@ -469,7 +469,7 @@ if test x$gui = xyes -a x$wxwinAvailable = xyes; then
 	CXXFLAGS_save=$CXXFLAGS
 	CXXFLAGS=`$WX_CONFIG --cxxflags`
 	LIBS_save=$LIBS
-	LIBS=`$WX_CONFIG --libs`
+	LIBS=`$WX_CONFIG --libs html,adv,core,base,ogl,net,xml`
 	AC_LINK_IFELSE(
 		[
 			AC_LANG_SOURCE(
@@ -511,7 +511,7 @@ if test x$WX_OGL = xyes -a x$using_wxWidgets_gui = xyes; then
 	CXXFLAGS_save=$CXXFLAGS
 	CXXFLAGS=`$WX_CONFIG --cxxflags`
 	LIBS_save=$LIBS
-	LIBS=`$WX_CONFIG --libs std,ogl`
+	LIBS=`$WX_CONFIG --libs ogl`
 	AC_LINK_IFELSE(
 		[
 			AC_LANG_SOURCE(
@@ -633,7 +633,7 @@ if test x$wx_base_available = xyes; then
 	AC_SUBST(DSAMEXTLIB)
 	WX_BASE_CXXFLAGS="`$WX_CONFIG --cxxflags base`"
 	AC_SUBST(WX_BASE_CXXFLAGS)
-	WX_BASE_LIBS="`$WX_CONFIG --libs base net xml`"
+	WX_BASE_LIBS="`$WX_CONFIG --libs base,net,xml`"
 	AC_SUBST(WX_BASE_LIBS)
 fi
 AM_CONDITIONAL(DSAM_EXTENSIONS, test x$wx_base_available = xyes)
@@ -658,7 +658,7 @@ AM_CONDITIONAL(DSAM_GRAPHICS, test x$using_wxWidgets_gui = xyes)
 if  test x$using_wxWidgets_gui = xyes -o x$using_wxWidgets_ogl = xyes; then
 	WXINC="`$WX_CONFIG --cxxflags`"
 	AC_SUBST(WXINC)
-	WXLDLIBS="`$WX_CONFIG --libs`"
+	WXLDLIBS="`$WX_CONFIG --libs html,adv,core,base,ogl,net,xml`"
 	AC_SUBST(WXLDLIBS)
 fi
 

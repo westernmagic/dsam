@@ -26,7 +26,7 @@
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
-!addincludedir "..\dsam2830\NSIS"
+!addincludedir "..\dsam2838\NSIS"
 
 ;!include "LogicLib.nsh"
 !include "Library.nsh"
@@ -39,13 +39,13 @@
 !include "DSAMAppUtils.nsh"
 
 !define APP_NAME		"SAMS"
-!define VERSION			"1.3.0"
+!define VERSION			"1.3.7"
 !define INST_VERSION		"1"
 !define MY_APP			"${APP_NAME}.exe"
 !define MY_APP2			"${APP_NAME}_ng.exe"
 !define APP_SHORTCUT		"${APP_NAME}.lnk"
 !define APP_SHORTCUT2		"${APP_NAME}_ng.lnk"
-!define REL32DIR		"Release (SDK)"
+!define REL32DIR		"DLL SDK Release"
 !define REL64DIR		"x64\Release"
 !define APP_RKEY		"${DSAM_APP_RKEY}\${APP_NAME}"
 !define README			"ReadMe"

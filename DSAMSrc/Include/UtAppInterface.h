@@ -108,7 +108,7 @@ typedef struct {
 	BOOLN	appParFileFlag, canLoadSimulationFlag, simulationFinishedFlag;
 	BOOLN	numThreadsFlag, threadModeFlag;
 	BOOLN	updateProcessVariablesFlag;
-	WChar	appName[MAXLINE];
+	WChar	appName[MAX_FILE_PATH];
 	WChar	appHelpBooks[APP_MAX_HELP_BOOKS][MAXLINE];
 	WChar	appParFile[MAX_FILE_PATH];
 	WChar	appVersion[MAXLINE];
