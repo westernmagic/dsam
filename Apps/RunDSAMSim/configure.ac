@@ -357,7 +357,8 @@ if test x$javaSupport = xyes ; then
 	dnl	JAVA_HOST=linux;;
 	dnl esac
 	JAVA_HOST=`echo $host_os | $AWK -F- '{ split($0, s); print s[[1]] }'`
-	JAVA_INC="-I$JAVA_HOME/include -I$JAVA_HOME/include/$JAVA_HOST"
+	JAVA_INC_DIR=`CfgTools/get_header_path.py jni.h`
+	JAVA_INC="-I$JAVA_INC_DIR -I$JAVA_INC_DIR/$JAVA_HOST"
 	AC_SUBST(JAVA_INC)
 	AM_JAVACFLAGS="-target 1.5 -source 1.5"
 	AC_SUBST(AM_JAVACFLAGS)
@@ -370,6 +371,20 @@ dnl ----------------------------------------------------------------------------
 
 AM_CONDITIONAL(LIBRUNDSAMSIM, test x$libRunDSAMSim = xyes)
 
+dnl ----------------------------------------------------------------------------
+dnl README Docbook Processing processing
+dnl ----------------------------------------------------------------------------
+
+if test -f /usr/share/xml/docbook5/schema/rng/5.0/docbook.rng ; then
+	RNG_FILE=/usr/share/xml/docbook5/schema/rng/5.0/docbook.rng
+	XSL_PREFIX=/usr/share/sgml/docbook/xsl-ns-stylesheets
+else
+	RNG_FILE=/usr/share/xml/docbook/schema/rng/5.0/docbook.rng
+	XSL_PREFIX=/usr/share/xml/docbook/stylesheet/docbook-xsl-ns
+fi
+AC_SUBST(RNG_FILE)
+AC_SUBST(XSL_PREFIX)
+
 dnl ============================================================================
 dnl Final configure outputs.
 dnl ============================================================================
@@ -378,6 +393,7 @@ AC_CONFIG_FILES(
 	Makefile
 	RunDSAMSim.spec
 	CfgTools/Makefile
+	debian/Makefile
 	MSVC/Makefile
 	MSVC/MatLib/Makefile
 	MSVC/LibRunDSAMSim/Makefile

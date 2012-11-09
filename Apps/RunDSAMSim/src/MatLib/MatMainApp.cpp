@@ -682,7 +682,7 @@ Notify_MatMainApp(const wxChar *message, CommonDiagSpecifier type)
 	if (fp == stdout) {
 		std::cout << wxConvUTF8.cWX2MB(message) << std::endl;
 	} else {
-		fprintf(fp, wxConvUTF8.cWX2MB(message));
+		fprintf(fp, "%s", (const char *) wxConvUTF8.cWX2MB(message));
 		fprintf(fp, "\n");
 	}
 

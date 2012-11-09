@@ -10,7 +10,7 @@ EXTRA_DIST		= autogen.sh RunDSAMSim.nsi LICENSE
 
 DISTCLEANFILES	= *.fo
 
-SUBDIRS			= CfgTools MSVC Examples src/MatLib
+SUBDIRS			= CfgTools debian MSVC Examples src/MatLib
 
 if USE_JAVA_SUPPORT
   SUBDIRS += src/java
@@ -37,10 +37,8 @@ endif
 BASE_FILE	= README
 TEMP_DIR	= /tmp
 TEMP_FILE	= $(TEMP_DIR)/temp.xml
-RNG_FILE	= /usr/share/xml/docbook5/schema/rng/5.0/docbook.rng
-XSL_PREFIX	= /usr/share/sgml/docbook/xsl-ns-stylesheets
-HTML_XSL	= $(XSL_PREFIX)/html/docbook.xsl
-FO_XSL		= $(XSL_PREFIX)/fo/docbook.xsl
+HTML_XSL	= $(@XSL_PREFIX@)/html/docbook.xsl
+FO_XSL		= $(@XSL_PREFIX@)/fo/docbook.xsl
 XSLTPROC	= xsltproc
 FOP			= fop
 XSL_ARGS	= --xinclude --param bibliography.numbered 1 --param section.autolabel 1 \
@@ -69,7 +67,7 @@ $(BASE_FILE).html:	$(BASE_FILE).xml
 
 check-xml:	$(BASE_FILE).xml
 		xmllint --xinclude $(BASE_FILE).xml > $(TEMP_FILE)
-		jing -t -i $(RNG_FILE) $(TEMP_FILE) > jing.log 2>&1
+		jing -t -i $(@RNG_FILE@) $(TEMP_FILE) > jing.log 2>&1
 
 ############################ Distribution Hook ################################
 
