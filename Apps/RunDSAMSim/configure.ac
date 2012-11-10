@@ -42,6 +42,7 @@ AC_SUBST(RUNDSAMSIM_PACKAGE)
 AM_CONFIG_HEADER(RunDSAMSimSetup.h:RunDSAMSimSetup.hin )
 
 AM_INIT_AUTOMAKE([-Wall -Werror])
+AM_PATH_PYTHON([2.5])
 
 dnl ============================================================================
 dnl 'Global' variable declaration
@@ -314,6 +315,8 @@ else
 fi
 AM_CONDITIONAL([USE_RUNDSAMSIM], [test "x$use_rundsamsim" = xyes])
 
+DSAM_VERSION="`$DSAM_CONFIG --version`"
+AC_SUBST(DSAM_VERSION)
 DSAMINC="$dsam_inc"
 AC_SUBST(DSAMINC)
 DSAMLDFLAGS=$dsam_ldflags
@@ -406,6 +409,7 @@ AC_CONFIG_FILES(
 	src/LibRunDSAMSimGen/Makefile
 	src/python/Makefile
 	src/python/dsam/Makefile
+	src/python/dsam/info.py
 )
 AC_OUTPUT
 

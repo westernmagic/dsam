@@ -3,6 +3,7 @@ from ctypes import POINTER
 import os 
 import numpy as np
 import dsam
+import dsam.info
 
 class info:
     def __init__(self, sig):
@@ -16,17 +17,9 @@ class info:
         self.interleaveLevel = sig.interleaveLevel
         self.wordSize = 2.0
 
-interfacePathEnvVar = "DSAM_DLL_PATH"
 baseInterfaceName = "libRunDSAMSimGen"
-
 interfaceName = baseInterfaceName + ".so" if (os.name == "posix") else baseInterfaceName
-try:
-    interfacePath = os.environ[interfacePathEnvVar]
-except KeyError:
-    print "The '" + interfacePathEnvVar + "' environment variable must be set."
-    raise
-
-lib = np.ctypeslib.load_library(interfaceName, interfacePath)
+lib = np.ctypeslib.load_library(interfaceName, dsam.info.GetDirLib())
 
 libRunDSAMSim = lib.RunDSAMSim
 libRunDSAMSim.argtypes = [c_wchar_p, c_wchar_p, POINTER(dsam.SignalData)]

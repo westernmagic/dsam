@@ -1,0 +1,21 @@
+# Package name and version information.
+
+import	os
+
+interfacePathEnvVar = "DSAM_DLL_PATH"
+
+def GetVersion():
+	return "@VERSION@"
+def GetDSAMVersion():
+	return "@DSAM_VERSION@"
+def GetLibDir():
+	if (os.name == "posix"):
+	    interfacePath = *** you are here ***
+	else:
+	    try:
+	        interfacePath = os.environ[interfacePathEnvVar]
+	    except KeyError:
+	        print "The '" + interfacePathEnvVar + "' environment variable must be set."
+	        raise
+	return interfacePath
+
