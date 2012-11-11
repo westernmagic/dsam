@@ -3,6 +3,8 @@
 
 AUTOMAKE_OPTIONS = foreign
 
+DIRECTORY	= Examples
+
 SimScripts	= gammatoneDemo.sim
 
 SPFFiles	= gammatoneDemo.spf LGuineaPigCN001_721Hz_HS1.spf \
@@ -22,3 +24,5 @@ DataFiles	=
 
 EXTRA_DIST	= $(SimScripts) $(ParFiles) $(DataFiles) $(SPFFiles) \
 				$(MatlabFiles) $(PythonFiles)
+
+include $(top_srcdir)/mkunxinst.env

@@ -2,6 +2,6 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-dsam_PYTHON		= __init__.py interface.py dsam
+dsam_PYTHON		= __init__.py interface.py info.py
 
 dsamdir			= $(pythondir)/dsam

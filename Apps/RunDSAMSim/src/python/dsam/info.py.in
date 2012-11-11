@@ -10,7 +10,7 @@ def GetDSAMVersion():
 	return "@DSAM_VERSION@"
 def GetLibDir():
 	if (os.name == "posix"):
-	    interfacePath = *** you are here ***
+	    interfacePath = "@SLIBDIR@"
 	else:
 	    try:
 	        interfacePath = os.environ[interfacePathEnvVar]

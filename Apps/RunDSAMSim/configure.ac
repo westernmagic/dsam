@@ -344,6 +344,12 @@ use_rundsamsimGen=
 if test x$genericDLLSupport = xyes ; then
 	use_rundsamsimgen=yes
 	enable_shared=yes
+	if test "x$prefix" = xNONE ; then
+		SLIBDIR=$ac_default_prefix/lib
+	else
+    	SLIBDIR=$prefix/lib
+	fi
+	AC_SUBST(SLIBDIR)
 fi
 
 AM_CONDITIONAL([USE_RUNDSAMSIMGEN], [test "x$use_rundsamsimgen" = xyes])

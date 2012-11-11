@@ -511,7 +511,7 @@ if test x$WX_OGL = xyes -a x$using_wxWidgets_gui = xyes; then
 	CXXFLAGS_save=$CXXFLAGS
 	CXXFLAGS=`$WX_CONFIG --cxxflags`
 	LIBS_save=$LIBS
-	LIBS=`$WX_CONFIG --libs ogl`
+	LIBS=`$WX_CONFIG --libs core,ogl`
 	AC_LINK_IFELSE(
 		[
 			AC_LANG_SOURCE(

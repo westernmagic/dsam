@@ -19,7 +19,7 @@ class info:
 
 baseInterfaceName = "libRunDSAMSimGen"
 interfaceName = baseInterfaceName + ".so" if (os.name == "posix") else baseInterfaceName
-lib = np.ctypeslib.load_library(interfaceName, dsam.info.GetDirLib())
+lib = np.ctypeslib.load_library(interfaceName, dsam.info.GetLibDir())
 
 libRunDSAMSim = lib.RunDSAMSim
 libRunDSAMSim.argtypes = [c_wchar_p, c_wchar_p, POINTER(dsam.SignalData)]

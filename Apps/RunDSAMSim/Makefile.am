@@ -6,7 +6,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 BUILT_SOURCES	= RunDSAMSim.spec RunDSAMSimSetup.h
 
-EXTRA_DIST		= autogen.sh RunDSAMSim.nsi LICENSE
+EXTRA_DIST		= autogen.sh mkunxinst.env RunDSAMSim.nsi LICENSE 
 
 DISTCLEANFILES	= *.fo
 
@@ -37,8 +37,8 @@ endif
 BASE_FILE	= README
 TEMP_DIR	= /tmp
 TEMP_FILE	= $(TEMP_DIR)/temp.xml
-HTML_XSL	= $(@XSL_PREFIX@)/html/docbook.xsl
-FO_XSL		= $(@XSL_PREFIX@)/fo/docbook.xsl
+HTML_XSL	= @XSL_PREFIX@/html/docbook.xsl
+FO_XSL		= @XSL_PREFIX@/fo/docbook.xsl
 XSLTPROC	= xsltproc
 FOP			= fop
 XSL_ARGS	= --xinclude --param bibliography.numbered 1 --param section.autolabel 1 \
