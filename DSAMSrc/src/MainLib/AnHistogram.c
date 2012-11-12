@@ -595,7 +595,6 @@ BOOLN
 CheckData_Analysis_Histogram(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("CheckData_Analysis_Histogram");
-	Float	signalDuration;
 	SignalDataPtr	inSignal;
 
 	if (data == NULL) {
@@ -611,7 +610,6 @@ CheckData_Analysis_Histogram(EarObjectPtr data)
 		  wxT("(%g ms)."), funcName, MSEC(histogramPtr->binWidth));
 		return(FALSE);
 	}
-	signalDuration = inSignal->length * inSignal->dt;
 	if (histogramPtr->typeMode == HISTOGRAM_PH) {
 		if ((histogramPtr->period > 0.0) && (histogramPtr->period < inSignal->
 		  dt)) {
