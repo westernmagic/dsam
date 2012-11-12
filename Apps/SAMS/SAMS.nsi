@@ -39,7 +39,7 @@
 !include "DSAMAppUtils.nsh"
 
 !define APP_NAME		"SAMS"
-!define VERSION			"1.3.8"
+!define VERSION			"1.3.9"
 !define INST_VERSION		"1"
 !define MY_APP			"${APP_NAME}.exe"
 !define MY_APP2			"${APP_NAME}_ng.exe"

@@ -39,7 +39,7 @@
 !include "DSAMAppUtils.nsh"
 
 !define APP_NAME		"RunDSAMSim"
-!define VERSION			"2.1.5"
+!define VERSION			"2.1.6"
 !define INST_VERSION		"1"
 !define MATLIB			"MatLib"
 !define MATLIBDLL		"${MATLIB}.dll"
