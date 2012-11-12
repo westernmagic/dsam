@@ -26,7 +26,7 @@
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
-!addincludedir "..\dsam2840\NSIS"
+!addincludedir "..\dsam2843\NSIS"
 
 ;!include "LogicLib.nsh"
 !include "Library.nsh"
@@ -39,7 +39,7 @@
 !include "DSAMAppUtils.nsh"
 
 !define APP_NAME		"RunDSAMSim"
-!define VERSION			"2.1.1"
+!define VERSION			"2.1.5"
 !define INST_VERSION		"1"
 !define MATLIB			"MatLib"
 !define MATLIBDLL		"${MATLIB}.dll"
