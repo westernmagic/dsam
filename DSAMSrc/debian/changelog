@@ -1,8 +1,11 @@
-dsam (2.8.41-0ubuntu1) UNRELEASED; urgency=low
+dsam (2.8.43-0ubuntu1) quantal; urgency=low
 
   * Several bug fixes have been made in addition to the code being re-configured  * to allow Windows(tm) DLLs to be created.
+  * The SAMS application was crashing on startup.  A mismatch in memory
+  * allocation was corrected.
+  * I also corrected problems with the GUI support shared library linkage. 
 
- -- Dr. Lowel P. O'Mard (One Word) <lowel.omard@gmail.com>  Thu, 01 Nov 2012 11:20:09 +0000
+ -- Dr. Lowel P. O'Mard (One Word) <lowel.omard@gmail.com>  Wed, 07 Nov 2012 10:05:13 +0000
 
 dsam (2.8.35-0ubuntu1) natty; urgency=low
 
