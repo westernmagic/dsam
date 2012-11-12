@@ -14,5 +14,8 @@ postinst.ex preinst.ex prerm.ex \
 README.source \
 rules \
 rundsamsim.doc-base.EX \
-rundsamsim.dirs \
-rundsamsim.install
+RunDSAMSim.dirs \
+RunDSAMSim.install \
+librundsamsim.dirs \
+librundsamsim.install
+

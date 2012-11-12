@@ -4,7 +4,7 @@ dnl Put in a check for 'bool' for CC and CXX.
 
 AC_REVISION($Revision: 2.13)
 
-AC_INIT(RunDSAMSim, 2.1.2)
+AC_INIT(RunDSAMSim, 2.1.5)
 AC_CONFIG_AUX_DIR(CfgTools)
 AC_CONFIG_MACRO_DIR(m4)
 

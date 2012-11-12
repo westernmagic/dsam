@@ -3,21 +3,23 @@ Priority: extra
 Maintainer: Dr. Lowel P. O'Mard (One Word) <lowel.omard@gmail.com>
 Build-Depends: debhelper (>= 8.0.0), autotools-dev, cdbs,
  libdsam2.8-dev (>= 2.8.0),
+ openjdk-7-jre,
+ liboctave-dev,
  docbook-xsl-ns,
  fop
 Standards-Version: 3.9.3
-Section: libs
+Section: science
 Homepage: http://dsam.org.uk
 #Vcs-Git: git://git.debian.org/collab-maint/rundsamsim.git
 #Vcs-Browser: http://git.debian.org/?p=collab-maint/rundsamsim.git;a=summary
 
 Package: rundsamsim
-Section: libs
+Section: science
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
   libdsam2.8 (>= 2.8.0)
 Description: Run and evaluate auditory models
- The rundsamsim application provides interfaces to Matlab(tm), via Java;
+ The rundsamsim package provides interfaces to Matlab(tm), via Java;
  Python and also Octave. The interfaces allow users to run and evaluate
  auditory models written using development system for auditory modelling
  (DSAM) simulation scripts. DSAM provides access to an extensive collection
