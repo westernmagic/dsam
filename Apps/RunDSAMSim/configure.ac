@@ -298,7 +298,7 @@ else
 		MAT_INC=""
 		DLLDIRNAME=matlab/dsam
 	else
-		EXEEXT=""
+		EXEEXT=".mex"
 		DLLCOMPILE="mkoctfile --mex"
 		MAT_INC="`mkoctfile -p CPPFLAGS` `mkoctfile -p CXXPICFLAG` `mkoctfile -p ALL_CXXFLAGS`"
 		MAT_LDFLAGS="`mkoctfile -p LFLAGS` `mkoctfile -p OCTAVE_LIBS`"
