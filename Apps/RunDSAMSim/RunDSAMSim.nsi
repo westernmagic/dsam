@@ -26,7 +26,7 @@
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
-!addincludedir "..\dsam2843\NSIS"
+!addincludedir "..\dsam2844\NSIS"
 
 ;!include "LogicLib.nsh"
 !include "Library.nsh"
@@ -39,7 +39,7 @@
 !include "DSAMAppUtils.nsh"
 
 !define APP_NAME		"RunDSAMSim"
-!define VERSION			"2.1.6"
+!define VERSION			"2.1.8"
 !define INST_VERSION		"1"
 !define MATLIB			"MatLib"
 !define MATLIBDLL		"${MATLIB}.dll"
@@ -89,7 +89,7 @@ RequestExecutionLevel admin
 ; License page - replaces: Page license
 PageEx license
 	LicenseText "DSAM ${APP_NAME} License"
-	LicenseData LICENSE
+	LicenseData COPYING
 PageExEnd
 
 Page components

@@ -26,7 +26,7 @@
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
-!addincludedir "..\dsam2843\NSIS"
+!addincludedir "..\dsam2844\NSIS"
 
 ;!include "LogicLib.nsh"
 !include "Library.nsh"
@@ -39,14 +39,14 @@
 !include "DSAMAppUtils.nsh"
 
 !define APP_NAME		"SAMS"
-!define VERSION			"1.3.9"
+!define VERSION			"1.3.10"
 !define INST_VERSION		"1"
 !define MY_APP			"${APP_NAME}.exe"
 !define MY_APP2			"${APP_NAME}_ng.exe"
 !define APP_SHORTCUT		"${APP_NAME}.lnk"
 !define APP_SHORTCUT2		"${APP_NAME}_ng.lnk"
-!define REL32DIR		"DLL SDK Release"
-!define REL64DIR		"x64\Release"
+!define REL32DIR		"DLL Release"
+!define REL64DIR		"x64\DLL Release"
 !define APP_RKEY		"${DSAM_APP_RKEY}\${APP_NAME}"
 !define README			"ReadMe"
 !define README_FILE		"${README}.rtf"
@@ -85,7 +85,7 @@ RequestExecutionLevel admin
 ; License page - replaces: Page license
 PageEx license
 	LicenseText "DSAM ${APP_NAME} License"
-	LicenseData LICENSE
+	LicenseData COPYING
 PageExEnd
 
 Page components
@@ -161,8 +161,8 @@ Section "Executable Files"
     CreateShortCut "$INSTDIR\${APP_SHORTCUT2}" "${DLL32DIR}\${MY_APP2}"
   ${else}
     DetailPrint "Installing 64-bit Executable"
-    File MSVC\SAMS\${REL64DIR}\${APP_NAME}.exe	
-    File MSVC\SAMS_ng\${REL64DIR}\${APP_NAME}_ng.exe	
+    File "MSVC\SAMS\${REL64DIR}\${APP_NAME}.exe"	
+    File "MSVC\SAMS_ng\${REL64DIR}\${APP_NAME}_ng.exe"	
     CreateShortCut "$INSTDIR\${APP_SHORTCUT}" "${DLL64DIR}\${MY_APP}"
     CreateShortCut "$INSTDIR\${APP_SHORTCUT2}" "${DLL64DIR}\${MY_APP2}"
   ${EndIf}

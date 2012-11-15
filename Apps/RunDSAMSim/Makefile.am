@@ -6,7 +6,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 BUILT_SOURCES	= RunDSAMSim.spec RunDSAMSimSetup.h
 
-EXTRA_DIST		= autogen.sh mkunxinst.env RunDSAMSim.nsi LICENSE 
+EXTRA_DIST		= autogen.sh mkunxinst.env RunDSAMSim.nsi COPYING 
 
 DISTCLEANFILES	= *.fo
 

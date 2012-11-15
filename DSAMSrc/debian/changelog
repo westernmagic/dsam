@@ -1,4 +1,4 @@
-dsam (2.8.43-0ubuntu1) quantal; urgency=low
+dsam (2.8.44-0ubuntu1) quantal; urgency=low
 
   * Several bug fixes have been made in addition to the code being re-configured  * to allow Windows(tm) DLLs to be created.
   * The SAMS application was crashing on startup.  A mismatch in memory
