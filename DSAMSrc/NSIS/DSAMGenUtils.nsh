@@ -34,7 +34,7 @@
 !define DSAM_APP_COUNT	"AppCount"
 !define INSTALL_DIR	"Install_Dir"
 !define DLL_PATH_ENV	"DSAM_DLL_PATH"
-!define DSAMDIR		"..\dsam2843\lib"
+!define DSAMDIR		"..\dsam2844\lib"
 
 !define WX_VERSION	"2.8.12"
 !define WXWINDIR	"..\SupportLibs\wxWidgets-${WX_VERSION}"
