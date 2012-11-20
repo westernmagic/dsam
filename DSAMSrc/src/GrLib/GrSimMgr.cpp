@@ -61,6 +61,7 @@
 #include <wx/filesys.h>
 #include <wx/fs_zip.h>
 #include <wx/docview.h>
+#include <wx/dynlib.h>
 
 #if !wxUSE_CONSTRAINTS
 #	error "You must set wxUSE_CONSTRAINTS to 1 in setup.h!"

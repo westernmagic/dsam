@@ -48,6 +48,7 @@
 #include <stdlib.h>
 
 #include "ExtCommon.h"
+#include <wx/dynlib.h>
 
 #include "GeCommon.h"
 #include "GeSignalData.h"

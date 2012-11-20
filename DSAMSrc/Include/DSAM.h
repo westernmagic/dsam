@@ -211,6 +211,7 @@
 		/* Any files included regardless of precompiled headers */
 #		include <wx/socket.h>
 #		include <wx/filesys.h>
+#		include <wx/dynlib.h>
 #		include <ExtIPCUtils.h>
 #		include <ExtIPCClient.h>
 #		include <ExtIPCServer.h>

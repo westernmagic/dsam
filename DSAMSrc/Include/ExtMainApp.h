@@ -42,14 +42,17 @@
 /******************************************************************************/
 
 #define MAINAPP_PARAMETER_STR_DELIMITERS	wxT(" ,\t")
+#define MAINAPP_USER_PLUGIN_PATH_EVAR		wxT("DSAM_PLUGIN_PATH")
 #define MAINAPP_QUOTE						'"'
 #define MAINAPP_SPACE_SUBST					'\1'
 #define	MAINAPP_NUM_BASE_ARGUMENTS			3
 
 #if !defined(WIN32)
 #	define MAINAPP_MAIN_SIM_INIT MainSimulation
+#	define MAINAPP_PLUGIN_FILESPEC		wxT("*.so")
 #else
 #	define MAINAPP_MAIN_SIM_INIT NULL
+#	define MAINAPP_PLUGIN_FILESPEC		wxT("*.dll")
 #endif
 
 /******************************************************************************/
@@ -70,6 +73,8 @@ class RunThreadedProc;
 class DSAMXMLDocument;
 class IPCClient;
 
+WX_DECLARE_LIST(wxDynamicLibrary, DLLList);
+
 /*************************** MainApp ******************************************/
 
 class DSAMEXT_API MainApp {
@@ -80,6 +85,7 @@ class DSAMEXT_API MainApp {
 	int		argc;
 	int		(* ExternalMain)(void);
 	int		(* ExternalRunSimulation)(void);
+	DLLList		dLLList;
 	SymbolPtr	symList;
 	IPCClient	*myClient;
 	wxFileName	simFileName;
@@ -124,6 +130,7 @@ class DSAMEXT_API MainApp {
 	bool	InitMain(bool loadSimulationFlag = false);
 	bool	LoadXMLDocument(void);
 	bool	ProtectQuotedStr(wxChar *str);
+	bool	RegisterPlugins(void);
 	void	RemoveCommands(int offset, const wxChar *prefix);
 	wxChar *	RestoreQuotedStr(wxChar *str);
 	int		RunIPCMode(void);

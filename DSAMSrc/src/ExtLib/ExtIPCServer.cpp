@@ -36,6 +36,7 @@
 #include <stdlib.h>
 
 #include <ExtCommon.h>
+#include <wx/dynlib.h>
 
 #include <wx/socket.h>
 #include <wx/filename.h>

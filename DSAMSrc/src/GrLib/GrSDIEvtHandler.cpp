@@ -39,6 +39,7 @@
 #include "ExtCommon.h"
 #include <wx/docview.h>
 #include <wx/cmdproc.h>
+#include <wx/dynlib.h>
 
 #include "GeCommon.h"
 #include "GeSignalData.h"

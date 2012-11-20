@@ -41,6 +41,9 @@
 #include <wx/app.h>
 #include <wx/socket.h>
 #include <wx/tokenzr.h>
+#include <wx/dir.h>
+#include <wx/list.h>
+#include <wx/dynlib.h>
 
 #include "GeCommon.h"
 #if USE_FFTW3_THREADS
@@ -51,6 +54,7 @@
 #include "GeUniParMgr.h"
 #include "GeNSpecLists.h"
 #include "GeModuleMgr.h"
+#include "GeModuleReg.h"
 #include "UtString.h"
 #include "UtOptions.h"
 #include "UtDatum.h"
@@ -66,6 +70,9 @@
 #include "ExtRunThreadedProc.h"
 #include "ExtXMLDocument.h"
 #include "ExtMainApp.h"
+
+#include <wx/listimpl.cpp>
+WX_DEFINE_LIST(DLLList);
 
 /******************************************************************************/
 /****************************** Global variables ******************************/
@@ -125,6 +132,7 @@ MainApp::MainApp(int theArgc, wxChar **theArgv, int(*TheExternalMain)(void),
 	DSAM_FFTW_NAME(plan_with_nthreads)((GetPtr_AppInterface()->numThreads < 1)? 1:
 			GetPtr_AppInterface()->numThreads);
 #	endif /* USE_FFTW3_THREADS */
+	RegisterPlugins();
 	runThreadedProc = new RunThreadedProc();
 
 }
@@ -152,6 +160,11 @@ MainApp::~MainApp(void) {
 	Free_AppInterface();
 	FreeAll_EarObject();
 	FreeNull_ModuleMgr();
+	DLLList::iterator iter;
+	for (iter = dLLList.begin(); iter != dLLList.end(); ++iter)	{
+		wxDynamicLibrary *lib = *iter;
+		delete lib;
+	}
 	dSAMMainApp = NULL;
 
 }
@@ -205,6 +218,65 @@ int MainApp::Main(void) {
 	ok = CXX_BOOL(simThread->Wait());
 	delete simThread;
 	return (ok);
+
+}
+
+/****************************** RegisterPlugins *******************************/
+
+/*
+ * Register the plugins from the folder specified by the environment.
+ */
+
+bool
+MainApp::RegisterPlugins(void) {
+	static const WChar *funcName = wxT("MainApp::RegisterPlugins");
+    typedef const WChar * (* GetModNameType)(void);
+    typedef BOOLN (* InitModFuncType)(ModulePtr);
+    GetModNameType	getModNameFunc;
+    InitModFuncType	initModFunc;
+	wxString pluginPath, getModNameFuncName, initModFuncName;
+	wxFileName	fName;
+
+	if (wxGetEnv(MAINAPP_USER_PLUGIN_PATH_EVAR, &pluginPath)) {
+		wxDir dir(pluginPath);
+		if ( !dir.IsOpened() ) {
+			NotifyError(wxT("%s: Could not access plugin directory, '%s'\n"),
+			  funcName, pluginPath.wc_str());
+			return(false);
+		}
+		wxString fileName;
+		bool cont = dir.GetFirst(&fileName, MAINAPP_PLUGIN_FILESPEC,
+		  wxDIR_FILES);
+		while ( cont ) {
+			wxDynamicLibrary *lib = new wxDynamicLibrary(pluginPath + wxT("/") +
+			  fileName);
+			fName = fileName;
+			getModNameFuncName = wxT("GetModName_") + fName.GetName();
+			if ((getModNameFunc = (GetModNameType) lib->GetSymbol(
+			  getModNameFuncName)) == NULL) {
+				NotifyError(wxT("%s: Could not find function '%s' in ")
+				  wxT("plugin '%s'."), funcName, getModNameFuncName.wc_str(),
+				  fileName.wc_str());
+				return(false);
+			}
+			initModFuncName = wxT("InitModule_") + fName.GetName();
+			if ((initModFunc = (InitModFuncType) lib->GetSymbol(
+			  initModFuncName)) == NULL) {
+				NotifyError(wxT("%s: Could not find function '%s' in ")
+				  wxT("plugin '%s'."), funcName, initModFuncName.wc_str(),
+				  fileName.wc_str());
+				return(false);
+			}
+			if (!RegEntry_ModuleReg((getModNameFunc)(), initModFunc)) {
+				NotifyError(wxT("%s: Could not register module '%s'."),
+				  funcName, initModFuncName.wc_str());
+				return(false);
+			}
+			dLLList.Append(lib);
+			cont = dir.GetNext(&fileName);
+		}
+	}
+	return(true);
 
 }
 

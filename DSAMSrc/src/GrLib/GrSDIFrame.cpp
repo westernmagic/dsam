@@ -35,6 +35,7 @@
 
 #include "ExtCommon.h"
 #include <wx/docview.h>
+#include <wx/dynlib.h>
 
 // define this to use XPMs everywhere (by default, BMPs are used under Win)
 #ifdef __WXMSW__
