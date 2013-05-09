@@ -30,6 +30,8 @@
 #ifndef _UTNOISEMOD_H
 #define _UTNOISEMOD_H 1
 
+#if HAVE_FFTW3
+
 #include "UtNameSpecs.h"
 
 /******************************************************************************/
@@ -123,5 +125,7 @@ BOOLN	SetRanSeed_Utility_AmpMod_Noise(long theRanSeed);
 BOOLN	SetUniParList_Utility_AmpMod_Noise(void);
 
 __END_DECLS
+
+#endif /* HAVE_FFTW3 */
 
 #endif

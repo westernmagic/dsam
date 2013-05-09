@@ -341,7 +341,6 @@ dnl ============================================================================
 dnl Checks for header files.
 dnl ============================================================================
 
-AM_C_PROTOTYPES
 AC_HEADER_STDC
 AC_CHECK_HEADERS(malloc.h)
 AC_PATH_X

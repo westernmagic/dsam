@@ -236,9 +236,11 @@ LibraryList_ModuleReg(uShort index)
 	{ CMR_HARMONICMASKER_MOD_NAME,
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_CMR_HarmonicMasker },
+#	if HAVE_FFTW3
 	{ CMR_NOISEMASKER_MOD_NAME,
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_CMR_NoiseMasker },
+#	endif
 	{ wxT("STIM_EXPGATEDTONE"),
 		IO_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Stimulus_ExpGatedTone },
@@ -297,9 +299,11 @@ LibraryList_ModuleReg(uShort index)
 	{ wxT("UTIL_AMPMOD"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_AmpMod },
+#	if HAVE_FFTW3
 	{ UTILITY_AMPMOD_NOISE_MOD_NAME,
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_AmpMod_Noise },
+#	endif
 	{ wxT("UTIL_BINSIGNAL"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_BinSignal },

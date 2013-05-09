@@ -87,16 +87,10 @@
  */
 __BEGIN_DECLS
 
-void	Calc_FFT(Float *data, unsigned long nn, int isign);
-
-void	CalcComplex_FFT(Complex data[], unsigned long nn, int isign);
-
-BOOLN	CalcReal_FFT(SignalDataPtr signal, Float *fT, int direction);
-
-void	CreateNoiseBand_FFT(FFTArrayPtr fTInv, int plan, RandParsPtr randPars,
-		  int kLow, int kUpp);
-
 #if HAVE_FFTW3
+	void	CreateNoiseBand_FFT(FFTArrayPtr fTInv, int plan, RandParsPtr randPars,
+			  int kLow, int kUpp);
+
 	FFTArrayPtr	InitArray_FFT(unsigned long dataLen, BOOLN forInPlaceFFT, int numPlans);
 
 	void	FreeArray_FFT(FFTArrayPtr *p);

@@ -36,6 +36,8 @@
 #ifndef _STCMRNOISEMASK_H
 #define _STCMRNOISEMASK_H 1
 
+#if HAVE_FFTW3
+
 #include "UtCmplxM.h"
 #include "UtNameSpecs.h"
 
@@ -246,5 +248,7 @@ BOOLN	SetUppFBLevel_CMR_NoiseMasker(Float theUppFBLevel);
 NameSpecifier *	SigGateModeList_CMR_NoiseMasker(int index);
 
 __END_DECLS
+
+#endif /* HAVE_FFTW3 */
 
 #endif
