@@ -1203,6 +1203,9 @@ FreeProcessVariables_BasilarM_ZilanyBruce(void)
  * re-used.
  * The delay algorithm using the 'delaypoint' variable is carried out backwards so that
  * additional signal storages space is not required.
+ * The decrement problem mentioned below for the delay code did not occur for gcc 4.3.0
+ * and was first noticed for gcc version 4.8.3, though other versions after gcc 4.3.0
+ * may have had the same problem.
  */
 
 #define C1_FILTER()		(ChirpFilt_Utility_ZilanyBruce(input, &p->c1Filter[chan], \
@@ -1325,8 +1328,8 @@ RunModel_BasilarM_ZilanyBruce(EarObjectPtr data)
 			for (n = delaypoint; n; n--)
 				*tSamples-- = *outPtr--;
 			outPtr = outSignal->channel[chan] + outSignal->length - 1;
-			for (n = data->outSignal->length - delaypoint; n; n--)
-				*outPtr-- = *(outPtr - delaypoint);
+			for (n = data->outSignal->length - delaypoint; n; n--, outPtr--)
+				*outPtr = *(outPtr - delaypoint);	/* decrement cannot be used here. */
 			dSamples = _OutSig_EarObject(p->delayedSamples)->channel[chan] + delaypoint - 1;
 			tSamples = p->tempSamples + delaypoint - 1;
 			for (n = delaypoint; n ; n--) {
