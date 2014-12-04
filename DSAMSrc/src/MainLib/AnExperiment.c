@@ -302,7 +302,7 @@ Calc2CompAdapt_ExpAnalysis(Float Tst[], Float Tr[], EarObjectPtr data,
 	register	ChanData	*inPtr, *outPtr;
 	ChanLen	sT1Indx, sTPeriodIndx, i, rT1Indx, rTPeriodIndx;
 	ChanLen	aveTimeOffsetIndex, avePeriodIndex;
-	SignalDataPtr	inSignal, outSignal;
+	SignalDataPtr	inSignal;
 
 	if (data == NULL) {
 		NotifyError(wxT("%s: EarObject not initialised."), funcName);
@@ -335,7 +335,6 @@ Calc2CompAdapt_ExpAnalysis(Float Tst[], Float Tr[], EarObjectPtr data,
 		return(FALSE);
 	}
 	ResetOutSignal_EarObject(data);
-	outSignal = _OutSig_EarObject(data);
 	aveTimeOffsetIndex = (ChanLen) (inSignal->length *
 	  STEADY_STATE_REGION_PERCENTAGE);
 	avePeriodIndex = inSignal->length - aveTimeOffsetIndex - 1;/*Miss last bin*/
