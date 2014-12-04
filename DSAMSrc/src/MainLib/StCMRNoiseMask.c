@@ -1306,7 +1306,7 @@ GenerateSignal_CMR_NoiseMasker(EarObjectPtr data)
 {
 	static const WChar	*funcName = wxT("GenerateSignal_CMR_NoiseMasker");
 	register ChanData	 *outPtr, *upPtr, *downPtr;
-	int		i, k, chan, nLow, nUpp, kUpp[CMR_NOISEMASKER_MAXNTOTAL];
+	int		i, k, chan, nLow, kUpp[CMR_NOISEMASKER_MAXNTOTAL];
 	int		nTotal, nSignal, kLow;
 	ChanLen	sample, silence, gatesample, mskModPhaseSamples;
 	Float	value, sigAtten, lowAtten, uppAtten, t, mskModPhase;
@@ -1370,13 +1370,10 @@ GenerateSignal_CMR_NoiseMasker(EarObjectPtr data)
 	}
 
 	// -------- precalculations for the masker ---------------------------------
-	if (p->condition == CMR_NOISEMASKER_CONDITION_RF)	{ // no flanking bands for ref -> overwrite p->nlow,p->nupp
+	if (p->condition == CMR_NOISEMASKER_CONDITION_RF)	 // no flanking bands for ref -> overwrite p->nlow,p->nupp
 		nLow = 0;
-		nUpp = 0;
-	} else {
+	else
 		nLow = p->nlow;
-		nUpp = p->nupp;
-	}
 	// now calculate center freq of flanking components
 	nTotal = p->nupp + nLow;
 	nSignal = nTotal;	/* put at the end of flanker components for convenience. */

@@ -954,9 +954,9 @@ FreeProcessVariables_Neuron_HHuxley(void)
 void *
 GetPotentialResponse_Neuron_HHuxley(void *potentialPtr)
 {
-	Float *potential;
+	/*Float *potential;
 
-	potential = (Float *) potentialPtr;
+	potential = (Float *) potentialPtr;*/
 	return(potentialPtr);
 
 }

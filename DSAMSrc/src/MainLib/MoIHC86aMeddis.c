@@ -628,7 +628,6 @@ BOOLN
 RunModel_IHC_Meddis86a(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("RunModel_IHC_Meddis86a");
-	BOOLN	clipped;
 	int		i;
 	ChanLen	j;
 	Float	dt, kdt;
@@ -667,16 +666,13 @@ RunModel_IHC_Meddis86a(EarObjectPtr data)
 			return(TRUE);
 	}
 	outSignal = _OutSig_EarObject(data);
-	for (i = outSignal->offset, clipped = FALSE; i < outSignal->numChannels;
-	  i++) {
+	for (i = outSignal->offset; i < outSignal->numChannels; i++) {
 		inPtr = _InSig_EarObject(data, 0)->channel[i];
 		outPtr = outSignal->channel[i];
 		for (j = 0; j < outSignal->length; j++) {
 			kdt = p->zdt * exp(p->permeabilityPH_h * *inPtr++);
-			if (kdt >= 1.0) {
+			if (kdt >= 1.0)
 				kdt = 0.99;
-				clipped = TRUE;
-			}
 			replenish = (p->hCChannels[i].reservoirQ < p->maxFreePool_M)?
 			  p->ymdt - p->ydt * p->hCChannels[i].reservoirQ: 0.0;
 			reprocessed = p->xdt * p->hCChannels[i].reprocessedW;
@@ -692,8 +688,6 @@ RunModel_IHC_Meddis86a(EarObjectPtr data)
 			*outPtr++ = (ChanData) (p->h2dt * p->hCChannels[i].cleftC);
 		}
 	}
-	/*if (clipped)
-		NotifyWarning(wxT("%s: Clipping has occurred."), funcName); */
 	SetProcessContinuity_EarObject(data);
 	return(TRUE);
 

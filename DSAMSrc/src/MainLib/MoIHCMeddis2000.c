@@ -1033,7 +1033,7 @@ CheckData_IHC_Meddis2000(EarObjectPtr data)
 		ok = FALSE;
 	}
 
-	return(TRUE);
+	return(ok);
 
 }
 
@@ -1184,7 +1184,7 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 	BOOLN	debug;
 	int		i;
 	ChanLen	j;
-	Float	dt, reUptake, reUptakeAndLost, timer, ssactCa, ICa, Vin;
+	Float	dt, reUptake, reUptakeAndLost, ssactCa, ICa, Vin;
 	RandParsPtr		randParsPtr;
 	SignalDataPtr	outSignal;
 	HairCell2Ptr	p = hairCell2Ptr;
@@ -1242,7 +1242,7 @@ RunModel_IHC_Meddis2000(EarObjectPtr data)
 	/*** Put your code here: process output signal. ***/
 	/*** (using 'inPtr' and 'outPtr' for each channel?) ***/
 
-	for (i = outSignal->offset, timer = DBL_MAX; i < outSignal->numChannels;
+	for (i = outSignal->offset; i < outSignal->numChannels;
 	  i++) {
 		inPtr = _InSig_EarObject(data, 0)->channel[i];
 		randParsPtr = &data->randPars[i];

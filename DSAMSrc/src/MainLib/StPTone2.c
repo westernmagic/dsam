@@ -459,7 +459,7 @@ GenerateSignal_PureTone_2(EarObjectPtr data)
 {
 	static const WChar *funcName = wxT("GenerateSignal_PureTone_2");
 	Float		totalDuration, amplitude;
-	register	Float	dt, time, endSignal, startSignal;
+	register	Float	time, endSignal, startSignal;
 	register	ChanData	*dataPtr;
 	ChanLen		i;
 	PureTone2Ptr	p = pureTone2Ptr;
@@ -476,7 +476,6 @@ GenerateSignal_PureTone_2(EarObjectPtr data)
 		if (data->initThreadRunFlag)
 			return(TRUE);
 	}
-	dt = _OutSig_EarObject(data)->dt;
 	startSignal = p->beginPeriodDuration;
 	endSignal = p->beginPeriodDuration + p->duration;
 	amplitude = RMS_AMP(p->intensity) * SQRT_2;

@@ -656,11 +656,8 @@ InitSynapse_IHC_Zhang(TSynapse *pthis)
 	Float alpha,beta,theta1,theta2,theta3;
 	Float PL,PG,VL,Cirest,CLrest;
 
-	Float tdres;
-
 	pthis->Run = NULL; /*run1syn_dynamic*/
 	pthis->Run2 = RunSynapseDynamic_IHC_Zhang;
-	tdres = pthis->tdres;
 	/*/begin the Synapse dynamic */
 	PTS = pthis->PTS;
 	Ass = pthis->Ass; /* For Human, from M. G. Heinz */
