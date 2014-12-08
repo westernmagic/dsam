@@ -45,6 +45,7 @@
 #include "GeSignalData.h"
 #include "GeEarObject.h"
 #include "UtSpikeList.h"
+#include "UtString.h"
 
 /******************************************************************************/
 /****************************** Global variables ******************************/
@@ -363,7 +364,7 @@ PrintList_SpikeList(SpikeListSpecPtr listSpec, int offset, int numChannels)
 	if ((numChannels > listSpec->numChannels) || (offset >
 			listSpec->numChannels) || (offset < 0)) {
 		NotifyError(wxT("%s: Illegal offset (%d) or numChannels (%d)."),
-		  offset, numChannels);
+		  funcName, offset, numChannels);
 		return;
 	}
 	for (chan = offset; chan < numChannels; chan++) {
@@ -399,7 +400,7 @@ FPrintList_SpikeList(SpikeListSpecPtr listSpec, int offset, int numChannels)
 	if ((numChannels > listSpec->numChannels) || (offset >
 			listSpec->numChannels) || (offset < 0)) {
 		NotifyError(wxT("%s: Illegal offset (%d) or numChannels (%d)."),
-		  offset, numChannels);
+		  funcName, offset, numChannels);
 		return;
 	}
 	DSAM_snprintf(fileName, MAXLINE, wxT("SpikeList%d-%d.txt"), offset,
