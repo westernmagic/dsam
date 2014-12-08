@@ -1,4 +1,6 @@
- # -*- coding: utf-8 -*-
+#!/usr/bin/env python
+
+# -*- coding: utf-8 -*-
 """
 Created on Sun Oct 07 10:44:43 2012
 
@@ -46,8 +48,7 @@ def PlotRateIntensity(simFile, simPars, freq, initialInt, finalInt, deltaInt):
     signalDuration = 0.1;
     levels = np.arange(initialInt, finalInt, deltaInt)
     rate = np.empty_like(levels)
-    count = 0
-    for leveldB in levels:
+    for i, leveldB in enumerate(levels):
         stim = PureTone(freq, leveldB, signalDuration, dt);
         inSig = dsam.CreateSignalData(stim, dt)
         sig = PyRunDSAMSim(sim = simFile, pars = simPars, inSignal = inSig)
@@ -56,8 +57,7 @@ def PlotRateIntensity(simFile, simPars, freq, initialInt, finalInt, deltaInt):
             offsetSamples = sig.length * steadyStateFactor;
             offsetTime = offsetSamples * sig.dt;
             calcDuration = (sig.length - offsetSamples) * sig.dt;
-        rate[count] = mean(data[0, offsetSamples:sig.length]) / calcDuration;
-        count = count + 1
+        rate[i] = mean(data[0, offsetSamples:sig.length]) / calcDuration;
     plt.plot(levels, rate);
     plt.title("Rate-Intensity Function: " + simFile)
     plt.xlabel("Level (dB SPL)");

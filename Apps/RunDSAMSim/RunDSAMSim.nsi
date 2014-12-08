@@ -26,7 +26,7 @@
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
-!addincludedir "..\dsam2844\NSIS"
+!addincludedir "..\dsam2847\NSIS"
 
 ;!include "LogicLib.nsh"
 !include "Library.nsh"
