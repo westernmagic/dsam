@@ -325,8 +325,6 @@ NLafterohc_Utility_ZilanyBruce(Float x,Float taumin, Float taumax, Float asym)
 
 	if (R<minR)
 		minR = 0.5 * R;
-    else
-    	minR = minR;
 
     dc = (asym-1)/(asym+1.0)/2.0-minR;
     R1 = R-minR;
