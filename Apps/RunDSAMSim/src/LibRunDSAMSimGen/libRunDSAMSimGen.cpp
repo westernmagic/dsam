@@ -73,9 +73,6 @@ EarObjectPtr	outProcess = NULL;
 LIBRUNDSAMSIMGEN_API SignalDataPtr
 RunDSAMSim(WChar *simFile, WChar *parameterOptions, SignalDataPtr inSignal)
 {
-	bool	staticTimeFlag = false;
-	int		numChannels = 0, interleaveLevel = 1;
-	ChanLen	length = 0;
 	EarObjectPtr	audModel, outProcess = NULL;
 	MatInSignal		*inputSignal = NULL;
 
