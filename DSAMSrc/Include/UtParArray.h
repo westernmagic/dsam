@@ -95,22 +95,22 @@ typedef struct _ParArray {
  */
 __BEGIN_DECLS
 
-BOOLN	CheckInit_ParArray(ParArrayPtr parArray, const WChar *callingFunction);
+DSAM_API BOOLN	CheckInit_ParArray(ParArrayPtr parArray, const WChar *callingFunction);
 
 BOOLN	CheckPars_ParArray(ParArrayPtr parArray, SignalDataPtr signal);
 
-void	Free_ParArray(ParArrayPtr *parArray);
+DSAM_API void	Free_ParArray(ParArrayPtr *parArray);
 
-ParArrayPtr	Init_ParArray(WChar *name, NameSpecifier *modeList,
-			  int (* GetNumPars)(int), BOOLN (* CheckPars)(ParArrayPtr,
-			  SignalDataPtr));
+DSAM_API ParArrayPtr	Init_ParArray(WChar *name, NameSpecifier *modeList,
+						  int (* GetNumPars)(int), BOOLN (* CheckPars)(
+						  ParArrayPtr, SignalDataPtr));
 
-void	PrintPars_ParArray(ParArrayPtr parArray);
+DSAM_API void	PrintPars_ParArray(ParArrayPtr parArray);
 
 BOOLN	SetIndividualPar_ParArray(ParArrayPtr parArray, int theIndex,
 		  Float parValue);
 
-BOOLN	SetMode_ParArray(ParArrayPtr parArray, const WChar *modeName);
+DSAM_API BOOLN	SetMode_ParArray(ParArrayPtr parArray, const WChar *modeName);
 
 BOOLN	SetUniParList_ParArray(ParArrayPtr parArray);
 

@@ -158,28 +158,29 @@ Float	BandPassFD_Filters(Float freq, Float lowerCutOffFreq,
 BOOLN	BrokenStick1Compression_Filters(SignalDataPtr theSignal, Float aA,
 		  Float bB, Float cC);
 
-BOOLN	BrokenStick1Compression2_Filters(SignalDataPtr theSignal, Float *aA,
-		  Float *bB, Float cC);
+DSAM_API BOOLN	BrokenStick1Compression2_Filters(SignalDataPtr theSignal,
+				  Float *aA, Float *bB, Float cC);
 
 BOOLN	Compression_Filters(SignalDataPtr theSignal, Float nrwthr,
 		  Float nrwcr);
 
 void	FreeBandPassCoeffs_Filters(BandPassCoeffsPtr *p);
 
-void	FreeGammaToneCoeffs_Filters(GammaToneCoeffsPtr *p);
+DSAM_API void	FreeGammaToneCoeffs_Filters(GammaToneCoeffsPtr *p);
 
-void	FreeIIR2ContCoeffs_Filters(ContButtCoeffsPtr *p);
+DSAM_API void	FreeIIR2ContCoeffs_Filters(ContButtCoeffsPtr *p);
 
 void	FreeTwoPoleCoeffs_Filters(TwoPoleCoeffsPtr *p);
 
-BOOLN	GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffsPtr p[]);
+DSAM_API BOOLN	GammaTone_Filters(SignalDataPtr theSignal,
+				  GammaToneCoeffsPtr p[]);
 
 BOOLN	IIR2_Filters(SignalDataPtr theSignal, TwoPoleCoeffsPtr p[]);
 
 BOOLN	IIR1Cont_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p[]);
 
-BOOLN	IIR2Cont_Filters(SignalDataPtr theSignal,
-		  ContButtCoeffsPtr pArray[]);
+DSAM_API BOOLN	IIR2Cont_Filters(SignalDataPtr theSignal,
+				  ContButtCoeffsPtr pArray[]);
 
 BOOLN	IIR1ContSingle_Filters(SignalDataPtr theSignal, ContButt1CoeffsPtr p);
 
@@ -187,15 +188,15 @@ BandPassCoeffsPtr	InitBandPassCoeffs_Filters(int cascade,
 					  Float lowerCutOffFreq, Float upperCutOffFreq,
 					  Float dt);
 
-ContButtCoeffsPtr	InitIIR2ContCoeffs_Filters(int cascade,
-					  Float cutOffFrequency, Float samplingInterval,
-					  int highOrLowPass);
+DSAM_API ContButtCoeffsPtr	InitIIR2ContCoeffs_Filters(int cascade,
+							  Float cutOffFrequency, Float samplingInterval,
+					  	  	  int highOrLowPass);
 
 ContButt1CoeffsPtr	InitIIR1ContCoeffs_Filters(Float cutOffFrequency,
 					  Float samplingInterval, int highOrLowPass);
 
-GammaToneCoeffsPtr	InitGammaToneCoeffs_Filters(Float centreFreq,
-					  Float bWidth3dB, int cascade, Float sampleClk);
+DSAM_API GammaToneCoeffsPtr	InitGammaToneCoeffs_Filters(Float centreFreq,
+							  Float bWidth3dB, int cascade, Float sampleClk);
 
 TwoPoleCoeffsPtr 	InitIIR2Coeffs_Filters(Float *splane, int cascade,
 					  Float f3dB, Float fs, int low_or_high);

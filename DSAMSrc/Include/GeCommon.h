@@ -399,6 +399,48 @@
 
 #endif /* __WINDOWS */
 
+/* ----------------------------------------------------------------------------
+ * Making or using module plugin as a Windows DLL
+ * ----------------------------------------------------------------------------
+ */
+
+#if defined(_WINDOWS)
+
+	/* __declspec works in BC++ 5 and later, as well as VC++ and gcc */
+#if defined(__MSVISUALC__) || defined(__BORLANDC__) || defined(__GNUC__)
+#  ifdef PLUGIN_MAKING_DLL
+#    define PLUGIN_API __declspec( dllexport )
+#  else
+#    define PLUGIN_API
+#  endif
+#else
+#    define PLUGIN_API
+#endif
+
+#elif defined(__PM__)
+
+#  if (!(defined(__VISAGECPP__) && (__IBMCPP__ < 400 || __IBMC__ < 400 )))
+
+#    ifdef PLUGIN_MAKING_DLL
+#      define PLUGIN_API _Export
+#    else
+#      define PLUGIN_API
+#    endif
+
+#  else
+
+#    define PLUGIN_API
+
+#  endif
+
+#else  /* !(MSW or OS2) */
+
+#  define PLUGIN_API
+
+#endif /* __WINDOWS */
+
+
+
 /******************************************************************************/
 /*************************** Macro definitions ********************************/
 /******************************************************************************/

@@ -164,15 +164,15 @@ Float		CFSpace_CFList(CFListPtr theCFs);
 
 BOOLN		CheckInit_CFList(CFList *theCFs, const WChar *callingFunction);
 
-BOOLN		CheckPars_CFList(CFListPtr theCFs);
+DSAM_API BOOLN	CheckPars_CFList(CFListPtr theCFs);
 
-int			FindCF_CFList(CFListPtr theCFs, Float theCF, Float accuracy);
+DSAM_API int	FindCF_CFList(CFListPtr theCFs, Float theCF, Float accuracy);
 
-void		Free_CFList(CFListPtr *theCFs);
+DSAM_API void	Free_CFList(CFListPtr *theCFs);
 
-CFListPtr	GenerateDefault_CFList(WChar *modeName, int numberOfCFs,
-			  Float minCF, Float maxCF, WChar *bwModeName,
-			  Float (* BWidthFunc)(struct BandwidthMode *, Float));
+DSAM_API CFListPtr	GenerateDefault_CFList(WChar *modeName, int numberOfCFs,
+					  Float minCF, Float maxCF, WChar *bwModeName,
+					  Float (* BWidthFunc)(struct BandwidthMode *, Float));
 
 BOOLN		GenerateERB_CFList(CFListPtr theCFs);
 
@@ -204,7 +204,7 @@ CFListPtr	Init_CFList(const WChar *callingFunctionName);
 
 void		PrintList_CFList(CFListPtr theCFs);
 
-void		PrintPars_CFList(CFListPtr theCFs);
+DSAM_API void	PrintPars_CFList(CFListPtr theCFs);
 
 BOOLN		RatifyPars_CFList(CFListPtr theCFs);
 
@@ -231,8 +231,8 @@ BOOLN		SetBandwidthSpecifier_CFList(CFListPtr theCFs,
 BOOLN		SetBandwidthsWithFunc_CFList(CFListPtr theCFs, WChar *modeName,
 			  Float (* Func)(BandwidthModePtr, Float));
 
-BOOLN		SetBandwidths_CFList(CFListPtr theCFs, WChar *modeName,
-			  Float *theBandwidths);
+DSAM_API BOOLN	SetBandwidths_CFList(CFListPtr theCFs, WChar *modeName,
+				  Float *theBandwidths);
 
 BOOLN		SetBandwidthUniParList_CFList(CFListPtr theCFs);
 

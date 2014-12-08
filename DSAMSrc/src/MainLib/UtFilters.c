@@ -88,7 +88,7 @@ ZeroArray_Filters(Float *p, int length)
  * The function returns a pointer to the coefficients structure.
  */
 
-GammaToneCoeffsPtr
+DSAM_API GammaToneCoeffsPtr
 InitGammaToneCoeffs_Filters(Float centreFreq, Float bWidth3dB, int cascade,
   Float sampleClk)
 {
@@ -210,7 +210,7 @@ RecalculateGammaToneCoeffs_Filters(GammaToneCoeffsPtr p, Float centreFreq,
  * the state vector, according to the filter cascade.
  */
 
-void
+DSAM_API void
 FreeGammaToneCoeffs_Filters(GammaToneCoeffsPtr *p)
 {
 	if (*p == NULL)
@@ -332,7 +332,7 @@ FreeTwoPoleCoeffs_Filters(TwoPoleCoeffsPtr *p)
  * the state vector, according to the filter cascade.
  */
 
-void
+DSAM_API void
 FreeIIR2ContCoeffs_Filters(ContButtCoeffsPtr *p)
 {
 	if (*p == NULL)
@@ -502,7 +502,7 @@ BrokenStick1Compression_Filters(SignalDataPtr theSignal, Float aA,
  * It expects the signal to be correctly initialised.
  */
 
-BOOLN
+DSAM_API BOOLN
 BrokenStick1Compression2_Filters(SignalDataPtr theSignal, Float *aA,
   Float *bB, Float cC)
 {
@@ -575,7 +575,7 @@ UptonBStick1Compression_Filters(SignalDataPtr theSignal, Float aA,
  * It expects the signal to be correctly initialised.
  */
 
-BOOLN
+DSAM_API BOOLN
 GammaTone_Filters(SignalDataPtr theSignal, GammaToneCoeffs *p[])
 {
 	int		j, chan;
@@ -746,7 +746,7 @@ BandPass_Filters(SignalDataPtr theSignal, BandPassCoeffsPtr p[])
  * behaviour.
  */
 
-ContButtCoeffsPtr
+DSAM_API ContButtCoeffsPtr
 InitIIR2ContCoeffs_Filters(int cascade, Float cutOffFrequency,
   Float samplingInterval, int highOrLowPass)
 {
@@ -814,7 +814,7 @@ InitIIR2ContCoeffs_Filters(int cascade, Float cutOffFrequency,
  * argument array, have been initialised.
  */
 
-BOOLN
+DSAM_API BOOLN
 IIR2Cont_Filters(SignalDataPtr theSignal, ContButtCoeffsPtr pArray[])
 {
 	static const WChar *funcName = wxT("IIR2Cont_Filters");

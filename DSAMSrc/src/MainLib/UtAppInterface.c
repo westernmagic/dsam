@@ -459,7 +459,7 @@ SetNumThreads_AppInterface(int numThreads)
 /****************************** SetMaxUserModules *****************************/
 
 /*
- * This functions sets the application's final pars routine.
+ * This functions sets the application's maximum number of user modules.
  * These are parameters which set by the application interace, after the
  * simulation is initialised.
  * It returns false if it fails in any way.

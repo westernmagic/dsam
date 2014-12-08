@@ -44,6 +44,7 @@ Options:
 	[--gui]
 	[--libs]
 	[--prefix[=DIR]]
+	[--plugin]
 	[--rflags]
 	[--version]
 EOF
@@ -100,6 +101,9 @@ while [ $# -gt 0 ]; do
 		fi
 		use_gui=yes
 		;;
+	--plugin)
+		create_plugin=yes
+		;;
 	--debug)
 		use_debug=yes
 		;;
@@ -142,6 +146,9 @@ if [ "$echo_libs" = "yes" ]; then
 		if test "$use_gui" = "yes"; then
 			libs="$libs -ldmallocxx"
 		fi
+	fi
+	if test "$create_plugin" = "yes"; then
+		libs="$libs --shared"
 	fi
 	if [ "$use_gui" = "yes" ]; then
 		libs="-l@PACKAGE@_g $libs @WXLDLIBS@ @WXOGLLIBS@"

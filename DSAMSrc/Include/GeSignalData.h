@@ -115,7 +115,7 @@ typedef struct {
  */
 __BEGIN_DECLS
 
-BOOLN	Add_SignalData(SignalDataPtr a, SignalDataPtr b);
+DSAM_API BOOLN	Add_SignalData(SignalDataPtr a, SignalDataPtr b);
 
 BOOLN	Delay_SignalData(SignalDataPtr signal, Float delay);
 
@@ -126,7 +126,7 @@ BOOLN	CheckInit_SignalData(SignalDataPtr theSignal,
 
 BOOLN	CheckPars_SignalData(SignalDataPtr theSignal);
 
-BOOLN	CheckRamp_SignalData(SignalDataPtr theSignal);
+DSAM_API BOOLN	CheckRamp_SignalData(SignalDataPtr theSignal);
 
 BOOLN	CopyInfo_SignalData(SignalDataPtr a, SignalDataPtr b);
 
@@ -162,6 +162,8 @@ BOOLN	InitInfo_SignalData(SignalInfoPtr info);
 
 NameSpecifier *	LimitModeList_SignalData(int index);
 
+DSAM_API BOOLN	Multiply_SignalData(SignalDataPtr a, SignalDataPtr b);
+
 BOOLN	OutputToFile_SignalData(WChar *fileName, SignalDataPtr theData);
 
 BOOLN	ResetInfo_SignalData(SignalDataPtr signal);
@@ -177,16 +179,16 @@ void	SetChannelsFromSignal_SignalData(SignalDataPtr theSignal,
 
 BOOLN	SetInfoCF_SignalData(SignalDataPtr theData, int index, Float cF);
 
-void	SetInfoCFArray_SignalData(SignalDataPtr theData, Float *cFs);
+DSAM_API void	SetInfoCFArray_SignalData(SignalDataPtr theData, Float *cFs);
 
-void	SetInfoChannelLabels_SignalData(SignalDataPtr signal, Float *labels);
+DSAM_API void	SetInfoChannelLabels_SignalData(SignalDataPtr signal, Float *labels);
 
 BOOLN	SetInfoChannelLabel_SignalData(SignalDataPtr theData, int index,
 		  Float label);
 
 void	SetInfoChanDataTitle_SignalData(SignalDataPtr theData, WChar *title);
 
-void	SetInfoChannelTitle_SignalData(SignalDataPtr theData, WChar *title);
+DSAM_API void	SetInfoChannelTitle_SignalData(SignalDataPtr theData, WChar *title);
 
 void	SetInfoSampleTitle_SignalData(SignalDataPtr theData, WChar *title);
 

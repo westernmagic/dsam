@@ -1123,7 +1123,7 @@ GetResult_EarObject(EarObjectPtr data, uShort channel)
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 CheckInSignal_EarObject(EarObjectPtr data, const WChar *callingFuncName)
 {
 	static const WChar	*funcName = wxT("CheckInSignal_EarObject");
@@ -1152,7 +1152,7 @@ CheckInSignal_EarObject(EarObjectPtr data, const WChar *callingFuncName)
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 TempInputConnection_EarObject(EarObjectPtr base, EarObjectPtr supporting,
   int numInSignals)
 {
@@ -1450,7 +1450,7 @@ FreeSubProcessList_EarObject(EarObjectPtr p)
  * It assumes that the module has been correctly initialised.
  */
 
-BOOLN
+DSAM_API BOOLN
 InitSubProcessList_EarObject(EarObjectPtr p, int numSubProcesses)
 {
 	static const WChar	*funcName = wxT("InitSubProcessList_EarObject");

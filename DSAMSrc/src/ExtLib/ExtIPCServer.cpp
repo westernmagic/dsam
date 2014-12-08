@@ -144,7 +144,7 @@ IPCServer::InitConnection(bool wait)
 	sock->SetFlags(wxSOCKET_WAITALL);
 	myServer->GetLocal(addr);
 	salutation.Printf(wxT("Host %s running %s, DSAM version %s.\n"), addr.
-	  Hostname().c_str(), EXTIPC_DEFAULT_SERVER_NAME, DSAM_VERSION);
+	  Hostname().C_STR(), EXTIPC_DEFAULT_SERVER_NAME, DSAM_VERSION);
 	sock->Write(salutation.mb_str(), (wxUint32) salutation.length());
 	return(sock);
 
@@ -174,7 +174,7 @@ IPCServer::OnInit(void)
 	wxFFileOutputStream	*oStream = new wxFFileOutputStream(tempFileName);
 	if (!oStream->Ok()) {
 		NotifyError(wxT("%s: Could not open temporary file '%s'."), funcName,
-		  tempFileName.c_str());
+		  tempFileName.C_STR());
 		return;
 	}
 	while (!sock->Read(&c, 1).Error() && (c != (unsigned char) EOF))
@@ -243,7 +243,7 @@ IPCServer::OnPutArgs(void)
 		while (!sock->Read(&c, 1).Error() && (c != '\0'))
 			s += c;
 		s += wxT('\0');
-		dSAMMainApp->SetArgvString(i, (wxChar *) s.c_str(), (wxUint32) s.length());
+		dSAMMainApp->SetArgvString(i, (wxChar *) s.C_STR(), (wxUint32) s.length());
 	}
 	ResetCommandArgFlags_AppInterface();
 
@@ -324,7 +324,7 @@ IPCServer::OnGetFiles(void)
 	numFiles = (wxUint32) list.Count();
 	sock->Write(&numFiles, 1);
 	for (i = 0; i < numFiles; i++) {
-		fileName = (wxChar *) GetParsFileFPath_Common((wxChar *) list[i].c_str(
+		fileName = (wxChar *) GetParsFileFPath_Common((wxChar *) list[i].C_STR(
 		  ));
 		nameOnly = fileName.GetFullName();
 		sock->Write(nameOnly.mb_str(), (wxUint32) nameOnly.length());
@@ -332,7 +332,7 @@ IPCServer::OnGetFiles(void)
 		wxFFileInputStream inStream(fileName.GetFullPath());
 		if (!inStream.Ok()) {
 			NotifyError(wxT("%s: Could not open '%s' for transfer."), funcName,
-			  list[i].c_str());
+			  list[i].C_STR());
 			return;
 		}
 		wxDataInputStream	data(inStream);
@@ -345,7 +345,7 @@ IPCServer::OnGetFiles(void)
 		}
 		if (!wxRemoveFile(fileName.GetFullPath()))
 			NotifyError(wxT("%s: Could not remove file '%s' from server."),
-			  funcName, fileName.GetFullPath().c_str());
+			  funcName, fileName.GetFullPath().C_STR());
 	}
 
 }
@@ -367,9 +367,9 @@ IPCServer::OnGetPar(void)
 		if (c != '\r')
 			parName += c;
 	if ((par = GetUniParPtr_ModuleMgr(GetSimProcess_AppInterface(), (wxChar *)
-	  parName.c_str())) == NULL) {
+	  parName.C_STR())) == NULL) {
 		NotifyError(wxT("%s: Could not find '%s' parameter."), funcName,
-		  parName.c_str());
+		  parName.C_STR());
 		sock->Write("", 1);
 		return;
 	}
@@ -402,15 +402,15 @@ IPCServer::OnSet(void)
 		return;
 	}
 	for (i = 0; i < numTokens / 2; i++) {
-		parameter = tokenizer.GetNextToken().c_str();
-		value = tokenizer.GetNextToken().c_str();
-		if (!SetProgramParValue_AppInterface((wxChar *) parameter.c_str(),
-		  (wxChar *) value.c_str(), FALSE) && !SetUniParValue_Utility_Datum(
-		  GetSimulation_AppInterface(), (wxChar *) parameter.c_str(),
-		  (wxChar *) value.c_str())) {
+		parameter = tokenizer.GetNextToken().C_STR();
+		value = tokenizer.GetNextToken().C_STR();
+		if (!SetProgramParValue_AppInterface((wxChar *) parameter.C_STR(),
+		  (wxChar *) value.C_STR(), FALSE) && !SetUniParValue_Utility_Datum(
+		  GetSimulation_AppInterface(), (wxChar *) parameter.C_STR(),
+		  (wxChar *) value.C_STR())) {
 			NotifyError(wxT("%s: Could not set '%s' parameter to '%s'."),
-			  funcName, (wxChar *)  parameter.c_str(), (wxChar *) value.
-			  c_str());
+			  funcName, (wxChar *)  parameter.C_STR(), (wxChar *) value.
+			  C_STR());
 			return;
 		}
 	}
@@ -490,7 +490,7 @@ IPCServer::ProcessInput(void)
 		if (c != '\r')
 			buffer += c;
 	
-	switch (Identify_NameSpecifier((wxChar *) buffer.c_str(), iPCUtils.
+	switch (Identify_NameSpecifier((wxChar *) buffer.C_STR(), iPCUtils.
 	  CommandList(0))) {
 	case IPC_COMMAND_QUIT:
 		endProcessing = true;
@@ -530,7 +530,7 @@ IPCServer::ProcessInput(void)
 	default:
 		if (buffer.Length())
 			NotifyError(wxT("%s: Unknown command given (%s)."), funcName,
-			  buffer.c_str());
+			  buffer.C_STR());
 	}
 	sock->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
 	return(!endProcessing);
@@ -584,7 +584,7 @@ IPCServer::LoadSimFile(const wxString& fileName)
 {
 	FreeSim_AppInterface();
 	if (!SetParValue_UniParMgr(&GetPtr_AppInterface()->parList,
-	  APP_INT_SIMULATIONFILE, (wxChar *) fileName.c_str()))
+	  APP_INT_SIMULATIONFILE, (wxChar *) fileName.C_STR()))
 		return(false);
 	return(dSAMMainApp->ResetSimulation());
 

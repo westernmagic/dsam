@@ -124,7 +124,7 @@ Init_CFList(const WChar *callingFunctionName)
  * This function de-allocates memory for the centre frequency data structure.
  */
 
-void
+DSAM_API void
 Free_CFList(CFListPtr *theCFs)
 {
 	if (*theCFs == NULL)
@@ -867,7 +867,7 @@ CheckInit_CFList(CFListPtr theCFs, const WChar *callingFunction)
  * It returns TRUE if there are no problems.
  */
 
-BOOLN
+DSAM_API BOOLN
 CheckPars_CFList(CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("CheckPars_CFList");
@@ -941,7 +941,7 @@ AllocateFrequencies_CFList(CFListPtr theCFs)
  * mode is being used.
  */
 
-CFListPtr
+DSAM_API CFListPtr
 GenerateDefault_CFList(WChar *modeName, int numberOfCFs, Float minCF,
   Float maxCF, WChar *bwModeName, Float (* BWidthFunc)(struct BandwidthMode *,
   Float))
@@ -1709,7 +1709,7 @@ SetBandwidthArray_CFList(CFListPtr theCFs, Float *theBandwidths)
  * If the 'modeName' is set to NULL, then the mode will not be reset.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetBandwidths_CFList(CFListPtr theCFs, WChar *modeName, Float *theBandwidths)
 {
 	static const WChar *funcName = wxT("SetBandwidths_CFList");
@@ -1996,7 +1996,7 @@ PrintList_CFList(CFListPtr theCFs)
  * This routine prints the parameters associated with a CFList data structure.
  */
 
-void
+DSAM_API void
 PrintPars_CFList(CFListPtr theCFs)
 {
 	static const WChar *funcName = wxT("PrintPars_CFList");

@@ -35,6 +35,7 @@
 /* sccsid[] = "%W% %G%" */
 
 #include <wx/filename.h>
+#include <wx/dynlib.h>
 #include "UtSSSymbols.h"
 
 /******************************************************************************/

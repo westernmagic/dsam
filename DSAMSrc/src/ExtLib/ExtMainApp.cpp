@@ -234,7 +234,7 @@ MainApp::RegisterPlugins(void) {
     typedef BOOLN (* InitModFuncType)(ModulePtr);
     GetModNameType	getModNameFunc;
     InitModFuncType	initModFunc;
-	wxString pluginPath, getModNameFuncName, initModFuncName;
+	wxString pluginPath, fileName, getModNameFuncName, initModFuncName;
 	wxFileName	fName;
 
 	if (wxGetEnv(MAINAPP_USER_PLUGIN_PATH_EVAR, &pluginPath)) {
@@ -244,9 +244,14 @@ MainApp::RegisterPlugins(void) {
 			  funcName, pluginPath.wc_str());
 			return(false);
 		}
-		wxString fileName;
 		bool cont = dir.GetFirst(&fileName, MAINAPP_PLUGIN_FILESPEC,
 		  wxDIR_FILES);
+		if (cont && !InitUserModuleList_ModuleReg(-1)) {
+			NotifyError(wxT("%s: Could not initialise user module ")
+			  wxT("list."), funcName);
+			return(FALSE);
+		}
+
 		while ( cont ) {
 			wxDynamicLibrary *lib = new wxDynamicLibrary(pluginPath + wxT("/") +
 			  fileName);
@@ -547,7 +552,7 @@ int MainApp::SetParameterOptionArgs(int indexStart,
 	wxString token, workStr = parameterOptions;
 	int count = 0;
 
-	if (!ProtectQuotedStr((wxChar *) workStr.c_str())) {
+	if (!ProtectQuotedStr((wxChar *) workStr.C_STR())) {
 		NotifyError(wxT("%s; Could note protect quoted parameters."), funcName);
 		return (-1);
 	}
@@ -558,7 +563,7 @@ int MainApp::SetParameterOptionArgs(int indexStart,
 			continue;
 		if (!countOnly)
 			SetArgvString(indexStart + count,
-					RestoreQuotedStr((wxChar *) token.c_str()), token.length());
+					RestoreQuotedStr((wxChar *) token.C_STR()), token.length());
 		count++;
 	}
 	return (count);
@@ -680,7 +685,7 @@ bool MainApp::LoadXMLDocument(void) {
 	InitXMLDocument();
 	if (!doc->Load(simFileName.GetFullPath())) {
 		NotifyError(wxT("%s: Could not load XML file '%s' (Error: %s)."),
-				funcName, simFileName.GetFullPath().c_str());
+				funcName, simFileName.GetFullPath().C_STR());
 		ok = false;
 	}
 	if (ok && !doc->Translate()) {
@@ -820,11 +825,11 @@ EarObjectPtr MainApp::GetSimProcess(void) {
 
 void MainApp::SetSimulationFile(wxFileName &fileName) {
 	simFileName = fileName;
-	SetWorkingDirectory_AppInterface((wxChar *) fileName.GetPath().c_str());
+	SetWorkingDirectory_AppInterface((wxChar *) fileName.GetPath().C_STR());
 	SetSimFileType_AppInterface(
 			GetSimFileType_Utility_SimScript(
-					(wxChar *) fileName.GetExt().c_str()));
-	SetSimulationFile_AppInterface((WChar *) fileName.GetFullPath().c_str());
+					(wxChar *) fileName.GetExt().C_STR()));
+	SetSimulationFile_AppInterface((WChar *) fileName.GetFullPath().C_STR());
 
 }
 

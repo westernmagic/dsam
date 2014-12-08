@@ -39,7 +39,7 @@
 !include "DSAMGenUtils.nsh"
 
 !define PACKAGE_NAME	"SDK"
-!define VERSION		"2.8.44"
+!define VERSION		"2.8.47"
 !define INST_VERSION	"1"
 !define DSAMDIR_ENV	"DSAMSDKDIR"
 

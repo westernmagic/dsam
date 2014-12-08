@@ -78,6 +78,8 @@ void	PrintFreeProcessVariablesRoutine(FILE *fp);
 
 void	PrintGetFunctions(FILE *fp);
 
+void	PrintGetModNameRoutine(FILE *fp);
+
 void	PrintGetNumXParsRoutines(FILE *fp);
 
 void	PrintGetUniParListPtrRoutine(FILE *fp);

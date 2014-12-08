@@ -378,7 +378,7 @@ DSAMXMLDocument::XMLNotifyError(wxXmlNode *node, const wxChar *format, ...)
 	va_list	args;
 
 	va_start(args, format);
-	NotifyError((wxChar *) CreateNotification(node, format, args).c_str());
+	NotifyError((wxChar *) CreateNotification(node, format, args).C_STR());
 	va_end(args);
 
 }
@@ -397,7 +397,7 @@ DSAMXMLDocument::XMLNotifyWarning(wxXmlNode *node, const wxChar *format, ...)
 	va_list	args;
 
 	va_start(args, format);
-	NotifyWarning((wxChar*) CreateNotification(node, format, args).c_str());
+	NotifyWarning((wxChar*) CreateNotification(node, format, args).C_STR());
 	va_end(args);
 
 }
@@ -420,12 +420,12 @@ DSAMXMLDocument::ValidVersion(const wxString &s1, const wxString &s2)
 	if ((pos = s1.find(DSAM_VERSION_SEPARATOR, s1.find(DSAM_VERSION_SEPARATOR) +
 	  1)) == s1.npos) {
 		NotifyError(wxT("%s: Could not find valid version (%s)."), funcName,
-		  s1.c_str());
+		  s1.C_STR());
 		return(false);
 	}
 	if (s1.compare(0, pos, s2, 0, pos) != 0) {
 		NotifyError(wxT("%s: Only versions '%s.x' are fully supported."),
-		  funcName, s2.substr(0, pos).c_str());
+		  funcName, s2.substr(0, pos).C_STR());
 		return(false);
 	}
 	return(true);
@@ -451,16 +451,16 @@ DSAMXMLDocument::GetParArrayInfo(wxXmlNode * parArrayElement, UniParList *parLis
 		return(false);
 	}
 	subParList = parList;
-	if ((par = FindUniPar_UniParMgr(&subParList, (wxChar *) parName.c_str(),
+	if ((par = FindUniPar_UniParMgr(&subParList, (wxChar *) parName.C_STR(),
 	  UNIPAR_SEARCH_ABBR)) == NULL) {
 		XMLNotifyError(parArrayElement, wxT("%s: Parameter '%s' not ")
-		  wxT("found"), funcName, (wxChar *) parName.c_str());
+		  wxT("found"), funcName, (wxChar *) parName.C_STR());
 		return(false);
 	}
 	if ((parListElement = parArrayElement->GetChildren()) == NULL) {
 	  	XMLNotifyError(parArrayElement, wxT("%s: Could not find sub-")
 		  wxT("parameter list for '%s' par_array."), funcName, (wxChar *)
-		  parName.c_str());
+		  parName.C_STR());
 		return(false);
 	}
 	if (!GetParListInfo(parListElement, subParList)) {
@@ -584,10 +584,10 @@ DSAMXMLDocument::GetParInfo(wxXmlNode *parListElement, UniParList *parList)
 				  funcName, DSAM_XML_NAME_ATTRIBUTE);
 				return(false);
 			}
-			if ((par = FindUniPar_UniParMgr(&parList, (wxChar *) parName.c_str(),
+			if ((par = FindUniPar_UniParMgr(&parList, (wxChar *) parName.C_STR(),
 			  UNIPAR_SEARCH_ABBR)) == NULL) {
 				XMLNotifyError(child, wxT("%s: Parameter '%s' not found."),
-				  funcName, parName.c_str());
+				  funcName, parName.C_STR());
 				return(false);
 			}
 			if (!child->GetPropVal(DSAM_XML_VALUE_ATTRIBUTE, &parValue)) {
@@ -596,9 +596,9 @@ DSAMXMLDocument::GetParInfo(wxXmlNode *parListElement, UniParList *parList)
 				return(false);
 			}
 			if (!SetParValue_UniParMgr(&parList, par->index, (wxChar *) parValue.
-			  c_str())) {
+			  C_STR())) {
 				XMLNotifyError(child, wxT("%s: Could not set %s parameter to ")
-				  wxT("%s."), funcName, parName.c_str(), parValue.c_str());
+				  wxT("%s."), funcName, parName.C_STR(), parValue.C_STR());
 				return(false);
 			}
 		} else if (child->GetName() == DSAM_XML_PAR_LIST_ELEMENT) {
@@ -607,11 +607,11 @@ DSAMXMLDocument::GetParInfo(wxXmlNode *parListElement, UniParList *parList)
 				  wxT("must have a name."), funcName, DSAM_XML_PAR_LIST_ELEMENT);
 				return(false);
 			}
-			if ((par = FindUniPar_UniParMgr(&parList, (wxChar *) parName.c_str(),
+			if ((par = FindUniPar_UniParMgr(&parList, (wxChar *) parName.C_STR(),
 			  UNIPAR_SEARCH_ABBR)) == NULL) {
 				XMLNotifyError(child, wxT("%s: Sub-parameter list ")
 				  wxT("'%s' parameter '%s' not found"), funcName,
-				  DSAM_XML_PAR_LIST_ELEMENT, parName.c_str());
+				  DSAM_XML_PAR_LIST_ELEMENT, parName.C_STR());
 				return(false);
 			}
 			if (!GetParListInfo(child, *par->valuePtr.parList.list)) {
@@ -707,7 +707,7 @@ DSAMXMLDocument::GetConnectionInfo(wxXmlNode *connectionElement, DynaListPtr *p)
 		return(false);
 	}
 	Append_Utility_DynaList(p, InstallSymbol_Utility_SSSymbols(
-	  &simScriptPtr->symList, (wxChar *) label.c_str(), STRING)->name);
+	  &simScriptPtr->symList, (wxChar *) label.C_STR(), STRING)->name);
 	return(true);
 
 }
@@ -731,33 +731,33 @@ DSAMXMLDocument::InstallProcess(wxXmlNode *objectElement)
 	}
 	if ((pc = InstallInst(objectElement, PROCESS)) == NULL) {
 		XMLNotifyError(objectElement, wxT("%s: Could not initialise ")
-		  wxT("instruction for '%s'"), funcName, (wxChar *) moduleName.c_str());
+		  wxT("instruction for '%s'"), funcName, (wxChar *) moduleName.C_STR());
 		return(NULL);
 	}
 	pc->u.proc.moduleName = InitString_Utility_String((wxChar *) moduleName.
-	  c_str());
+	  C_STR());
 	if (!InitProcessInst_Utility_Datum(pc)) {
 		XMLNotifyError(objectElement, wxT("%s: Could not initialise process ")
-		  wxT("'%s'"), funcName, (wxChar *) moduleName.c_str());
+		  wxT("'%s'"), funcName, (wxChar *) moduleName.C_STR());
 		return(NULL);
 	}
 	if (objectElement->GetPropVal(DSAM_XML_ENABLED_ATTRIBUTE, &enabledStatus))
-		EnableProcess_Utility_Datum(pc, DSAM_atoi(enabledStatus.c_str()));
+		EnableProcess_Utility_Datum(pc, DSAM_atoi(enabledStatus.C_STR()));
 	for (node = objectElement->GetChildren(); node; node = node->GetNext())
 		if ((node->GetName() == DSAM_XML_PAR_LIST_ELEMENT) &&
 		  !GetParListInfo(node, GetUniParListPtr_ModuleMgr(pc->data))) {
 			XMLNotifyError(objectElement, wxT("%s: Could not initialise '%s' ")
-			  wxT("module parameters"), funcName, (wxChar *) moduleName.c_str());
+			  wxT("module parameters"), funcName, (wxChar *) moduleName.C_STR());
 			return(NULL);
 		} else if ((node->GetName() == DSAM_XML_INPUT_ELEMENT) &&
 		  !GetConnectionInfo(node, &pc->u.proc.inputList)) {
 			XMLNotifyError(objectElement, wxT("%s: Could not find '%s' module input ")
-			  wxT("connections"), funcName, (wxChar *) moduleName.c_str());
+			  wxT("connections"), funcName, (wxChar *) moduleName.C_STR());
 			return(NULL);
 		} else if ((node->GetName() == DSAM_XML_OUTPUT_ELEMENT) &&
 		  !GetConnectionInfo(node, &pc->u.proc.outputList)) {
 			XMLNotifyError(objectElement, wxT("%s: Could not find '%s' module output ")
-			  wxT("connections"), funcName, (wxChar *) moduleName.c_str());
+			  wxT("connections"), funcName, (wxChar *) moduleName.C_STR());
 			return(NULL);
 		} else if (node->GetName() == DSAM_XML_SHAPE_ELEMENT)
 			GetShapeInfo(node, pc);
@@ -790,7 +790,7 @@ DSAMXMLDocument::InstallInst(wxXmlNode *objectElement, int type)
 		return(NULL);
 	}
 	if (objectElement->GetPropVal(DSAM_XML_LABEL_ATTRIBUTE, &label))
-		pc->label = InitString_Utility_String((wxChar *) label.c_str());
+		pc->label = InitString_Utility_String((wxChar *) label.C_STR());
 	return(pc);
 
 }
@@ -827,7 +827,7 @@ DSAMXMLDocument::InstallSimulationNodes(wxXmlNode *startSimElement)
 			}
 			GetShapeInfo(child, pc);
 		} else if ((sp = LookUpSymbol_Utility_SSSymbols(dSAMMainApp->GetSymList(
-		  ), (wxChar *) objectType.c_str())) != NULL) {
+		  ), (wxChar *) objectType.C_STR())) != NULL) {
 			switch (sp->type) {
 			case REPEAT:
 				if ((pc = InstallInst(objectElement, sp->type)) == NULL)
@@ -856,7 +856,7 @@ DSAMXMLDocument::InstallSimulationNodes(wxXmlNode *startSimElement)
 					return(false);
 				}
 				pc->u.ref.string = InitString_Utility_String((wxChar *) label.
-				  c_str());
+				  C_STR());
 				GetShapeInfo(child, pc);
 				break;
 			default:
@@ -952,7 +952,7 @@ DSAMXMLDocument::Translate(void)
 		NotifyError(wxT("%s: Could not get DSAM version."), funcName);
 		return(false);
 	}
-	if (docDSAMVersion.empty() || !ValidVersion(docDSAMVersion.c_str(),
+	if (docDSAMVersion.empty() || !ValidVersion(docDSAMVersion.C_STR(),
 	  GetDSAMPtr_Common()->version)) {
 		NotifyError(wxT("%s: Could not find valid DSAM version."), funcName);
 		return(false);

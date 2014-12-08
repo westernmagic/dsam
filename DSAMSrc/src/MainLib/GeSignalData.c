@@ -324,7 +324,7 @@ CheckPars_SignalData(SignalDataPtr theSignal)
  * It returns TRUE if the signal has been ramped.
  */
 
-BOOLN
+DSAM_API BOOLN
 CheckRamp_SignalData(SignalDataPtr theSignal)
 {
 	static const WChar *funcName = wxT("CheckRamp_SignalData");
@@ -444,7 +444,7 @@ Scale_SignalData(SignalDataPtr d, Float multiplier)
  * The result is put into the first of the data sets: a = a + b;
  */
 
-BOOLN
+DSAM_API BOOLN
 Add_SignalData(SignalDataPtr a, SignalDataPtr b)
 {
 	int		i;
@@ -607,7 +607,7 @@ SetLocalInfoFlag_SignalData(SignalDataPtr theData, BOOLN flag)
  * channel index divided by the interleave level.
  */
 
-void
+DSAM_API void
 SetInfoChannelLabels_SignalData(SignalDataPtr signal, Float *labels)
 {
 	int		i;
@@ -661,7 +661,7 @@ SetInfoChannelLabel_SignalData(SignalDataPtr theData, int index, Float label)
  * If the cFs array is null, then the values will be set to the channel index.
  */
 
-void
+DSAM_API void
 SetInfoCFArray_SignalData(SignalDataPtr theData, Float *cFs)
 {
 	int		i;
@@ -713,7 +713,7 @@ SetInfoCF_SignalData(SignalDataPtr theData, int index, Float cF)
  * but only if the information is local, and not just a copy.
  */
 
-void
+DSAM_API void
 SetInfoChannelTitle_SignalData(SignalDataPtr theData, WChar *title)
 {
 	if (!CheckInit_SignalData(theData, wxT("SetInfoChannelTitle_SignalData")))
@@ -981,6 +981,35 @@ Divide_SignalData(SignalDataPtr a, SignalDataPtr b)
 		bPtr = b->channel[i];
 		for (j = 0; j < a->length; j++)
 			*(aPtr++) /= *(bPtr++);
+	}
+	return(TRUE);
+
+}
+
+/**************************** Multiply ******************************************/
+
+/*
+ * This function multiplies two data structures.
+ * The result is put into the first of the data sets: a = a * b;
+ */
+
+BOOLN
+Multiply_SignalData(SignalDataPtr a, SignalDataPtr b)
+{
+	int		i;
+	ChanLen	j;
+	ChanData	*aPtr, *bPtr;
+
+	if (!CheckInit_SignalData(a, wxT("Multiply_SignalData (a)")) ||
+	  !CheckInit_SignalData(b, wxT("Multiply_SignalData (b)")))
+		return(FALSE);
+	if (!SameType_SignalData(a, b))
+		return(FALSE);
+	for (i = 0; i < a->numChannels; i++) {
+		aPtr = a->channel[i];
+		bPtr = b->channel[i];
+		for (j = 0; j < a->length; j++)
+			*(aPtr++) *= *(bPtr++);
 	}
 	return(TRUE);
 

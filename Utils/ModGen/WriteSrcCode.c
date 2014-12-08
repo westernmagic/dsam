@@ -41,6 +41,7 @@
 
 StandardFunctions standardFunctions[] = {
 
+	{"GetModName",		PrintGetModNameRoutine},
 	{"Free",			PrintFreeRoutine},
 	{"InitList",		PrintNameSpecInitListRoutines},
 	{"GetNumXPars",		PrintGetNumXParsRoutines},
@@ -178,7 +179,7 @@ PrintNameSpecInitListRoutines(FILE *fp)
 				fprintf(fp, "%s\n{\n", funcDeclaration);
 				fprintf(fp, "\tstatic NameSpecifier\tmodeList[] = {\n\n");
 				fprintf(fp, "\t\t\t{ wxT(\"\"),\t%s },\n", nameSpecBase);
-				fprintf(fp, "\t\t\t{ wxT(\"\"),\t%sNULL },\n", nameSpecBase);
+				fprintf(fp, "\t\t\t{ 0,\t%sNULL },\n", nameSpecBase);
 				fprintf(fp, "\t\t};\n");
 				fprintf(fp, "\treturn(&modeList[index]);\n");
 				fprintf(fp, "\n}\n\n");
@@ -253,6 +254,36 @@ PrintSetDefaultArraysRoutine(FILE *fp)
 		fprintf(fp, "\n}\n\n");
 		AddRoutine(funcDeclaration);
 	}
+
+}
+
+/****************************** PrintGetModNameRoutine ************************/
+
+/*
+ * This routine prints the Module GetModName routine.
+ * It adds the function declaration to the main list.
+ */
+
+void
+PrintGetModNameRoutine(FILE *fp)
+{
+	static 	char	*function = "GetModName";
+	char	*funcName, *funcDeclaration;
+
+	PrintLineCommentHeading(fp, function);
+	fprintf(fp,
+	  "/*\n"
+	  " * This function returns the module name.\n"
+	  " */\n\n"
+	  );
+	funcName = CreateFuncName(function, module, qualifier);
+	funcDeclaration = CreateFuncDeclaration("PLUGIN_API const WChar *\n",
+	  funcName, "void");
+	fprintf(fp, "%s\n{\n", funcDeclaration);
+
+	fprintf(fp, "\treturn(wxT(\"USER_MODULE\"));\n");
+	fprintf(fp, "\n}\n\n");
+	AddRoutine(funcDeclaration);
 
 }
 
@@ -1097,7 +1128,7 @@ PrintInitModuleRoutine(FILE *fp)
 	  " */\n\n"
 	  );
 	funcName = CreateFuncName(function, module, qualifier);
-	funcDeclaration = CreateFuncDeclaration("BOOLN\n", funcName,
+	funcDeclaration = CreateFuncDeclaration("PLUGIN_API BOOLN\n", funcName,
 	  "ModulePtr theModule");
 	fprintf(fp, "%s\n{\n", funcDeclaration);
 	PrintStaticFuncNameDeclaration(fp, funcName);

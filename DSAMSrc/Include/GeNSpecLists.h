@@ -128,7 +128,7 @@ NameSpecifier *	DiagModeList_NSpecLists(int index);
 
 NameSpecifier * EarModeList_NSpecLists(int index);
 
-NameSpecifier *	FitFuncModeList_NSpecLists(int index);
+DSAM_API NameSpecifier *	FitFuncModeList_NSpecLists(int index);
 
 int		GetNumListEntries_NSpecLists(NameSpecifierPtr list);
 

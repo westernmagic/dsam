@@ -103,7 +103,7 @@ DiagModeList_NSpecLists(int index)
  * conjunction with the UtNameSpecifier routines.
  */
 
-NameSpecifier *
+DSAM_API NameSpecifier *
 FitFuncModeList_NSpecLists(int index)
 {
 	static NameSpecifier	modeList[] = {

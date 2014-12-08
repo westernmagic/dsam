@@ -164,7 +164,7 @@ BOOLN	AddEarObjRef_EarObject(EarObjRefPtr *theList, EarObjectPtr theCustomer);
 
 BOOLN	AddInSignal_EarObject(EarObjectPtr data);
 
-BOOLN	CheckInSignal_EarObject(EarObjectPtr data, const WChar
+DSAM_API BOOLN	CheckInSignal_EarObject(EarObjectPtr data, const WChar
 		  *callingFuncName);
 
 DSAM_API BOOLN	ConnectOutSignalToIn_EarObject(EarObjectPtr supplier,
@@ -207,7 +207,8 @@ DSAM_API BOOLN	InitOutSignal_EarObject(EarObjectPtr data, uShort numChannels,
 
 void	InitThreadRandPars_EarObject(EarObjectPtr p, EarObjectPtr baseP);
 
-BOOLN	InitSubProcessList_EarObject(EarObjectPtr p, int numSubProcesses);
+DSAM_API BOOLN	InitSubProcessList_EarObject(EarObjectPtr p,
+				  int numSubProcesses);
 
 DSAM_API BOOLN	InitThreadProcs_EarObject(EarObjectPtr p);
 
@@ -252,8 +253,8 @@ DSAM_API void	SetUpdateProcessFlag_EarObject(EarObjectPtr theObject,
 
 void	SetUtilityProcessContinuity_EarObject(EarObjectPtr data);
 
-BOOLN	TempInputConnection_EarObject(EarObjectPtr base,
-		  EarObjectPtr supporting, int numInSignals);
+DSAM_API BOOLN	TempInputConnection_EarObject(EarObjectPtr base,
+				  EarObjectPtr supporting, int numInSignals);
 
 __END_DECLS
 

@@ -52,4 +52,10 @@
 #	define DSAM_USE_UNICODE		1
 #endif
 
+#if wxMINOR_VERSION > 8
+#	define	C_STR		wx_str
+#else
+#	define	C_STR		c_str
+#endif
+
 #endif

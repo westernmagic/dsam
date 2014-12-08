@@ -84,7 +84,7 @@ IPCClient::IPCClient(const wxString& hostName, uShort theServicePort)
 	}
 	SetFlags(wxSOCKET_WAITALL);
 	ReadString(salutation);
-	DPrint(wxT("%s: %s\n"), funcName, salutation.c_str());
+	DPrint(wxT("%s: %s\n"), funcName, salutation.C_STR());
 
 }
 
@@ -176,7 +176,7 @@ IPCClient::Errors(void)
 	for (i = 0; i < numErrors; i++) {
 		while (!Read(&c, 1).Error() && (c != '\n'))
 			errMsg += c;
-		NotifyError(wxT("%s: %s"), funcName, errMsg.c_str());
+		NotifyError(wxT("%s: %s"), funcName, errMsg.C_STR());
 		errMsg.Empty();
 	}
 	return(true);
@@ -230,7 +230,7 @@ IPCClient::CreateSPFFromSimScript(wxFileName &fileName)
 	DiagModeSpecifier oldDiagMode = GetDSAMPtr_Common()->diagMode;
 	SetDiagMode(COMMON_OFF_DIAG_MODE);
 	if (!ReadPars_ModuleMgr(process, (wxChar *) fileName.GetFullPath().
-	  c_str())) {
+	  C_STR())) {
 		NotifyError(wxT("%s: Could not read simulation."), funcName);
 		ok = false;
 	}
@@ -238,7 +238,7 @@ IPCClient::CreateSPFFromSimScript(wxFileName &fileName)
 	if (ok) {
 		fileName.SetExt(wxT("spf"));
 		FILE *oldFp = GetDSAMPtr_Common()->parsFile;
-		SetParsFile_Common((wxChar *) fileName.GetFullPath().c_str(),
+		SetParsFile_Common((wxChar *) fileName.GetFullPath().C_STR(),
 		  OVERWRITE);
 		if (!PrintSimParFile_ModuleMgr(process)) {
 			NotifyError(wxT("%s: Could not list simulation parameter file."),
@@ -273,13 +273,13 @@ IPCClient::InitSimFromFile(const wxString &simFileName)
 	if ((fileName.GetExt().CmpNoCase(wxT("sim")) == 0) &&
 	  !CreateSPFFromSimScript(fileName)) {
 		NotifyError(wxT("%s: Could not convert SIM file ('%s') to SPF file."),
-		  funcName, fileName.GetFullName().c_str());
+		  funcName, fileName.GetFullName().C_STR());
 		return(false);
 	}
 	wxFFileInputStream inStream(fileName.GetFullPath());
 	if (!inStream.Ok()) {
 		NotifyError(wxT("%s: Could not open simulation file '%s'."), funcName,
-		  fileName.GetFullName().c_str());
+		  fileName.GetFullName().C_STR());
 		return(false);
 	}
 	wxDataInputStream	data(inStream);
@@ -296,12 +296,12 @@ IPCClient::InitSimFromFile(const wxString &simFileName)
 		return(false);
 	}
 	GetParValue(parFilePathModeParName);
-	if (Identify_NameSpecifier((wxChar *) buffer.c_str(),
+	if (Identify_NameSpecifier((wxChar *) buffer.C_STR(),
 	  ParFilePathModePrototypeList_Utility_SimScript()) ==
 	   UTILITY_SIMSCRIPT_PARFILEPATHMODE_RELATIVE)
-		SetParsFilePath_Common((wxChar *) fileName.GetPath().c_str());
+		SetParsFilePath_Common((wxChar *) fileName.GetPath().C_STR());
 	else
-		SetParsFilePath_Common((wxChar *) buffer.c_str());
+		SetParsFilePath_Common((wxChar *) buffer.C_STR());
 	return(true);
 
 }
@@ -342,7 +342,7 @@ IPCClient::GetAllOutputFiles(void)
 	Read(&numFiles, sizeof(numFiles));
 	for (i = 0; i < numFiles; i++) {
 		ReadString(baseFileName);
-		fileName = GetParsFileFPath_Common((wxChar *) baseFileName.c_str());
+		fileName = GetParsFileFPath_Common((wxChar *) baseFileName.C_STR());
 		Read(&length, sizeof(length));
 		wxFFileOutputStream outStream(fileName);
 		wxDataOutputStream	data(outStream);

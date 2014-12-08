@@ -30,7 +30,7 @@
 
 AC_REVISION($Revision: 2.61)
 
-AC_INIT(DSAM, 2.8.46)
+AC_INIT(DSAM, 2.8.47)
 AC_CONFIG_AUX_DIR(CfgTools)
 
 AC_CANONICAL_TARGET
@@ -61,9 +61,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 DSAM_MAJOR_VERSION=2
 DSAM_MINOR_VERSION=8
-DSAM_MICRO_VERSION=46
-DSAM_INTERFACE_AGE=46
-DSAM_BINARY_AGE=46
+DSAM_MICRO_VERSION=47
+DSAM_INTERFACE_AGE=47
+DSAM_BINARY_AGE=47
 DSAM_RPM_AGE=1
 
 dnl
@@ -569,6 +569,7 @@ AC_DEFINE_UNQUOTED([HAVE_SNDFILE],${ac_cv_sndfile},
 
 AC_SUBST(SNDFILE_CFLAGS)
 AC_SUBST(SNDFILE_LIBS)
+DSAM_DEFS="$DSAM_DEFS $SNDFILE_CFLAGS"
 
 dnl ----------------------------------------------------------------------------
 dnl fftw3 library
@@ -586,6 +587,7 @@ AC_DEFINE_UNQUOTED([HAVE_FFTW3],${ac_cv_fftw3},
 
 AC_SUBST(FFTW3_CFLAGS)
 AC_SUBST(FFTW3_LIBS)
+DSAM_DEFS="$DSAM_DEFS $FFTW3_CFLAGS"
 
 dnl ----------------------------------------------------------------------------
 dnl Parallel library option

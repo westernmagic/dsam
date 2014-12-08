@@ -41,7 +41,7 @@
 /************************** Global Variables **********************************/
 /******************************************************************************/
 
-int			numUserModules, maxUserModules;
+int			numUserModules = 0, maxUserModules = -1;
 ModRegEntry	*userModuleList = NULL;
 
 /******************************************************************************/
@@ -299,11 +299,9 @@ LibraryList_ModuleReg(uShort index)
 	{ wxT("UTIL_AMPMOD"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_AmpMod },
-#	if HAVE_FFTW3
 	{ UTILITY_AMPMOD_NOISE_MOD_NAME,
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_AmpMod_Noise },
-#	endif
 	{ wxT("UTIL_BINSIGNAL"),
 		UTILITY_MODULE_CLASS, PROCESS_MODULE,
 		InitModule_Utility_BinSignal },
@@ -467,6 +465,8 @@ FreeUserModuleList_ModuleReg(void)
 	if (userModuleList)
 		free(userModuleList);
 	userModuleList = NULL;
+	maxUserModules = -1;
+	numUserModules = 0;
 
 }
 
@@ -474,6 +474,9 @@ FreeUserModuleList_ModuleReg(void)
 
 /*
  * This function initialises the user module list.
+ * If this routine is called with theMaxUserModules set to greater than
+ * the current maxUserModules, then any previously register modules will be
+ * deleted at present.
  * It returns FALSE if it fails in any way.
  */
 
@@ -484,6 +487,8 @@ InitUserModuleList_ModuleReg(int theMaxUserModules)
 	int		i;
 	ModRegEntryPtr	regEntry;
 
+	if ((maxUserModules > 0) && (theMaxUserModules < maxUserModules))
+		return(TRUE);
 	FreeUserModuleList_ModuleReg();
 	maxUserModules = (theMaxUserModules > 0)? theMaxUserModules:
 	  MODULE_REG_DEFAAULT_USER_MODULES;

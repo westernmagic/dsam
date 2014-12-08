@@ -60,7 +60,7 @@
  * structure.
  */
 
-void
+DSAM_API void
 Free_ParArray(ParArrayPtr *parArray)
 {
 	if (!*parArray)
@@ -82,7 +82,7 @@ Free_ParArray(ParArrayPtr *parArray)
  * It returns NULL if it fails in any way.
  */
 
-ParArrayPtr
+DSAM_API ParArrayPtr
 Init_ParArray(WChar *name, NameSpecifier *modeList, int (* GetNumPars)(int),
   BOOLN (* CheckPars)(ParArrayPtr, SignalDataPtr))
 {
@@ -153,7 +153,7 @@ Init_ParArray(WChar *name, NameSpecifier *modeList, int (* GetNumPars)(int),
  * It returns FALSE if it fails in any way.
  */
 
-BOOLN
+DSAM_API BOOLN
 CheckInit_ParArray(ParArrayPtr parArray, const WChar *callingFunction)
 {
 	static const WChar	*funcName = wxT("CheckInit_ParArray");
@@ -219,7 +219,7 @@ SetUniParList_ParArray(ParArrayPtr parArray)
  * This routine sets the mode for a parameter array list.
  */
 
-BOOLN
+DSAM_API BOOLN
 SetMode_ParArray(ParArrayPtr parArray, const WChar *modeName)
 {
 	static const WChar *funcName = wxT("SetMode_ParArray");
@@ -293,7 +293,7 @@ SetIndividualPar_ParArray(ParArrayPtr parArray, int theIndex, Float parValue)
  * This routine prints the parameters associated with a ParArray data structure.
  */
 
-void
+DSAM_API void
 PrintPars_ParArray(ParArrayPtr parArray)
 {
 	static const WChar *funcName = wxT("PrintPars_ParArray");
