@@ -192,7 +192,6 @@ FindTokenInst(int inst, Token *p)
 TokenPtr
 FindArrayLimit(TokenPtr pc, char *variableName)
 {
-	static char *funcName = "FindArrayLimit";
 	TokenPtr	p, arrayLimit, arrayType, arrayIdentifierList[MAX_IDENTIFIERS];
 	TokenPtr	pStart, *list, type, identifierList[MAX_IDENTIFIERS];
 

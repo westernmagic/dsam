@@ -5,11 +5,12 @@
 mod_name		BasilarM;
 qualifier		Cooke;
 proc_routine	RunModel;
+process_vars	true;
 
 typedef struct {
 
-	CFListPtr	theCFs;
-	double		broadeningCoeff;
+	Float		broadeningCoeff;
 	NameSpecifier outputMode;
+	CFListPtr	theCFs;
 
 } BM0Cooke;

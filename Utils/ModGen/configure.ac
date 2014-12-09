@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_REVISION($Revision: 2.13)
-AC_INIT(MODGEN, 1.7.6)
+AC_INIT(MODGEN, 1.7.7)
 AC_CONFIG_AUX_DIR(CfgTools)
 
 AC_CANONICAL_SYSTEM
@@ -17,7 +17,7 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #
 MODGEN_MAJOR_VERSION=1
 MODGEN_MINOR_VERSION=7
-MODGEN_MICRO_VERSION=6
+MODGEN_MICRO_VERSION=7
 MODGEN_BINARY_AGE=0
 
 dnl
@@ -61,7 +61,6 @@ AC_PROG_YACC
 dnl Checks for libraries.
 
 dnl Checks for header files.
-AM_C_PROTOTYPES
 AC_HEADER_STDC
 AC_EXEEXT
 AC_OBJEXT
@@ -70,6 +69,23 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
+
+dnl ----------------------------------------------------------------------------
+dnl debug option
+dnl ----------------------------------------------------------------------------
+
+AC_ARG_ENABLE(debug,
+	[  --enable-debug          Turn on full debugging options],
+	[case ${enableval} in
+		yes)
+			debugFlags="-ggdb3 -Wall"
+			debug=true
+			CFLAGS="${debugFlags} -Wstrict-prototypes"
+			CXXFLAGS=${debugFlags}
+			;;
+		no)		debug=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
+	esac], [debug=false])
 
 AC_OUTPUT(
 	modgen.spec

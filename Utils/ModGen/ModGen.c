@@ -45,8 +45,7 @@
 void
 TestProcess(char *baseName)
 {
-	static char	*moduleName = "PureTone", *qualifier = "Multi";
-	static char	*structure = "MPureTone", *headerFile = "StMPTone.h";
+	static *headerFile = "StMPTone.h";
 	int		i;
 
 	PrintTokens(pc);
@@ -182,12 +181,12 @@ main(int argc, char * argv[])
 		return 1;
 	}
 	if ((fpIn = fopen(fileName, "r")) == NULL) {
-		fprintf(stderr, "ModuleProducer: could not open module file\n",
+		fprintf(stderr, "ModuleProducer: could not open module file '%s'\n",
 		  fileName);
 		 return 1;
 	}
 	if (yyparse() == 1) {
-		fprintf(stderr, "ModuleProducer: exit with error\n", fileName);
+		fprintf(stderr, "ModuleProducer: exit from '%s' with error\n", fileName);
 		return 1;
 	}
 	fclose(fpIn);

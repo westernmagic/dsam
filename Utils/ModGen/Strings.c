@@ -109,7 +109,7 @@ PrintAndAdjustLine(FILE *fp, char *prefix, char *string, char *eol,
   BOOLN clearLeadingSpace)
 {
 	int	numChars = 0;
-	char	*p, *pp;
+	char	*p;
 
 	for (p = string; (*p != '\0') && (p < eol); p++)
 		fputc(*p, fp);
@@ -119,7 +119,7 @@ PrintAndAdjustLine(FILE *fp, char *prefix, char *string, char *eol,
 		for (; (*p != '\0') && isspace(*p); p++)
 			;
 	for (*string = '\0'; *prefix != '\0'; prefix++)
-		pp = AddChar(string, *prefix, &numChars, FALSE);
+		AddChar(string, *prefix, &numChars, FALSE);
 	for (; *p != '\0'; p++)
 			AddChar(string, *p, &numChars, FALSE);
 	return(numChars);
@@ -432,11 +432,11 @@ PluralToSingular(char *string)
 	struct	conversion {
 		char *plural, *singular;
 	} convTable[] = {
-		"IES", "Y",
-		"ies", "y",
-		"S", "",
-		"s", "",
-		"", ""
+			{"IES", "Y"},
+			{"ies", "y"},
+			{"S", ""},
+			{"s", ""},
+			{"", ""}
 	};
 	
 	if (strlen(string) >= MAXLINE)

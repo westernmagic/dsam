@@ -87,7 +87,7 @@ static struct {
 /****************************** Init ******************************************/
 
 /*
- * installs constanst and built-ins in table.
+ * installs constants and built-ins in table.
  */
 
 void

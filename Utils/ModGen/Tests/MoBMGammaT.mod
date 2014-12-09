@@ -5,9 +5,11 @@
 mod_name		BasilarM;
 qualifier		GammaT;
 proc_routine	RunModel;
+process_vars	true;
 
 typedef struct {
 
+	BoolSpecifier		interleaveMode;
 	int			order;		/* Defines the Q value of the gamma tone filters.*/
 	CFListPtr	theCFs;		/* Pointer to centre frequency structure. */
 

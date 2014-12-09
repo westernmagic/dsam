@@ -58,7 +58,7 @@ PrintHeaderIncludes(FILE *fp)
 
 	/* Name specifier header */
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); )
 		for (list = identifierList; *list != 0; list++)
 			if (type->sym->type == NAMESPECIFIER) {
 				fprintf(fp, "#include \"UtNameSpecs.h\"\n\n");
@@ -81,8 +81,8 @@ PrintConstantDefinitions(FILE *fp)
 
 	/* Number of parameters - required by the Universal parameter handling. */
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next, count = 0; p = GetType_IdentifierList(&type,
-	  identifierList, p); )
+	for (p = p->next, count = 0; (p = GetType_IdentifierList(&type,
+	  identifierList, p)); )
 		for (list = identifierList; *list != 0; list++)
 			count++;
 	fprintf(fp, "#define %s_NUM_PARS\t\t\t%d\n\n", CreateBaseModuleName(module,
@@ -108,7 +108,7 @@ PrintParSpecifierEnumDefinition(FILE *fp)
 	baseModuleName = CreateBaseModuleName(module, qualifier, TRUE);
 	fprintf(fp, "typedef enum {\n\n");
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); ) {
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); ) {
 		if (placeComma) {
 			fprintf(fp, ",\n");
 			placeComma = FALSE;
@@ -146,7 +146,7 @@ PrintNameSpecifierEnumDefinition(FILE *fp)
 	Token	*p, *type, *identifierList[MAX_IDENTIFIERS], **list;
 
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); )
 		for (list = identifierList; *list != 0; list++)
 			if (type->sym->type == NAMESPECIFIER) {
 				sprintf(nameSpecBase, "%s_%s_", CreateBaseModuleName(module,
@@ -170,7 +170,6 @@ PrintNameSpecifierEnumDefinition(FILE *fp)
 void
 PrintExpandedStructure(FILE *fp)
 {
-	char	line[MAXLINE], variable[MAXLINE];
 	Token	*p, *type, *identifierList[10], **list;
 
 	fprintf(fp, "typedef struct {\n\n");
@@ -181,7 +180,7 @@ PrintExpandedStructure(FILE *fp)
 
 	/* Parameters */
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); ) {
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); ) {
 		fprintf(fp, "\t");
 		switch (type->sym->type){
 		case BOOLSPECIFIER:
@@ -220,7 +219,7 @@ PrintExpandedStructure(FILE *fp)
 	fprintf(fp, "\t/* Private members */\n");
 	/* Name Specifiers */
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); )
 		for (list = identifierList; *list != 0; list++)
 			switch (type->sym->type) {
 			case DATUMPTR:

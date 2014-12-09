@@ -94,7 +94,7 @@ PrintIncludeFiles(FILE *fp, char *headerFileName)
 	fprintf(fp, "#include \"FiParFile.h\"\n");
 
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); )
 		for (list = identifierList; *list != 0; list++) {
 			if ((type->sym->type == BOOLSPECIFIER) &&
 			  !nameSpecListsHeaderPlaced) {
@@ -159,7 +159,7 @@ PrintNameSpecInitListRoutines(FILE *fp)
 	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list;
 
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); )
 		for (list = identifierList; *list != 0; list++)
 			if (type->sym->type == NAMESPECIFIER) {
 				sprintf(strVariable, "%s%s", GetName((*list)->sym),
@@ -323,7 +323,7 @@ PrintFreeRoutine(FILE *fp)
 		  qualifier));
 	/* Free pointers. */
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); )
 		for (list = identifierList; *list != 0; list++)
 			if (((*list)->inst == POINTER) && (type->sym->type != CHAR) &&
 			  (type->sym->type != WCHAR)) {
@@ -365,11 +365,11 @@ void
 PrintInitRoutine(FILE *fp)
 {
 	static char	*function = "Init";
-	BOOLN	firstParArrayFlag = TRUE, printSetDefaults = FALSE;
+	BOOLN	printSetDefaults = FALSE;
 	char	*funcName, *funcDeclaration;
-	char	initListFunc[MAXLINE], defaultsFunction[MAXLINE];
+	char	defaultsFunction[MAXLINE];
 	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list, arrayLimit;
-	TokenPtr	pStart, arrayType, arrayIdentifierList[MAX_IDENTIFIERS];
+	TokenPtr	arrayType, arrayIdentifierList[MAX_IDENTIFIERS];
 	Symbol	*limitSym;
 
 	PrintLineCommentHeading(fp, function);
@@ -413,7 +413,7 @@ PrintInitRoutine(FILE *fp)
 
 	/* Public parameters */
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); )
 		for (list = identifierList; *list != 0; list++) {
 			if (type->sym->type == PARARRAY) {
 				Print(fp, "\t  ", "\tif ((");
@@ -485,8 +485,7 @@ PrintInitRoutine(FILE *fp)
 	for (arrayLimit = pc; (arrayLimit = FindTokenType(INT_AL, arrayLimit));
 	  arrayLimit = arrayLimit->next) {
 		printSetDefaults = TRUE;
-		pStart = GetType_IdentifierList(&arrayType, arrayIdentifierList,
-		  arrayLimit);
+		GetType_IdentifierList(&arrayType, arrayIdentifierList, arrayLimit);
 		limitSym = arrayIdentifierList[0]->sym;
 		sprintf(defaultsFunction, "SetDefault%sArrays", Capital(
 		  GetName(limitSym)));
@@ -571,7 +570,7 @@ PrintSetUniParListRoutine(FILE *fp)
 	fprintf(fp, "\t}\n");
 	fprintf(fp, "\tpars = %s->parList->pars;\n", ptrVar);
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); )
 		for (list = identifierList; *list != 0; list++) {
 			fprintf(fp, "\tSetPar_UniParMgr(&pars[%s_%s], wxT(\"\"),\n",
 			  baseModuleName, UpperCase(DT_TO_SAMPLING_INTERVAL(
@@ -675,7 +674,7 @@ CreateSetParsArguments(BOOLN justNames)
 	length = 0;
 	extraChars = strlen(",  ");
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); )
 		for (list = identifierList; *list != 0; list++) {
 			length += strlen(GetTypeFormatStr(type->sym, TRUE)) + strlen(
 			  DT_TO_SAMPLING_INTERVAL(GetName((*list)->sym))) + extraChars;
@@ -685,7 +684,7 @@ CreateSetParsArguments(BOOLN justNames)
 	string = (char *) emalloc(length + 1);
 	*string = '\0';
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); )
 		for (list = identifierList; *list != 0; list++) {
 			 if (*string != '\0')
 				strcat(string, ", ");
@@ -840,7 +839,7 @@ PrintPrintParsRoutine(FILE *fp)
 		PrintArrayListVars(fp, arrayLimit);
 	}
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); )
 		for (list = identifierList; *list != 0; list++)
 			if (type->sym->type == CFLISTPTR)
 				fprintf(fp, "\tPrintPars_CFList(%s->%s);\n", ptrVar,
@@ -1375,10 +1374,10 @@ PrintProcessRoutine(FILE *fp)
 		  "variables.\"),\n\t\t  funcName);\n");
 		fprintf(fp, "\t\t\treturn(FALSE);\n");
 		fprintf(fp, "\t\t}\n");
-		fprintf(fp, "\t\tif (data->initThreadRunFlag)\n");
-		fprintf(fp, "\t\t\treturn(TRUE);\n");
-		fprintf(fp, "\t}\n");
 	}
+	fprintf(fp, "\t\tif (data->initThreadRunFlag)\n");
+	fprintf(fp, "\t\t\treturn(TRUE);\n");
+	fprintf(fp, "\t}\n");
 
 	fprintf(fp, "\toutSignal = _OutSig_EarObject(data);\n");
 	fprintf(fp, "\tfor (chan = outSignal->offset; chan < outSignal->numChannels; "
@@ -1483,7 +1482,7 @@ PrintSetFunction(FILE *fp, TokenPtr token, TokenPtr type,
 		break;
 	case SET_BANDWIDTHS_ROUTINE:
 		variableName = PluralToSingular(GetName(token->sym));
-		sprintf(function, "SetBandWidths", Capital(variableName));
+		sprintf(function, "SetBandWidths");
 		sprintf(funcArguments, "WChar *theBandwidthMode, double *theBandwidths");
 		assignmentString[0] = '\0';
 		break;
@@ -1658,7 +1657,7 @@ PrintSetFunctions(FILE *fp)
 	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list;
 
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); )
 		for (list = identifierList; *list != 0; list++) {
 			PrintSetFunction(fp, *list, type, SET_STANDARD_ROUTINE);
 			if (((*list)->inst == POINTER) && FindArrayLimit(pc,
@@ -1685,7 +1684,7 @@ PrintGetFunctions(FILE *fp)
 	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list;
 
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); )
 		for (list = identifierList; *list != 0; list++) {
 			if (type->sym->type == CFLISTPTR) {
 				strcpy(function, "GetCFListPtr");
@@ -1733,7 +1732,7 @@ PrintGetNumXParsRoutines(FILE *fp)
 	TokenPtr	p, type, identifierList[MAX_IDENTIFIERS], *list;
 
 	p = FindTokenType(STRUCT, pc);
-	for (p = p->next; p = GetType_IdentifierList(&type, identifierList, p); )
+	for (p = p->next; (p = GetType_IdentifierList(&type, identifierList, p)); )
 		for (list = identifierList; *list != 0; list++) {
 			if (type->sym->type == PARARRAY) {
 				sprintf(function, "GetNum%sPars", Capital(GetName((*list)->
