@@ -5,6 +5,7 @@
 mod_name		IHC;
 qualifier		Cooke91;
 proc_routine	RunModel;
+process_vars	true;
 
 typedef struct {
 

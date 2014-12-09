@@ -5,6 +5,7 @@
 
 mod_name		Utility;
 qualifier		ShapePulse;
+process_vars	true;
 typedef struct {
 
 	Float	eventThreshold;

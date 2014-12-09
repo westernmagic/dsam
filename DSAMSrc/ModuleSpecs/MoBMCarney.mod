@@ -4,6 +4,7 @@
 
 mod_name		BasilarM;
 qualifier		Carney;
+process_vars	true;
 proc_routine	RunModel;
 
 typedef struct {

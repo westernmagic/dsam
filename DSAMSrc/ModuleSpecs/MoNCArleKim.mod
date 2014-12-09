@@ -5,6 +5,7 @@
 mod_name		Neuron;
 qualifier		ArleKim;
 proc_routine	RunModel;
+process_vars	true;
 typedef struct {
 
 	Float	membraneTConst_Tm;	/* Membrane time constant (s). */	

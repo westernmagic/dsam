@@ -6,6 +6,7 @@
 mod_name		Filter;
 qualifier		MultiBPass;
 proc_routine	RunModel;
+process_vars	true;
 typedef struct {
 
 	int_al	numFilters;

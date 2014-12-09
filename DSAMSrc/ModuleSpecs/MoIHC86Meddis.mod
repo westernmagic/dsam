@@ -5,6 +5,7 @@
 mod_name		IHC;
 qualifier		Meddis86;
 proc_routine	RunModel;
+process_vars	true;
 
 typedef struct {
 

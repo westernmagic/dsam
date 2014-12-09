@@ -4,6 +4,7 @@
 
 mod_name		Utility;
 qualifier		RefractoryAdjust;
+process_vars	true;
 typedef struct {
 
 	Float	refractoryPeriod;

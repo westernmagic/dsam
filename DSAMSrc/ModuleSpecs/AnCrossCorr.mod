@@ -4,6 +4,7 @@
 mod_name		Analysis;
 qualifier		CCF;
 proc_routine	Calc;
+process_vars	true;
 typedef struct {
 
 	Float	timeOffset;

@@ -5,6 +5,7 @@
 mod_name		IHCRP;
 qualifier		Meddis;
 proc_routine	RunModel;
+process_vars	true;
 
 typedef struct {
 

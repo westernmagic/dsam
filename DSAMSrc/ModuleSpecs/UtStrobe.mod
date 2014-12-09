@@ -4,6 +4,7 @@
 
 mod_name		Utility;
 qualifier		Strobe;
+process_vars	true;
 typedef struct {
 
 	int		typeMode;

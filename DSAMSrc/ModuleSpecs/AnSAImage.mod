@@ -4,6 +4,7 @@
 
 mod_name		Analysis;
 qualifier		SAI;
+process_vars	true;
 typedef struct {
 
 	NameSpecifier	diagnosticMode;

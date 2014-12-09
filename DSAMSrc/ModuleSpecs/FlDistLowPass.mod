@@ -5,9 +5,10 @@
 mod_name		Filter;
 qualifier		DLowPass;
 proc_routine	RunModel;
+process_vars	true;
 typedef struct {
 
-	int		mode;
+	NameSpecifier	mode;
 	Float	signalMultiplier;	/* potential mV */
 	ParArrayPtr	freqDistr;
 

@@ -13,6 +13,7 @@
 mod_name		Analysis;
 qualifier		Histogram;
 proc_routine	Calc;
+process_vars	true;
 typedef struct {
 
 	NameSpecifier	detectionMode;

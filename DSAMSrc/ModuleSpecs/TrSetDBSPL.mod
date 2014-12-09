@@ -3,6 +3,7 @@
 
 mod_name		Transform;
 qualifier		SetDBSPL;
+process_vars	true;
 typedef struct {
 
 	Float	timeOffset;

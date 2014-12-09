@@ -1,6 +1,7 @@
 /* This is a module specifiction file for the DataFile module */
 mod_name		DataFile;
 proc_routine	ReadSignal;
+process_vars	true;
 typedef struct {
 
 	char	*name;			/* [MAX_FILE_PATH] */

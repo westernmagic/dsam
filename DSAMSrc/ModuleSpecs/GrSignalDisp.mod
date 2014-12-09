@@ -1,6 +1,7 @@
 /* This is a module specifiction file for the DataFile module */
 mod_name		SignalDisp;
 proc_routine	ShowSignal;
+process_vars	true;
 typedef struct {
 
 	/* Signal Controls */

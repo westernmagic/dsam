@@ -4,6 +4,7 @@
 mod_name		Filter;
 qualifier		BandPass;
 proc_routine	RunModel;
+process_vars	true;
 typedef struct {
 
 	int		cascade;

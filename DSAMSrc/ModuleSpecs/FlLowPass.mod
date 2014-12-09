@@ -5,6 +5,7 @@
 mod_name		Filter;
 qualifier		LowPass;
 proc_routine	RunModel;
+process_vars	true;
 typedef struct {
 
 	int		mode;
