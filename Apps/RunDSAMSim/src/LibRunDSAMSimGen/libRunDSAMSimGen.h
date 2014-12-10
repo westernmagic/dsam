@@ -78,7 +78,7 @@ extern SignalDataPtr	outSignal;
 __BEGIN_DECLS
 
 LIBRUNDSAMSIMGEN_API SignalDataPtr	RunDSAMSim(WChar *simFile,
-										WChar *parameterOptions = wxT(""),
+										WChar *parameterOptions = (WChar *) wxT(""),
 										SignalDataPtr inSignal = NULL);
 
 __END_DECLS
