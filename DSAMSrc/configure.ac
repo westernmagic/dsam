@@ -1,13 +1,13 @@
 #######################
 ##
-## File:		configure.ac
-## Purpose:		
-## Comments:	CVS ID $Id$
-##				Process this file with autoconf to produce a configure script.
-## Author:		L. P. O'Mard
-## Created:		19 Nov 2006
+## File:        configure.ac
+## Purpose:     
+## Comments:    CVS ID $Id$
+##              Process this file with autoconf to produce a configure script.
+## Author:      L. P. O'Mard
+## Created:     19 Nov 2006
 ## Updated:
-## Copyright:	(c) 2006, 2010 Lowel P. O'Mard
+## Copyright:   (c) 2006, 2010 Lowel P. O'Mard
 ##
 #######################
 ##
@@ -32,6 +32,7 @@ AC_REVISION($Revision: 2.61)
 
 AC_INIT(DSAM, 2.8.47)
 AC_CONFIG_AUX_DIR(CfgTools)
+AC_CONFIG_MACRO_DIRS([m4])
 
 AC_CANONICAL_TARGET
 
@@ -56,7 +57,7 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 # +1 : ? : 0   == new interface that breaks old one
 #  ? : ? : 0   == no new interfaces, but breaks apps
 #  ? :+1 : ?   == just some internal changes, nothing breaks but might work
-#		  better
+#         better
 # CURRENT: REVISION : AGE
 #
 DSAM_MAJOR_VERSION=2
@@ -188,17 +189,17 @@ dnl -
 dnl ============================================================================
 
 if test $host != $build; then
-	if test "$host_alias" != NONE; then
-		CC=$host_alias-gcc
-		CXX=$host_alias-c++
-		AR=$host_alias-ar
-		RANLIB=$host_alias-ranlib
-		DLLTOOL=$host_alias-dlltool
-		LD=$host_alias-ld
-		NM=$host_alias-nm
-		STRIP=$host_alias-strip
-		WX_CONFIG=$host_alias-wx-config
-	fi
+    if test "$host_alias" != NONE; then
+        CC=$host_alias-gcc
+        CXX=$host_alias-c++
+        AR=$host_alias-ar
+        RANLIB=$host_alias-ranlib
+        DLLTOOL=$host_alias-dlltool
+        LD=$host_alias-ld
+        NM=$host_alias-nm
+        STRIP=$host_alias-strip
+        WX_CONFIG=$host_alias-wx-config
+    fi
 fi
 
 dnl Initialize maintainer mode
@@ -301,17 +302,17 @@ dnl debug option
 dnl ----------------------------------------------------------------------------
 
 AC_ARG_ENABLE(debug,
-	[  --enable-debug          Turn on full debugging options],
-	[case ${enableval} in
-		yes)
-			debugFlags="-ggdb3 -Wall"
-			debug=true
-			CFLAGS="${debugFlags} -Wstrict-prototypes"
-			CXXFLAGS=${debugFlags}
-			;;
-		no)		debug=false ;;
-		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
-	esac], [debug=false])
+    [  --enable-debug          Turn on full debugging options],
+    [case ${enableval} in
+        yes)
+            debugFlags="-ggdb3 -Wall"
+            debug=true
+            CFLAGS="${debugFlags} -Wstrict-prototypes"
+            CXXFLAGS=${debugFlags}
+            ;;
+        no)     debug=false ;;
+        *)  AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
+    esac], [debug=false])
 
 dnl ============================================================================
 dnl Checks for types
@@ -352,9 +353,9 @@ dnl ============================================================================
 
 AC_MSG_CHECKING(for CHIMP environment variables)
 if test $CHIMPHOME && test $CHIMP_LIB; then
-	mpiAvailable=yes
+    mpiAvailable=yes
 else
-	mpiAvailable=no
+    mpiAvailable=no
 fi
 AC_MSG_RESULT($mpiAvailable)
 
@@ -366,7 +367,7 @@ AC_C_CONST
 AC_STRUCT_TM
 AC_PROG_CXX
 AC_LANG_CPLUSPLUS
-dnl	AC_PROG_CXX must come before AC_LANG_CPLUSPLUS or autogen.sh fails under the
+dnl AC_PROG_CXX must come before AC_LANG_CPLUSPLUS or autogen.sh fails under the
 dnl new automake
 
 dnl ============================================================================
@@ -391,18 +392,18 @@ dnl debug option
 dnl ----------------------------------------------------------------------------
 
 AC_ARG_ENABLE(dmalloc,
-	[  --enable-dmalloc        Use DMalloc for debugging.],
-	[case ${enableval} in
-		yes)
-			if test x$debug = xfalse; then
-				AC_MSG_ERROR(--enable-debug must also be used!)
-			fi
-			dmalloc=true
-			;;
-		no)		dmalloc=false ;;
-		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-dmalloc) ;;
-	esac], [dmalloc=false])
-	AM_CONDITIONAL(DMALLOC, test x$dmalloc = xtrue)
+    [  --enable-dmalloc        Use DMalloc for debugging.],
+    [case ${enableval} in
+        yes)
+            if test x$debug = xfalse; then
+                AC_MSG_ERROR(--enable-debug must also be used!)
+            fi
+            dmalloc=true
+            ;;
+        no)     dmalloc=false ;;
+        *)  AC_MSG_ERROR(bad value ${enableval} for --enable-dmalloc) ;;
+    esac], [dmalloc=false])
+    AM_CONDITIONAL(DMALLOC, test x$dmalloc = xtrue)
 
 dnl ----------------------------------------------------------------------------
 dnl wxWin library (General)
@@ -410,13 +411,13 @@ dnl ----------------------------------------------------------------------------
 
 wxwinAvailable=no
 if test x$gui = xyes -o x$DSAM_EXT = xyes; then
-	AC_MSG_CHECKING([for WXWIN configuration shell script ($WX_CONFIG)])
-	if eval "$WX_CONFIG --version 2> config.log > /dev/null"; then
-		wxwinAvailable=yes
-		wx_version=`$WX_CONFIG --version | cut -d. -f 1-2`
-		wx_basename=`$WX_CONFIG --basename`
-	fi
-	AC_MSG_RESULT($wxwinAvailable)
+    AC_MSG_CHECKING([for WXWIN configuration shell script ($WX_CONFIG)])
+    if eval "$WX_CONFIG --version 2> config.log > /dev/null"; then
+        wxwinAvailable=yes
+        wx_version=`$WX_CONFIG --version | cut -d. -f 1-2`
+        wx_basename=`$WX_CONFIG --basename`
+    fi
+    AC_MSG_RESULT($wxwinAvailable)
 fi
 
 dnl ----------------------------------------------------------------------------
@@ -424,39 +425,39 @@ dnl wxBase library
 dnl ----------------------------------------------------------------------------
 
 if test x$DSAM_EXT = xyes -a x$wxwinAvailable = xyes; then
-	CXXFLAGS_save=$CXXFLAGS
-	CXXFLAGS=`$WX_CONFIG --cxxflags base`
-	LIBS_save=$LIBS
-	LIBS=`$WX_CONFIG --libs base`
-	AC_MSG_CHECKING([for wxWidgets base support for threaded extensions])
-	AC_LINK_IFELSE(
-		[
-			AC_LANG_PROGRAM(
-				[
-					#include <wx/wx.h>
-					#include <wx/thread.h>
+    CXXFLAGS_save=$CXXFLAGS
+    CXXFLAGS="`$WX_CONFIG --cxxflags base` $lt_cv_prog_compiler_pic"
+    LIBS_save=$LIBS
+    LIBS=`$WX_CONFIG --libs base`
+    AC_MSG_CHECKING([for wxWidgets base support for threaded extensions])
+    AC_LINK_IFELSE(
+        [
+            AC_LANG_PROGRAM(
+                [
+                    #include <wx/wx.h>
+                    #include <wx/thread.h>
 
-					class MyThread: public wxThread {
-					public:
-					  MyThread(void): wxThread()	{ Create(); }
-					  virtual  ExitCode Entry()	{ return (ExitCode) 1; }
-					};
-				],
-				[
-					MyThread	*thread = new MyThread();
-				]
-			)
-		],
-		[
-			wx_base_available=yes
-		],
-		[
-			wx_base_available=no
-		]
-	)
-	AC_MSG_RESULT($wx_base_available);
-	CXXFLAGS=$CXXFLAGS_save
-	LIBS=$LIBS_save
+                    class MyThread: public wxThread {
+                    public:
+                      MyThread(void): wxThread()    { Create(); }
+                      virtual  ExitCode Entry() { return (ExitCode) 1; }
+                    };
+                ],
+                [
+                    MyThread    *thread = new MyThread();
+                ]
+            )
+        ],
+        [
+            wx_base_available=yes
+        ],
+        [
+            wx_base_available=no
+        ]
+    )
+    AC_MSG_RESULT($wx_base_available);
+    CXXFLAGS=$CXXFLAGS_save
+    LIBS=$LIBS_save
 fi
 
 dnl ----------------------------------------------------------------------------
@@ -464,41 +465,41 @@ dnl wxWidgets GUI library
 dnl ----------------------------------------------------------------------------
 
 if test x$gui = xyes -a x$wxwinAvailable = xyes; then
-	AC_MSG_CHECKING([for wxWidgets GUI support])
-	CXXFLAGS_save=$CXXFLAGS
-	CXXFLAGS=`$WX_CONFIG --cxxflags`
-	LIBS_save=$LIBS
-	LIBS=`$WX_CONFIG --libs html,adv,core,base,ogl,net,xml`
-	AC_LINK_IFELSE(
-		[
-			AC_LANG_SOURCE(
-				[
-					#include "wx/wx.h"
+    AC_MSG_CHECKING([for wxWidgets GUI support])
+    CXXFLAGS_save=$CXXFLAGS
+    CXXFLAGS="`$WX_CONFIG --cxxflags` $lt_cv_prog_compiler_pic"
+    LIBS_save=$LIBS
+    LIBS=`$WX_CONFIG --libs html,adv,core,base,ogl,net,xml`
+    AC_LINK_IFELSE(
+        [
+            AC_LANG_SOURCE(
+                [
+                    #include "wx/wx.h"
 
-					class MyApp : public wxApp
-					{
-						public:
-						virtual bool OnInit();
-					};
+                    class MyApp : public wxApp
+                    {
+                        public:
+                        virtual bool OnInit();
+                    };
 
-					IMPLEMENT_APP(MyApp)
-					bool MyApp::OnInit()
-					{
-						return true;
-					}
-				]
-			)
-		],
-		[
-			using_wxWidgets_gui=yes
-		],
-		[
-			using_wxWidgets_gui=no
-		]
-	)
-	AC_MSG_RESULT($using_wxWidgets_gui);
-	CXXFLAGS=$CXXFLAGS_save
-	LIBS=$LIBS_save
+                    IMPLEMENT_APP(MyApp)
+                    bool MyApp::OnInit()
+                    {
+                        return true;
+                    }
+                ]
+            )
+        ],
+        [
+            using_wxWidgets_gui=yes
+        ],
+        [
+            using_wxWidgets_gui=no
+        ]
+    )
+    AC_MSG_RESULT($using_wxWidgets_gui);
+    CXXFLAGS=$CXXFLAGS_save
+    LIBS=$LIBS_save
 fi
 
 dnl ----------------------------------------------------------------------------
@@ -506,43 +507,43 @@ dnl wx OGL library
 dnl ----------------------------------------------------------------------------
 
 if test x$WX_OGL = xyes -a x$using_wxWidgets_gui = xyes; then
-	AC_MSG_CHECKING([for wxWidgets OGL support])
-	CXXFLAGS_save=$CXXFLAGS
-	CXXFLAGS=`$WX_CONFIG --cxxflags`
-	LIBS_save=$LIBS
-	LIBS=`$WX_CONFIG --libs core,ogl`
-	AC_LINK_IFELSE(
-		[
-			AC_LANG_SOURCE(
-				[
-					#include "wx/wx.h"
-					#include <wx/ogl/ogl.h>
+    AC_MSG_CHECKING([for wxWidgets OGL support])
+    CXXFLAGS_save=$CXXFLAGS
+    CXXFLAGS="`$WX_CONFIG --cxxflags` $lt_cv_prog_compiler_pic"
+    LIBS_save=$LIBS
+    LIBS=`$WX_CONFIG --libs core,ogl`
+    AC_LINK_IFELSE(
+        [
+            AC_LANG_SOURCE(
+                [
+                    #include "wx/wx.h"
+                    #include <wx/ogl/ogl.h>
 
-					class MyApp : public wxApp
-					{
-						public:
-						virtual bool OnInit();
-					};
+                    class MyApp : public wxApp
+                    {
+                        public:
+                        virtual bool OnInit();
+                    };
 
-					IMPLEMENT_APP(MyApp)
-					bool MyApp::OnInit()
-					{
-						wxShapeEvtHandler	*handler = new wxShapeEvtHandler();
-						return true;
-					}
-				]
-			)
-		],
-		[
-			using_wxWidgets_ogl=yes
-		],
-		[
-			using_wxWidgets_ogl=no
-		]
-	)
-	AC_MSG_RESULT($using_wxWidgets_ogl);
-	CXXFLAGS=$CXXFLAGS_save
-	LIBS=$LIBS_save
+                    IMPLEMENT_APP(MyApp)
+                    bool MyApp::OnInit()
+                    {
+                        wxShapeEvtHandler   *handler = new wxShapeEvtHandler();
+                        return true;
+                    }
+                ]
+            )
+        ],
+        [
+            using_wxWidgets_ogl=yes
+        ],
+        [
+            using_wxWidgets_ogl=no
+        ]
+    )
+    AC_MSG_RESULT($using_wxWidgets_ogl);
+    CXXFLAGS=$CXXFLAGS_save
+    LIBS=$LIBS_save
 fi
 
 dnl ----------------------------------------------------------------------------
@@ -551,12 +552,12 @@ dnl ----------------------------------------------------------------------------
 
 
 if test x$enable_portaudio = xyes; then
-	PKG_CHECK_MODULES(PORTAUDIO, portaudio-2.0 >= 19, ac_cv_portaudio=1, ac_cv_portaudio=0)
-	AC_DEFINE_UNQUOTED([HAVE_PORTAUDIO],${ac_cv_portaudio},
-		[Set to 1 if you have portaudio development environment.])
-	
-	AC_SUBST(PORTAUDIO_CFLAGS)
-	AC_SUBST(PORTAUDIO_LIBS)
+    PKG_CHECK_MODULES(PORTAUDIO, portaudio-2.0 >= 19, ac_cv_portaudio=1, ac_cv_portaudio=0)
+    AC_DEFINE_UNQUOTED([HAVE_PORTAUDIO],${ac_cv_portaudio},
+        [Set to 1 if you have portaudio development environment.])
+    
+    AC_SUBST(PORTAUDIO_CFLAGS)
+    AC_SUBST(PORTAUDIO_LIBS)
 fi
 
 dnl ----------------------------------------------------------------------------
@@ -565,7 +566,7 @@ dnl ----------------------------------------------------------------------------
 
 PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.2, ac_cv_sndfile=1, ac_cv_sndfile=0)
 AC_DEFINE_UNQUOTED([HAVE_SNDFILE],${ac_cv_sndfile},
-	[Set to 1 if you have libsndfile.])
+    [Set to 1 if you have libsndfile.])
 
 AC_SUBST(SNDFILE_CFLAGS)
 AC_SUBST(SNDFILE_LIBS)
@@ -576,14 +577,14 @@ dnl fftw3 library
 dnl ----------------------------------------------------------------------------
 
 if test x$use_float = xyes; then
-	FFTW3LIB=fftw3f
+    FFTW3LIB=fftw3f
 else
-	FFTW3LIB=fftw3
+    FFTW3LIB=fftw3
 fi
 
 PKG_CHECK_MODULES(FFTW3, $FFTW3LIB >= 3.0.0, ac_cv_fftw3=1, ac_cv_fftw3=0)
 AC_DEFINE_UNQUOTED([HAVE_FFTW3],${ac_cv_fftw3},
-	[Set to 1 if you have fftw3.])
+    [Set to 1 if you have fftw3.])
 
 AC_SUBST(FFTW3_CFLAGS)
 AC_SUBST(FFTW3_LIBS)
@@ -596,25 +597,25 @@ dnl ----------------------------------------------------------------------------
 no_MPI_Environment="Cannot enable MPI support - CHIMPHOME and CHIMP_LIB\
  environment variables must be set!"
 AC_ARG_ENABLE(parallel,
-	[  --enable-parallel=ARG   Enable DSAM parallel support [ARG=no]],
-	[parallel=${enableval}
-	if test x$mpiAvailable = xyes; then
-		DSAM_DEFS="$DSAM_DEFS -DMPI_SUPPORT=1"
-		mpi=true
-		LIBDSAMM=libdsam_m.la
-		PAWORKER1M=PaWorker1m.exe
-	else
-		AC_MSG_ERROR($no_MPI_Environment)
-	fi
-	], [ mpi=no ])
+    [  --enable-parallel=ARG   Enable DSAM parallel support [ARG=no]],
+    [parallel=${enableval}
+    if test x$mpiAvailable = xyes; then
+        DSAM_DEFS="$DSAM_DEFS -DMPI_SUPPORT=1"
+        mpi=true
+        LIBDSAMM=libdsam_m.la
+        PAWORKER1M=PaWorker1m.exe
+    else
+        AC_MSG_ERROR($no_MPI_Environment)
+    fi
+    ], [ mpi=no ])
 
 dnl ----------------------------------------------------------------------------
 dnl Unicode option
 dnl ----------------------------------------------------------------------------
 
 if test x$enable_unicode = xyes; then
-	AC_DEFINE(DSAM_USE_UNICODE, 1, [Use unicode options])
-	DSAM_DEFS="$DSAM_DEFS -DDSAM_USE_UNICODE=1"
+    AC_DEFINE(DSAM_USE_UNICODE, 1, [Use unicode options])
+    DSAM_DEFS="$DSAM_DEFS -DDSAM_USE_UNICODE=1"
 fi
 AM_CONDITIONAL(DSAM_USE_UNICODE, test x$enable_unicode = xyes)
 
@@ -623,57 +624,57 @@ dnl General option settings.
 dnl ----------------------------------------------------------------------------
 
 if test x$wxwinAvailable = xyes; then
-	AC_PROG_CXX
-	AC_PROG_CXXCPP
+    AC_PROG_CXX
+    AC_PROG_CXXCPP
 fi
 
 if test x$wx_base_available = xyes; then
-	AC_DEFINE(USE_EXTENSIONS_LIBRARY, 1, 'Use Extensions Support")
-	DSAM_DEFS="$DSAM_DEFS -DEXTENSIONS_SUPPORT=1"
-	DSAMEXTLIB="-l${DSAM_PACKAGE}_ext"
-	AC_SUBST(DSAMEXTLIB)
-	WX_BASE_CXXFLAGS="`$WX_CONFIG --cxxflags base`"
-	AC_SUBST(WX_BASE_CXXFLAGS)
-	WX_BASE_LIBS="`$WX_CONFIG --libs base,net,xml`"
-	AC_SUBST(WX_BASE_LIBS)
+    AC_DEFINE(USE_EXTENSIONS_LIBRARY, 1, 'Use Extensions Support")
+    DSAM_DEFS="$DSAM_DEFS -DEXTENSIONS_SUPPORT=1"
+    DSAMEXTLIB="-l${DSAM_PACKAGE}_ext"
+    AC_SUBST(DSAMEXTLIB)
+    WX_BASE_CXXFLAGS="`$WX_CONFIG --cxxflags base`"
+    AC_SUBST(WX_BASE_CXXFLAGS)
+    WX_BASE_LIBS="`$WX_CONFIG --libs base,net,xml`"
+    AC_SUBST(WX_BASE_LIBS)
 fi
 AM_CONDITIONAL(DSAM_EXTENSIONS, test x$wx_base_available = xyes)
 
 if test x$using_wxWidgets_ogl = xyes; then
-	AC_DEFINE(USE_WX_OGL, 1, [Use wxWidgets OGL Support])
-	WXOGLLIBS="`$WX_CONFIG --libs ogl`"
-	AC_SUBST(WXOGLLIBS)
+    AC_DEFINE(USE_WX_OGL, 1, [Use wxWidgets OGL Support])
+    WXOGLLIBS="`$WX_CONFIG --libs ogl`"
+    AC_SUBST(WXOGLLIBS)
 fi
 
 if test x$using_wxWidgets_gui = xyes; then
-	DSAM_GRAPHICS="-DGRAPHICS_SUPPORT"
-	AC_DEFINE(GRAPHICS_SUPPORT, 1, 'Using Graphics Support")
-	WXRESFLAGS="--include-dir `$WX_CONFIG --exec-prefix`/include \
-	  --include-dir `$WX_CONFIG --exec-prefix`/$host_alias/include"
-	AC_SUBST(WXRESFLAGS)
-	XINCLUDE=$wx_xinclude
-	AC_SUBST(XINCLUDE)
+    DSAM_GRAPHICS="-DGRAPHICS_SUPPORT"
+    AC_DEFINE(GRAPHICS_SUPPORT, 1, 'Using Graphics Support")
+    WXRESFLAGS="--include-dir `$WX_CONFIG --exec-prefix`/include \
+      --include-dir `$WX_CONFIG --exec-prefix`/$host_alias/include"
+    AC_SUBST(WXRESFLAGS)
+    XINCLUDE=$wx_xinclude
+    AC_SUBST(XINCLUDE)
 fi
 AM_CONDITIONAL(DSAM_GRAPHICS, test x$using_wxWidgets_gui = xyes)
 
 if  test x$using_wxWidgets_gui = xyes -o x$using_wxWidgets_ogl = xyes; then
-	WXINC="`$WX_CONFIG --cxxflags`"
-	AC_SUBST(WXINC)
-	WXLDLIBS="`$WX_CONFIG --libs html,adv,core,base,ogl,net,xml`"
-	AC_SUBST(WXLDLIBS)
+    WXINC="`$WX_CONFIG --cxxflags` "
+    AC_SUBST(WXINC)
+    WXLDLIBS="`$WX_CONFIG --libs html,adv,core,base,ogl,net,xml`"
+    AC_SUBST(WXLDLIBS)
 fi
 
 if test x$using_portaudio = xyes; then
-	AC_DEFINE(USE_PORTAUDIO, 1, [Use PortAudio library])
-	DSAM_DEFS="$DSAM_DEFS $PORTAUDIO_CFLAGS"
-	AC_SUBST(PORTAUDIO_CFLAGS)
-	AC_SUBST(PORTAUDIO_LIBS)
+    AC_DEFINE(USE_PORTAUDIO, 1, [Use PortAudio library])
+    DSAM_DEFS="$DSAM_DEFS $PORTAUDIO_CFLAGS"
+    AC_SUBST(PORTAUDIO_CFLAGS)
+    AC_SUBST(PORTAUDIO_LIBS)
 fi
 AM_CONDITIONAL(USE_PORTAUDIO, test x$using_portaudio = xyes)
 
 if test x$use_float = xyes; then
-	AC_DEFINE(DSAM_USE_FLOAT, 1, [Use float channel data])
-	DSAM_DEFS="$DSAM_DEFS -DDSAM_USE_FLOAT=1"
+    AC_DEFINE(DSAM_USE_FLOAT, 1, [Use float channel data])
+    DSAM_DEFS="$DSAM_DEFS -DDSAM_USE_FLOAT=1"
 fi
 AM_CONDITIONAL(DSAM_USE_FLOAT, test x$use_float = xyes)
 
@@ -681,7 +682,7 @@ dnl ----------------------------------------------------------------------------
 dnl DSAM Definitions.
 dnl ----------------------------------------------------------------------------
 
-DSAM_DEFS="$DSAM_DEFS -fPIC"
+DSAM_DEFS="$DSAM_DEFS $lt_cv_prog_compiler_pic"
 AC_SUBST(DSAM_GRAPHICS)
 AC_SUBST(DSAM_MPI)
 AC_SUBST(DSAM_DEFS)
@@ -706,25 +707,25 @@ dnl Final configure outputs.
 dnl ============================================================================
 
 AC_CONFIG_FILES([
-	dsam.spec
-	manpage.xml
-	CfgTools/Makefile
-	Makefile
-	Include/Makefile
-	src/Makefile
-	src/MainLib/Makefile
-	src/ExtLib/Makefile
-	src/GrLib/Makefile
-	src/GrLib/Bitmaps/Makefile
-	ModuleSpecs/Makefile
-	Examples/Makefile
-	dsam-config
-	MSVC/Makefile
-	MSVC/DSAM/Makefile
-	MSVC/DSAM_ext/Makefile
-	MSVC/DSAM_g/Makefile
-	NSIS/Makefile
-	debian/Makefile
+    dsam.spec
+    manpage.xml
+    CfgTools/Makefile
+    Makefile
+    Include/Makefile
+    src/Makefile
+    src/MainLib/Makefile
+    src/ExtLib/Makefile
+    src/GrLib/Makefile
+    src/GrLib/Bitmaps/Makefile
+    ModuleSpecs/Makefile
+    Examples/Makefile
+    dsam-config
+    MSVC/Makefile
+    MSVC/DSAM/Makefile
+    MSVC/DSAM_ext/Makefile
+    MSVC/DSAM_g/Makefile
+    NSIS/Makefile
+    debian/Makefile
 ], [chmod +x dsam-config])
 
 AC_OUTPUT
