@@ -1167,7 +1167,7 @@ ResetSimulation_Utility_Datum(DatumPtr start)
 
 /*
  * This routine executes a set of simulation instructions.
- * It continues until it reachs  a NULL instuction.
+ * It continues until it reaches  a NULL instruction.
  * It returns a pointer to the last instruction run.
  */
 
@@ -1253,9 +1253,10 @@ GetLastProcess_Utility_Datum(DatumPtr start)
 	EarObjectPtr	lastProcess = NULL;
 	DatumPtr	pc;
 
-    for (pc = start; pc != NULL; pc = pc->next)
+    for (pc = start; pc != NULL; pc = pc->next) {
     	if (pc->type == PROCESS)
     		lastProcess = pc->data;
+    }
 	return(lastProcess);
 
 }
@@ -1272,9 +1273,10 @@ GetFirstProcess_Utility_Datum(DatumPtr start)
 {
 	DatumPtr	pc;
 
-    for (pc = start; pc != NULL; pc = pc->next)
+    for (pc = start; pc != NULL; pc = pc->next) {
     	if (pc->type == PROCESS)
     		return(pc->data);
+    }
 	return(NULL);
 
 }
@@ -1291,9 +1293,10 @@ GetFirstProcessInst_Utility_Datum(DatumPtr start)
 {
 	DatumPtr	pc;
 
-    for (pc = start; pc != NULL; pc = pc->next)
+    for (pc = start; pc != NULL; pc = pc->next) {
     	if (pc->type == PROCESS)
     		return(pc);
+    }
 	return(NULL);
 
 }
@@ -1310,9 +1313,10 @@ GetPreviousProcessInst_Utility_Datum(DatumPtr start)
 {
 	DatumPtr	pc;
 
-    for (pc = start; pc != NULL; pc = pc->previous)
+    for (pc = start; pc != NULL; pc = pc->previous) {
     	if (pc->type == PROCESS)
     		return(pc);
+    }
 	return(NULL);
 
 }
