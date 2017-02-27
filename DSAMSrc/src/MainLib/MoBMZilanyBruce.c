@@ -1108,8 +1108,8 @@ InitProcessVariables_BasilarM_ZilanyBruce(EarObjectPtr data)
 			centreFreq = p->cFList->frequency[cFIndex];
 		    CAgain = 52.0 / 2.0 * (tanh(2.2 * log10(centreFreq / p->cutOffCP) +
 		      0.15) + 1);
-		    if(CAgain < 15.0)
-		    	CAgain = 15.0;
+			if(CAgain < 15.0)
+				CAgain = 15.0;
 			if ((p->wbgt[i] = InitZBWBGTCoeffs_Utility_ZilanyBruce(p->wborder,
 			  dt, centreFreq, CAgain, p->cOHC)) == NULL) {
 				NotifyError(wxT("%s: Could not set wbgt[%d]."), funcName, i);

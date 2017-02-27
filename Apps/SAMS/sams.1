@@ -1,0 +1,194 @@
+'\" t
+.\"     Title: SAMS
+.\"    Author: Lowel O\*(AqMard <lowel.omard@gmail.com>
+.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\"      Date: 02/25/2016
+.\"    Manual: sams User Manual
+.\"    Source: sams
+.\"  Language: English
+.\"
+.TH "SAMS" "1" "02/25/2016" "sams" "sams User Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+sams \- allows users to design, run and evaluate auditory models
+.SH "SYNOPSIS"
+.HP \w'\fBsams\fR\ 'u
+\fBsams\fR [\fB\-d\ \fR\ {\fBoff\fR\ |\ \fBscreen\fR\ |\ \fB\fI<file\ name>\fR\fR}] [\fB\-I\ \fR\ \fB\fIint\fR\fR] [\fB\-P\ \fR\ \fB\fI<file\ name>\fR\fR] [\fB\-s\ \fR\ \fB\fI<file\ name>\fR\fR] [\fB\-S\fR] [\fB\-r\ \fR\ \fB\fIint\fR\fR] [\fB\fIparameter1\ value1\fR\fR] [\fB\fIparameter2\ value2\fR\fR] [\fB\fI\&...\fR\fR]
+.HP \w'\fBsams\fR\ 'u
+\fBsams\fR [\fB\-h\fR] | [\fB\-v\fR] | [\fB\-l\fR\ {\fBparameters\fR\ |\ \fBcfinfo\fR\ }] 
+.SH "DESCRIPTION"
+.PP
+This man page documents briefly the
+\fBsams\fR
+and
+\fBsams_ng\fR
+commands\&.
+.PP
+The auditory model simulator (SAMS) allows users to design, run and evaluate auditory models\&. It is supported by the extensive collection of published and new models supplied by the development system for auditory modelling (DSAM) library\&. The facilities and interface of this package have many features in common with those of other applications produced using the DSAM library\&.
+.PP
+\fBsams\fR
+employs a graphical user interface, whereas
+\fBsams_ng\fR
+is the command\-line version\&.
+.PP
+For a more detailed manual please see the
+\fI/usr/local/share/sams/HelpFiles/SAMSHelp\&.pdf\fR
+document\&.
+.SH "OPTIONS"
+.PP
+The program follows the usual GNU command line syntax, with options starting with a dash (`\-\*(Aq)\&. A summary of options is included below\&. For a complete description, see the
+\fBinfo\fR(1)
+files\&.
+.PP
+\fB\-d <state>\fR
+.RS 4
+Diagnostic mode:
+\fIoff\fR,
+\fIscreen\fR
+or a
+\fIfile name\fR\&.
+.RE
+.PP
+\fB\-I \fR\fB\fIint\fR\fR
+.RS 4
+User server ID
+\fIint\fR
+when running in server mode\&.\&.
+.RE
+.PP
+\fB\-l \fR\fB\fIlist\fR\fR
+.RS 4
+Produce lists from the simulation script:
+.PP
+\fIparameters\fR
+.RS 4
+produce a list of the simulation and all all of its parameters and settings\&. With the heading lines removed, this output can be used as a simulation parameter file (SPF)\&.
+.RE
+.PP
+\fIcfinfo\fR
+.RS 4
+produce a list of the centre frequency information for the first basilar membrane process module found in the simulation\&.
+.RE
+.RE
+.PP
+\fB\-P \fR\fB\fI<file name>\fR\fR
+.RS 4
+Read the main application parameters from this file (obsolete)\&.
+.RE
+.PP
+\fB\-s \fR\fB\fI<file name>\fR\fR
+.RS 4
+Simulation file to use (\&.spf, \&.sim or \&.xml)\&.
+.RE
+.PP
+\fB\-S\fR
+.RS 4
+Run application in server mode\&.
+.RE
+.PP
+\fB\-r \fR\fB\fIint\fR\fR
+.RS 4
+No\&. of simulation runs (obsolete)\&.
+.RE
+.PP
+\fB\-v\fR
+.RS 4
+Show program version\&.
+.RE
+.SH "FILES"
+.PP
+/usr/local/share/sams/DEFAULT/*
+.RS 4
+Example simulations such as thauditory image model AIM, etc\&. that can be run by
+sams\&.
+.RE
+.PP
+/usr/local/share/sams/HelpFiles/*
+.RS 4
+Contains the more detailed manual,
+\fISAMSHelp\&.pdf\fR\&.
+.RE
+.PP
+/usr/local/share/sams/Tutorials/*
+.RS 4
+Contains tutorials on how to use
+sams
+including the example simulation scripts\&.
+.RE
+.SH "ENVIRONMENT"
+.PP
+\fB\&...\fR
+.RS 4
+none used at present\&.
+.RE
+.SH "DIAGNOSTICS"
+.PP
+\fBsams\fR
+issues verbose diagnostics on
+stderr\&.
+.PP
+\fBsams\fR
+provides some return codes, that can be used in scripts:
+.\" line length increase to cope w/ tbl weirdness
+.ll +(\n(LLu * 62u / 100u)
+.TS
+ll.
+\fICode\fR	\fIDiagnostic\fR
+T{
+\fB0\fR
+T}	T{
+Program exited successfully\&.
+T}
+T{
+\fB1\fR
+T}	T{
+Program exited unsuccessfully\&.
+T}
+.TE
+.\" line length decrease back to previous value
+.ll -(\n(LLu * 62u / 100u)
+.sp
+.SH "BUGS"
+.PP
+To report a bug please e\-mail the author\&. Be sure to include error diagnostic listings, a copy of the simulation script (in SPF form if possible) and a description of the platform, e\&.g\&. Windows Vista, Ubuntu 11\&.04, etc\&.\&.
+.PP
+The online help has not been implemented at present\&. A PDF help document is included with the installation and described above\&.
+.SH "SEE ALSO"
+.PP
+\fBdsam\fR(1),
+.SH "AUTHOR"
+.PP
+\fBLowel O\*(AqMard\fR <\&lowel\&.omard@gmail\&.com\&>
+.RS 4
+Wrote this manpage for the Debian system\&.
+.RE
+.SH "COPYRIGHT"
+.br
+Copyright \(co 1993-2011 Dr. Lowel P. O'Mard (One Word)
+.br
+.PP
+This manual page was written for the Redhat Fedora system (and may be used by others)\&.
+.PP
+Permission is granted to copy, distribute and/or modify this document under the terms of the GNU General Public License, Version 3 or (at your option) any later version published by the Free Software Foundation\&.
+.PP
+The complete text of the GNU General Public License can be found in
+/usr/local/share/doc/sams\-1\&.3\&.10/COPYING\&.
+.sp

@@ -297,8 +297,8 @@ FreeModuleRef_ModuleMgr(ModuleRefPtr *theList, ModuleHandle theHandle)
 {
 	ModuleRefPtr	p, lastRef;
 
-    if (*theList == NULL)
-    	return;
+	if (*theList == NULL)
+		return;
 	for (p = lastRef = *theList; (p != NULL) && (p->module->handle !=
 	  theHandle); p = p->next)
 		lastRef = p;
@@ -650,7 +650,7 @@ PrintPars_ModuleMgr(EarObjectPtr data)
  */
 
 DSAM_API BOOLN
-ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName)
+ReadPars_ModuleMgr(EarObjectPtr data, const WChar *fileName)
 {
 	static const WChar *funcName = wxT("ReadPars_ModuleMgr");
 	BOOLN	ok = TRUE;

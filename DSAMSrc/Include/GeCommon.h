@@ -632,7 +632,7 @@ DSAM_API DSAMPtr	GetDSAMPtr_Common(void);
 
 FILE *	GetFilePtr(const WChar *outputSpecifier, FileAccessSpecifier mode);
 
-DSAM_API WChar *	GetParsFileFPath_Common(WChar *parFile);
+DSAM_API WChar *	GetParsFileFPath_Common(const WChar *parFile);
 
 DSAM_API void	NotifyError(const WChar *format, ...);
 
@@ -660,7 +660,7 @@ DSAM_API void	SetNotifyFunc(void (* Func)(const WChar *, CommonDiagSpecifier));
 
 DSAM_API BOOLN	SetParsFile_Common(const WChar *outputSpecifier, FileAccessSpecifier mode);
 
-DSAM_API void	SetParsFilePath_Common(WChar *name);
+DSAM_API void	SetParsFilePath_Common(const WChar *name);
 
 void	SetSegmentedMode(BOOLN setting);
 

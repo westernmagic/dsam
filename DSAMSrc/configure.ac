@@ -343,7 +343,7 @@ dnl Checks for header files.
 dnl ============================================================================
 
 AC_HEADER_STDC
-AC_CHECK_HEADERS(malloc.h)
+AC_CHECK_HEADERS
 AC_PATH_X
 AC_PATH_XTRA
 
@@ -467,9 +467,13 @@ dnl ----------------------------------------------------------------------------
 if test x$gui = xyes -a x$wxwinAvailable = xyes; then
     AC_MSG_CHECKING([for wxWidgets GUI support])
     CXXFLAGS_save=$CXXFLAGS
-    CXXFLAGS="`$WX_CONFIG --cxxflags` $lt_cv_prog_compiler_pic"
+    #CXXFLAGS="`$WX_CONFIG --cxxflags` $lt_cv_prog_compiler_pic"
+    WXINC="`$WX_CONFIG --cxxflags` $lt_cv_prog_compiler_pic"
+    CXXFLAGS=$WXINC
     LIBS_save=$LIBS
-    LIBS=`$WX_CONFIG --libs html,adv,core,base,ogl,net,xml`
+    #LIBS=`$WX_CONFIG --libs html,adv,core,base,net,xml`
+    WXLDLIBS="`$WX_CONFIG --libs html,adv,core,base,net,xml`"
+    LIBS=$WXLDLIBS
     AC_LINK_IFELSE(
         [
             AC_LANG_SOURCE(
@@ -509,9 +513,17 @@ dnl ----------------------------------------------------------------------------
 if test x$WX_OGL = xyes -a x$using_wxWidgets_gui = xyes; then
     AC_MSG_CHECKING([for wxWidgets OGL support])
     CXXFLAGS_save=$CXXFLAGS
-    CXXFLAGS="`$WX_CONFIG --cxxflags` $lt_cv_prog_compiler_pic"
+    if test -n $WX_OGL_CPPFLAGS; then
+    	CXXFLAGS="$WX_OGL_CPPFLAGS $WXINC"
+    else
+    	CXXFLAGS=$WXINC
+    fi
     LIBS_save=$LIBS
-    LIBS=`$WX_CONFIG --libs core,ogl`
+    if test -n "$WX_OLIBSAGS"; then
+    	LIBS="$WX_OLIBSAGS $WXLDLIBS"
+    else
+   		LIBS=$WXLDLIBS
+   	fi
     AC_LINK_IFELSE(
         [
             AC_LANG_SOURCE(

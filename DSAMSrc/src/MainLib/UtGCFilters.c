@@ -700,8 +700,8 @@ SetpsEst_GCFilters(CntlGammaCPtr *cntlGammaC, int numChannels,
 	for (mch = 0; mch < numChannels; mch++) {
 		winOut = 0.0;
       	for (nch = 0; nch < numChannels; nch++)
-		winOut += winPsEst[mch + nch * numChannels] * cntlGammaC[
-		  nch]->outSignalLI;
+			winOut += winPsEst[mch + nch * numChannels] * cntlGammaC[
+			  nch]->outSignalLI;
 		winOut = MAX(winOut, pow(10.0, -10.0));
 					/* Limit minimum value for log10 */
 		cntlGammaC[mch]->psEst = MIN(20.0 * log10(coefPsEst * winOut), 120.0 );

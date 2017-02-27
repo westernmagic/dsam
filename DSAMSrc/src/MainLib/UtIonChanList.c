@@ -639,7 +639,7 @@ CheckPars_IonChanList(IonChanListPtr theICList)
 		NotifyError(wxT("%s: ionChannels array not set."), funcName);
 		ok = FALSE;
 	}
-	if (!theICList->numChannels <= 0) {
+	if (theICList->numChannels <= 0) {
 		NotifyError(wxT("%s: Number of Channels not correctly set."), funcName);
 		ok = FALSE;
 	}

@@ -702,7 +702,7 @@ ReadSimScript_Utility_SimScript(FILE *fp)
  */
 
 DSAM_API SimFileTypeSpecifier
-GetSimFileType_Utility_SimScript(WChar *suffix)
+GetSimFileType_Utility_SimScript(const WChar *suffix)
 {
 	static NameSpecifier simFileTypeList[] = {
 
@@ -728,7 +728,7 @@ GetSimFileType_Utility_SimScript(WChar *suffix)
  */
 
 BOOLN
-ReadPars_Utility_SimScript(WChar *fileName)
+ReadPars_Utility_SimScript(const WChar *fileName)
 {
 	static const WChar	*funcName = wxT("ReadPars_Utility_SimScript");
 	BOOLN	ok = TRUE;

@@ -602,12 +602,12 @@ SetInterruptRequestStatus_Common(BOOLN status)
  */
 
 void
-SetParsFilePath_Common(WChar *name)
+SetParsFilePath_Common(const WChar *name)
 {
 	if ((name == NULL) || (name[0] == '\0'))
 		dSAM.parsFilePath = NULL;
 	else
-		dSAM.parsFilePath = name;
+		dSAM.parsFilePath = (WChar *) name;
 
 }
 
@@ -656,23 +656,28 @@ FindFilePathAndName_Common(WChar *filePath, WChar *path, WChar *name)
  */
 
 DSAM_API WChar *
-GetParsFileFPath_Common(WChar *parFile)
+GetParsFileFPath_Common(const WChar *parFile)
 {
 	static const WChar *funcName = wxT("GetParsFileFPath_Common");
 	static WChar filePath[MAX_FILE_PATH];
+	WChar	myParFile[MAX_FILE_PATH];
 
-	if (!dSAM.parsFilePath)
-		return(parFile);
 	if (DSAM_strlen(parFile) >= MAX_FILE_PATH) {
-		parFile[MAX_FILE_PATH - 1] = '\0';
+		DSAM_strncpy(myParFile, parFile, MAX_FILE_PATH - 1);
+		myParFile[MAX_FILE_PATH - 1] = '\0';
 		NotifyWarning(wxT("%s: file path is too long, truncating to '%s'"),
-		  funcName, parFile);
-	}
-	if ((parFile[0] == '/') || DSAM_strstr(parFile, wxT(":\\")))
+		  funcName, myParFile);
+	} else
 		DSAM_strcpy(filePath, parFile);
+	if (!dSAM.parsFilePath) {
+		DSAM_strcpy(filePath, myParFile);
+		return(filePath);
+	}
+	if ((myParFile[0] == '/') || DSAM_strstr(myParFile, wxT(":\\")))
+		DSAM_strcpy(filePath, myParFile);
 	else
 		Snprintf_Utility_String(filePath, MAX_FILE_PATH, wxT("%s/%s"),
-		  dSAM.parsFilePath, parFile);
+		  dSAM.parsFilePath, myParFile);
 	return (filePath);
 
 }

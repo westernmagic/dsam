@@ -1,0 +1,15 @@
+#!/bin/sh
+##################
+#
+# File:		mkaconfarc
+# Purpose:	Makes an archive of all the files necessary for the ogl auto-
+#			configuration.
+# Author:	L.P.O'Mard
+# Created:	07 Nov 2002
+# Updated:	
+# Copyright:(c) 2002, University of Essex
+#
+##################
+
+tar zcvf mkaconf.tar.gz CfgTools configure.ac ogl.spec.in \
+  `find . -name Makefile.am -print`

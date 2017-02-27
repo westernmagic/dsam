@@ -353,7 +353,7 @@ SetSimulationFileFlag_AppInterface(BOOLN theSimulationFileFlag)
  */
 
 DSAM_API BOOLN
-SetSimulationFile_AppInterface(WChar *theSimulationFile)
+SetSimulationFile_AppInterface(const WChar *theSimulationFile)
 {
 	static const WChar	*funcName = wxT("SetSimulationFile_AppInterface");
 
@@ -955,7 +955,8 @@ ParseParSpecifiers_AppInterface(WChar *parName, WChar *appName,
  */
 
 DSAM_API BOOLN
-SetProgramParValue_AppInterface(const WChar *parName, WChar *parValue, BOOLN readSPF)
+SetProgramParValue_AppInterface(const WChar *parName, const WChar *parValue,
+  BOOLN readSPF)
 {
 	static const WChar *funcName = wxT("SetProgramParValue_AppInterface");
 	BOOLN	ok = TRUE, creatorApp = TRUE;
@@ -1261,7 +1262,7 @@ SetSimFileType_AppInterface(int simFileType)
  */
 
 DSAM_API BOOLN
-SetWorkingDirectory_AppInterface(WChar * workingDirectory)
+SetWorkingDirectory_AppInterface(const WChar * workingDirectory)
 {
 	static const WChar	*funcName = wxT("SetWorkingDirectory_AppInterface");
 

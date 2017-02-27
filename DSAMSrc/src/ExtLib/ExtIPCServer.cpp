@@ -231,7 +231,6 @@ IPCServer::OnPut(void)
 void
 IPCServer::OnPutArgs(void)
 {
-	bool	ok = true;
 	unsigned char	c;
 	wxUint8	i, argc;
 	wxString	s;
@@ -243,7 +242,7 @@ IPCServer::OnPutArgs(void)
 		while (!sock->Read(&c, 1).Error() && (c != '\0'))
 			s += c;
 		s += wxT('\0');
-		dSAMMainApp->SetArgvString(i, (wxChar *) s.C_STR(), (wxUint32) s.length());
+		dSAMMainApp->SetArgvString(i, (const wxChar *) s.C_STR(), (wxUint32) s.length());
 	}
 	ResetCommandArgFlags_AppInterface();
 
@@ -324,7 +323,7 @@ IPCServer::OnGetFiles(void)
 	numFiles = (wxUint32) list.Count();
 	sock->Write(&numFiles, 1);
 	for (i = 0; i < numFiles; i++) {
-		fileName = (wxChar *) GetParsFileFPath_Common((wxChar *) list[i].C_STR(
+		fileName = (wxChar *) GetParsFileFPath_Common((const wxChar *) list[i].C_STR(
 		  ));
 		nameOnly = fileName.GetFullName();
 		sock->Write(nameOnly.mb_str(), (wxUint32) nameOnly.length());
@@ -366,7 +365,7 @@ IPCServer::OnGetPar(void)
 	while (!sock->Read(&c, 1).Error() && (c != '\n'))
 		if (c != '\r')
 			parName += c;
-	if ((par = GetUniParPtr_ModuleMgr(GetSimProcess_AppInterface(), (wxChar *)
+	if ((par = GetUniParPtr_ModuleMgr(GetSimProcess_AppInterface(), (const wxChar *)
 	  parName.C_STR())) == NULL) {
 		NotifyError(wxT("%s: Could not find '%s' parameter."), funcName,
 		  parName.C_STR());
@@ -374,7 +373,7 @@ IPCServer::OnGetPar(void)
 		return;
 	}
 	value = GetParString_UniParMgr(par);
-	sock->Write(value.mb_str(), (wxUint32) value.length());
+	sock->Write((const void *) value.mb_str(), (wxUint32) value.length());
 	sock->Write(wxT("\n"), 1);
 
 }
@@ -404,13 +403,13 @@ IPCServer::OnSet(void)
 	for (i = 0; i < numTokens / 2; i++) {
 		parameter = tokenizer.GetNextToken().C_STR();
 		value = tokenizer.GetNextToken().C_STR();
-		if (!SetProgramParValue_AppInterface((wxChar *) parameter.C_STR(),
-		  (wxChar *) value.C_STR(), FALSE) && !SetUniParValue_Utility_Datum(
-		  GetSimulation_AppInterface(), (wxChar *) parameter.C_STR(),
-		  (wxChar *) value.C_STR())) {
+		if (!SetProgramParValue_AppInterface((const wxChar *) parameter.C_STR(),
+		  (const wxChar *) value.C_STR(), FALSE) && !SetUniParValue_Utility_Datum(
+		  GetSimulation_AppInterface(), (const wxChar *) parameter.C_STR(),
+		  (const wxChar *) value.C_STR())) {
 			NotifyError(wxT("%s: Could not set '%s' parameter to '%s'."),
-			  funcName, (wxChar *)  parameter.C_STR(), (wxChar *) value.
-			  C_STR());
+			  funcName, (const wxChar *) parameter.C_STR(),
+			  (const wxChar *) value.C_STR());
 			return;
 		}
 	}
@@ -490,7 +489,7 @@ IPCServer::ProcessInput(void)
 		if (c != '\r')
 			buffer += c;
 	
-	switch (Identify_NameSpecifier((wxChar *) buffer.C_STR(), iPCUtils.
+	switch (Identify_NameSpecifier((const wxChar *) buffer.C_STR(), iPCUtils.
 	  CommandList(0))) {
 	case IPC_COMMAND_QUIT:
 		endProcessing = true;
@@ -584,7 +583,7 @@ IPCServer::LoadSimFile(const wxString& fileName)
 {
 	FreeSim_AppInterface();
 	if (!SetParValue_UniParMgr(&GetPtr_AppInterface()->parList,
-	  APP_INT_SIMULATIONFILE, (wxChar *) fileName.C_STR()))
+	  APP_INT_SIMULATIONFILE, (const wxChar *) fileName.C_STR()))
 		return(false);
 	return(dSAMMainApp->ResetSimulation());
 

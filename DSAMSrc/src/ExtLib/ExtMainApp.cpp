@@ -35,6 +35,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream> // DEBUG
 
 #include <ExtCommon.h>
 
@@ -491,26 +492,24 @@ bool MainApp::SetArgvString(int index, const wxChar *string, size_t size) {
 /****************************** ProtectQuotedStr ******************************/
 
 /*
- * This function replaces characters between quotes so the strings are reqarded
+ * This function replaces characters between quotes so the strings are regarded
  * as non-delimited.
  * The speech marks are also replaced with spaces.
  * It returns FALSE if it enounters an error.
  */
 
-/* ToDo: implement this using wxString. */
-
-bool MainApp::ProtectQuotedStr(wxChar *str) {
+bool MainApp::ProtectQuotedStr(wxString& str) {
 	static const wxChar *funcName = wxT("MainApp::ProtectQuotedStr");
 	bool quotesOn = FALSE;
-	wxChar *p;
 
-	for (p = str; *p != '\0'; p++) {
-		if (*p == MAINAPP_QUOTE) {
+	for (wxString::iterator it = str.begin(); it != str.end(); ++it) {
+		if (*it == MAINAPP_QUOTE) {
 			quotesOn = (!quotesOn);
-			*p = ' ';
-		} else if (quotesOn && (*p == ' '))
-			*p = MAINAPP_SPACE_SUBST;
+			*it = ' ';
+		} else if (quotesOn && (*it == ' '))
+			*it = MAINAPP_SPACE_SUBST;
 	}
+	std::cout << "MainApp::ProtectQuotedStr: " << str << "\n";
 	if (quotesOn) {
 		NotifyError(wxT("%s: Incomplete quoted string in parameters."),
 				funcName);
@@ -526,13 +525,12 @@ bool MainApp::ProtectQuotedStr(wxChar *str) {
  * This routine returns the spaces to a protected quoted string.
  */
 
-wxChar *
-MainApp::RestoreQuotedStr(wxChar *str) {
-	wxChar *p;
+wxString&
+MainApp::RestoreQuotedStr(wxString& str) {
 
-	for (p = str; *p != '\0'; p++)
-		if (*p == MAINAPP_SPACE_SUBST)
-			*p = ' ';
+	for (wxString::iterator it = str.begin(); it != str.end(); ++it)
+		if (*it == MAINAPP_SPACE_SUBST)
+			*it = ' ';
 	return (str);
 
 }
@@ -552,8 +550,8 @@ int MainApp::SetParameterOptionArgs(int indexStart,
 	wxString token, workStr = parameterOptions;
 	int count = 0;
 
-	if (!ProtectQuotedStr((wxChar *) workStr.C_STR())) {
-		NotifyError(wxT("%s; Could note protect quoted parameters."), funcName);
+	if (!ProtectQuotedStr(workStr)) {
+		NotifyError(wxT("%s; Could not protect quoted parameters."), funcName);
 		return (-1);
 	}
 	wxStringTokenizer tkz(workStr, MAINAPP_PARAMETER_STR_DELIMITERS);
@@ -563,7 +561,7 @@ int MainApp::SetParameterOptionArgs(int indexStart,
 			continue;
 		if (!countOnly)
 			SetArgvString(indexStart + count,
-					RestoreQuotedStr((wxChar *) token.C_STR()), token.length());
+					RestoreQuotedStr(token), token.length());
 		count++;
 	}
 	return (count);
@@ -825,11 +823,11 @@ EarObjectPtr MainApp::GetSimProcess(void) {
 
 void MainApp::SetSimulationFile(wxFileName &fileName) {
 	simFileName = fileName;
-	SetWorkingDirectory_AppInterface((wxChar *) fileName.GetPath().C_STR());
+	SetWorkingDirectory_AppInterface((const wxChar *) fileName.GetPath().C_STR());
 	SetSimFileType_AppInterface(
 			GetSimFileType_Utility_SimScript(
-					(wxChar *) fileName.GetExt().C_STR()));
-	SetSimulationFile_AppInterface((WChar *) fileName.GetFullPath().C_STR());
+					(const wxChar *) fileName.GetExt().C_STR()));
+	SetSimulationFile_AppInterface((const WChar *) fileName.GetFullPath().C_STR());
 
 }
 

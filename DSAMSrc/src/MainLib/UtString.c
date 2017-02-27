@@ -141,7 +141,7 @@ StrNCmpNoCase_Utility_String(const WChar *fullString, const WChar *abbrevString)
  */
 
 DSAM_API WChar *
-InitString_Utility_String(WChar *string)
+InitString_Utility_String(const WChar *string)
 {
 	static const WChar	*funcName = wxT("InitString_Utility_String");
 	WChar	*p;
@@ -182,8 +182,8 @@ QuotedString_Utility_String(const WChar *string)
  * It returns the entire file name if no suffix is returned.
  */
 
-WChar *
-GetSuffix_Utility_String(WChar *fileName)
+const WChar *
+GetSuffix_Utility_String(const WChar *fileName)
 {
 	WChar	*p;
 

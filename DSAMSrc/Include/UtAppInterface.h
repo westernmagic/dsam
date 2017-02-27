@@ -286,10 +286,10 @@ DSAM_API BOOLN	SetOnExecute_AppInterface(BOOLN (* OnExecute)(void));
 
 DSAM_API BOOLN	SetOnExit_AppInterface(void (* OnExit)(void));
 
-DSAM_API BOOLN	SetWorkingDirectory_AppInterface(WChar * workingDirectory);
+DSAM_API BOOLN	SetWorkingDirectory_AppInterface(const WChar * workingDirectory);
 
 DSAM_API BOOLN	SetProgramParValue_AppInterface(const WChar *parName,
-				  WChar *parValue, BOOLN readSPF);
+				  const WChar *parValue, BOOLN readSPF);
 
 BOOLN	SetRealArraySimPar_AppInterface(WChar *parName, int index, Float value);
 
@@ -301,7 +301,7 @@ DSAM_API BOOLN	SetSimFileType_AppInterface(int simFileType);
 
 BOOLN	SetSimPar_AppInterface(WChar *parName, WChar *value);
 
-DSAM_API BOOLN	SetSimulationFile_AppInterface(WChar *theSimulationFile);
+DSAM_API BOOLN	SetSimulationFile_AppInterface(const WChar *theSimulationFile);
 
 DSAM_API void	SetSimulationFileFlag_AppInterface(BOOLN theSimulationFileFlag);
 

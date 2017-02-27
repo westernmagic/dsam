@@ -1273,10 +1273,9 @@ GetFirstProcess_Utility_Datum(DatumPtr start)
 {
 	DatumPtr	pc;
 
-    for (pc = start; pc != NULL; pc = pc->next) {
-    	if (pc->type == PROCESS)
-    		return(pc->data);
-    }
+	for (pc = start; pc != NULL; pc = pc->next)
+		if (pc->type == PROCESS)
+			return(pc->data);
 	return(NULL);
 
 }
@@ -1293,10 +1292,9 @@ GetFirstProcessInst_Utility_Datum(DatumPtr start)
 {
 	DatumPtr	pc;
 
-    for (pc = start; pc != NULL; pc = pc->next) {
-    	if (pc->type == PROCESS)
-    		return(pc);
-    }
+	for (pc = start; pc != NULL; pc = pc->next)
+		if (pc->type == PROCESS)
+			return(pc);
 	return(NULL);
 
 }
@@ -1313,10 +1311,9 @@ GetPreviousProcessInst_Utility_Datum(DatumPtr start)
 {
 	DatumPtr	pc;
 
-    for (pc = start; pc != NULL; pc = pc->previous) {
-    	if (pc->type == PROCESS)
-    		return(pc);
-    }
+	for (pc = start; pc != NULL; pc = pc->previous)
+		if (pc->type == PROCESS)
+			return(pc);
 	return(NULL);
 
 }
@@ -1673,7 +1670,8 @@ SetControlParValue_Utility_Datum(DatumPtr start, const WChar *label, const WChar
  */
 
 DSAM_API BOOLN
-SetUniParValue_Utility_Datum(DatumPtr start, const WChar *parName, const WChar *parValue)
+SetUniParValue_Utility_Datum(DatumPtr start, const WChar *parName,
+  const WChar *parValue)
 {
 	static const WChar	*funcName = wxT("SetUniParValue_Utility_Datum");
 	uInt	index;

@@ -688,13 +688,13 @@ Process_Utility_SelectChannels(EarObjectPtr data)
 			for (i = 0, numChannels = 0; i < p->numChannels; i++)
 				if (p->selectionArray[i] > 0.0)
 					numChannels++;
-				numChannels *= _InSig_EarObject(data, 0)->interleaveLevel;
-				break;
+			numChannels *= _InSig_EarObject(data, 0)->interleaveLevel;
+			break;
 		case SELECT_CHANS_EXPAND_MODE:
 			for (i = 0, numChannels = 0; i < p->numChannels; i++)
 				if (p->selectionArray[i] > 0.0)
 					numChannels += (uShort) p->selectionArray[i];
-				numChannels *= _InSig_EarObject(data, 0)->interleaveLevel;
+			numChannels *= _InSig_EarObject(data, 0)->interleaveLevel;
 			break;
 		} /* switch */
 		if (!InitOutSignal_EarObject(data, numChannels, _InSig_EarObject(data,

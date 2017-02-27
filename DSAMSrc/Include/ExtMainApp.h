@@ -130,10 +130,10 @@ class DSAMEXT_API MainApp {
 	bool	InitCommandLineArgs(int theArgc, wxChar **theArgv);
 	bool	InitMain(bool loadSimulationFlag = false);
 	bool	LoadXMLDocument(void);
-	bool	ProtectQuotedStr(wxChar *str);
+	bool	ProtectQuotedStr(wxString& str);
 	bool	RegisterPlugins(void);
 	void	RemoveCommands(int offset, const wxChar *prefix);
-	wxChar *	RestoreQuotedStr(wxChar *str);
+	wxString&	RestoreQuotedStr(wxString& str);
 	int		RunIPCMode(void);
 	int		RunServer(void);
 	int		RunClient(void);

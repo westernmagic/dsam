@@ -839,8 +839,8 @@ FreeEarObjRef_EarObject(EarObjRefPtr *theList, EarObjHandle theHandle)
 	int		inSignalRef = -1;
 	EarObjRefPtr	p, lastRef;
 
-    if (*theList == NULL)
-    	return (-1);
+	if (*theList == NULL)
+		return (-1);
 	for (p = lastRef = *theList; (p != NULL) && (p->earObject->handle !=
 	  theHandle); p = p->next)
 		lastRef = p;

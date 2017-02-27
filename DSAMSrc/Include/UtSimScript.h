@@ -161,7 +161,7 @@ DynaBListPtr	GetLabelBList_Utility_SimScript(void);
 SimScriptPtr	GetPtr_Utility_SimScript(void);
 
 DSAM_API SimFileTypeSpecifier	GetSimFileType_Utility_SimScript(
-								  WChar *suffix);
+								  const WChar *suffix);
 
 DatumPtr	GetSimulation_Utility_SimScript(void);
 
@@ -195,7 +195,7 @@ BOOLN	Process_Utility_SimScript(EarObjectPtr data);
 
 DatumPtr	Read_Utility_SimScript(FILE *fp);
 
-BOOLN	ReadPars_Utility_SimScript(WChar *fileName);
+BOOLN	ReadPars_Utility_SimScript(const WChar *fileName);
 
 BOOLN	ReadSimParFile_Utility_SimScript(FILE *fp);
 

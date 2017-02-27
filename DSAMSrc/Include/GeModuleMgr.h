@@ -258,7 +258,7 @@ BOOLN	PrintSimFile_ModuleMgr(WChar *fileName, EarObjectPtr data);
 
 DSAM_API BOOLN	PrintSimParFile_ModuleMgr(EarObjectPtr data);
 
-DSAM_API BOOLN	ReadPars_ModuleMgr(EarObjectPtr data, WChar *fileName);
+DSAM_API BOOLN	ReadPars_ModuleMgr(EarObjectPtr data, const WChar *fileName);
 
 DSAM_API BOOLN	ResetProcess_ModuleMgr(EarObjectPtr data);
 

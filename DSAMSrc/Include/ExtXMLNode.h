@@ -60,6 +60,8 @@
 
 /*************************** DSAMXMLNode **************************************/
 
+//ToDO: LPO 2017-02-16 Change name from AddProperty to AddAttribute
+
 class DSAMXMLNode: public wxXmlNode
 {
 
@@ -69,13 +71,13 @@ class DSAMXMLNode: public wxXmlNode
 	  content = wxEmptyString): wxXmlNode(type, name, content) { ; }
 	~DSAMXMLNode() { ;}
 
-	void	AddProperty(const wxString& name, const wxString& x) { wxXmlNode::
-			  AddProperty(name, x); }
-	void	AddProperty(const wxString& name, int x) { wxXmlNode::AddProperty(
+	void	MyAddAttribute(const wxString& name, const wxString& x) { wxXmlNode::
+			  AddAttribute(name, x); }
+	void	MyAddAttribute(const wxString& name, int x) { wxXmlNode::AddAttribute(
 			  name, wxString::Format(wxT("%d"), x)); }
-	void	AddProperty(const wxString& name, long x) { wxXmlNode::AddProperty(
+	void	MyAddAttribute(const wxString& name, long x) { wxXmlNode::AddAttribute(
 			  name, wxString::Format(wxT("%ld"), x)); }
-	void	AddProperty(const wxString& name, double x) { wxXmlNode::AddProperty(
+	void	MyAddAttribute(const wxString& name, double x) { wxXmlNode::AddAttribute(
 			  name, wxString::Format(wxT("%g"), x)); }
 	
 };

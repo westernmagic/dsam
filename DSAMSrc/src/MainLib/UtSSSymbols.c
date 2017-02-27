@@ -92,7 +92,7 @@ InitKeyWords_Utility_SSSymbols(SymbolPtr *list)
  */
 
 DSAM_API SymbolPtr
-LookUpSymbol_Utility_SSSymbols(SymbolPtr list, WChar *s)
+LookUpSymbol_Utility_SSSymbols(SymbolPtr list, const WChar *s)
 {
 	Symbol	*sp;
 	
@@ -110,7 +110,7 @@ LookUpSymbol_Utility_SSSymbols(SymbolPtr list, WChar *s)
  */
 
 DSAM_API SymbolPtr
-InstallSymbol_Utility_SSSymbols(SymbolPtr *list, WChar *s, int type)
+InstallSymbol_Utility_SSSymbols(SymbolPtr *list, const WChar *s, int type)
 {
 	static const WChar	*funcName = wxT("InstallSymbol_Utility_SSSymbols");
 	Symbol	*sp;

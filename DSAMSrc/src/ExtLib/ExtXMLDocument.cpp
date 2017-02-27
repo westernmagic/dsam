@@ -94,8 +94,9 @@ void
 DSAMXMLDocument::Create(EarObjectPtr simProcess)
 {
 	SetVersion(wxT("1.1"));
-	DSAMXMLNode *dSAMElement = new DSAMXMLNode(wxXML_ELEMENT_NODE, DSAM_XML_DSAM_ELEMENT);
-	dSAMElement->AddProperty(DSAM_XML_VERSION_ATTRIBUTE, GetDSAMPtr_Common()->
+	DSAMXMLNode *dSAMElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
+	  DSAM_XML_DSAM_ELEMENT);
+	dSAMElement->MyAddAttribute(DSAM_XML_VERSION_ATTRIBUTE, GetDSAMPtr_Common()->
 	  version);
 	AddAppInfo(dSAMElement);
 	AddSimulation(dSAMElement, simProcess);
@@ -104,7 +105,7 @@ DSAMXMLDocument::Create(EarObjectPtr simProcess)
 }
 
 /******************************************************************************/
-/****************************** AddSimConnections **************************/
+/****************************** AddSimConnections *****************************/
 /******************************************************************************/
 
 void
@@ -115,7 +116,7 @@ DSAMXMLDocument::AddSimConnections(DSAMXMLNode *node, DynaListPtr list,
 
 	for (dNode = list; dNode != NULL; dNode = dNode->next) {
 		DSAMXMLNode *connectionElement = new DSAMXMLNode(wxXML_ELEMENT_NODE, type);
-		connectionElement->AddProperty(DSAM_XML_LABEL_ATTRIBUTE, (WChar *) 
+		connectionElement->MyAddAttribute(DSAM_XML_LABEL_ATTRIBUTE, (WChar *)
 		  dNode->data);
 		node->AddChild(connectionElement);
 	}
@@ -129,9 +130,9 @@ DSAMXMLDocument::AddSimConnections(DSAMXMLNode *node, DynaListPtr list,
 #define CREATE_OBJECT_ELEMENT(PC, TYPE)	\
 			DSAMXMLNode *objectElement = new DSAMXMLNode(wxXML_ELEMENT_NODE, \
 			  DSAM_XML_OBJECT_ELEMENT); \
-			objectElement->AddProperty(DSAM_XML_TYPE_ATTRIBUTE, (TYPE)); \
+			objectElement->MyAddAttribute(DSAM_XML_TYPE_ATTRIBUTE, (TYPE)); \
 			if ((PC)->label && *(PC)->label) \
-				objectElement->AddProperty(DSAM_XML_LABEL_ATTRIBUTE, \
+				objectElement->MyAddAttribute(DSAM_XML_LABEL_ATTRIBUTE, \
 				  (PC)->label)
 
 DatumPtr
@@ -148,10 +149,10 @@ DSAMXMLDocument::AddSimObjects(DSAMXMLNode *parent, DatumPtr start)
 				break;
 			}
 			CREATE_OBJECT_ELEMENT(pc, DSAM_XML_PROCESS_ATTRIBUTE_VALUE);
-			objectElement->AddProperty(DSAM_XML_NAME_ATTRIBUTE, 
+			objectElement->MyAddAttribute(DSAM_XML_NAME_ATTRIBUTE,
 			  pc->data->module->name);
 			if (!pc->data->module->onFlag)
-				objectElement->AddProperty(DSAM_XML_ENABLED_ATTRIBUTE, wxT("0"));
+				objectElement->MyAddAttribute(DSAM_XML_ENABLED_ATTRIBUTE, wxT("0"));
 			AddSimConnections(objectElement, pc->u.proc.inputList,
 			  DSAM_XML_INPUT_ELEMENT);
 			AddSimConnections(objectElement, pc->u.proc.outputList,
@@ -162,15 +163,14 @@ DSAMXMLDocument::AddSimObjects(DSAMXMLNode *parent, DatumPtr start)
 			break; }
 		case REPEAT: {
 			CREATE_OBJECT_ELEMENT(pc, GetProcessName_Utility_Datum(pc));
-			objectElement->AddProperty(DSAM_XML_COUNT_ATTRIBUTE, wxString::
-			  Format(wxT("%d"), pc->u.loop.count));
+			objectElement->MyAddAttribute(DSAM_XML_COUNT_ATTRIBUTE, pc->u.loop.count);
 			AddShapeInfo(objectElement, pc->shapePtr);
 			pc = lastInstruction = AddSimObjects(objectElement, pc->next);
 			parent->AddChild(objectElement);
 			break; }
 		case RESET: {
 			CREATE_OBJECT_ELEMENT(pc, GetProcessName_Utility_Datum(pc));
-			objectElement->AddProperty(DSAM_XML_OBJLABEL_ATTRIBUTE, pc->u.
+			objectElement->MyAddAttribute(DSAM_XML_OBJLABEL_ATTRIBUTE, pc->u.
 			  ref.string);
 			AddShapeInfo(objectElement, pc->shapePtr);
 			parent->AddChild(objectElement);
@@ -242,7 +242,7 @@ DSAMXMLDocument::AddParGeneral(DSAMXMLNode *parent, UniParPtr p)
 	case UNIPAR_PARARRAY: {
 		DSAMXMLNode *parArrayElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 		  DSAM_XML_PARARRAY_ELEMENT);
-		parArrayElement->AddProperty(DSAM_XML_NAME_ATTRIBUTE, (*p->valuePtr.pAPtr)->
+		parArrayElement->MyAddAttribute(DSAM_XML_NAME_ATTRIBUTE, (*p->valuePtr.pAPtr)->
 		  name);
 		AddParList(parArrayElement, (*p->valuePtr.pAPtr)->parList);
 		parent->AddChild(parArrayElement);
@@ -262,9 +262,9 @@ DSAMXMLDocument::AddParGeneral(DSAMXMLNode *parent, UniParPtr p)
 			p->valuePtr.array.index = i;
 			DSAMXMLNode *parElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 			  DSAM_XML_PAR_ELEMENT);
-			parElement->AddProperty(DSAM_XML_NAME_ATTRIBUTE, p->abbr);
+			parElement->MyAddAttribute(DSAM_XML_NAME_ATTRIBUTE, p->abbr);
 			str.Printf(wxT("%d:%s"), i, GetParString_UniParMgr(p));
-			parElement->AddProperty(DSAM_XML_VALUE_ATTRIBUTE, str);
+			parElement->MyAddAttribute(DSAM_XML_VALUE_ATTRIBUTE, str);
 			parent->AddChild(parElement);
 			p->valuePtr.array.index = oldIndex;
 		}
@@ -276,8 +276,8 @@ DSAMXMLDocument::AddParGeneral(DSAMXMLNode *parent, UniParPtr p)
 			break;
 		DSAMXMLNode *parElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 		  DSAM_XML_PAR_ELEMENT);
-		parElement->AddProperty(DSAM_XML_NAME_ATTRIBUTE, p->abbr);
-		parElement->AddProperty(DSAM_XML_VALUE_ATTRIBUTE, 
+		parElement->MyAddAttribute(DSAM_XML_NAME_ATTRIBUTE, p->abbr);
+		parElement->MyAddAttribute(DSAM_XML_VALUE_ATTRIBUTE,
 		  GetParString_UniParMgr(p));
 		parent->AddChild(parElement);
 	}
@@ -318,7 +318,7 @@ DSAMXMLDocument::AddParList(DSAMXMLNode *parent, UniParListPtr parList, const wx
 	DSAMXMLNode *parListElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 	  DSAM_XML_PAR_LIST_ELEMENT);
 	if (name)
-		parListElement->AddProperty(DSAM_XML_NAME_ATTRIBUTE, name);
+		parListElement->MyAddAttribute(DSAM_XML_NAME_ATTRIBUTE, name);
 	AddParListStandard(parListElement, parList);
 	parent->AddChild(parListElement);
 
@@ -333,9 +333,9 @@ DSAMXMLDocument::AddAppInfo(DSAMXMLNode *parent)
 {
 	DSAMXMLNode *appElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 	  DSAM_XML_APPLICATION_ELEMENT);
-	appElement->AddProperty(DSAM_XML_NAME_ATTRIBUTE, GetPtr_AppInterface()->
+	appElement->MyAddAttribute(DSAM_XML_NAME_ATTRIBUTE, GetPtr_AppInterface()->
 	  appName);
-	appElement->AddProperty(DSAM_XML_VERSION_ATTRIBUTE, GetPtr_AppInterface()->
+	appElement->MyAddAttribute(DSAM_XML_VERSION_ATTRIBUTE, GetPtr_AppInterface()->
 	  appVersion);
 	AddParList(appElement, GetPtr_AppInterface()->parList);
 	parent->AddChild(appElement);
@@ -378,7 +378,7 @@ DSAMXMLDocument::XMLNotifyError(wxXmlNode *node, const wxChar *format, ...)
 	va_list	args;
 
 	va_start(args, format);
-	NotifyError((wxChar *) CreateNotification(node, format, args).C_STR());
+	NotifyError((const wxChar *) CreateNotification(node, format, args).C_STR());
 	va_end(args);
 
 }
@@ -397,7 +397,7 @@ DSAMXMLDocument::XMLNotifyWarning(wxXmlNode *node, const wxChar *format, ...)
 	va_list	args;
 
 	va_start(args, format);
-	NotifyWarning((wxChar*) CreateNotification(node, format, args).C_STR());
+	NotifyWarning((const wxChar*) CreateNotification(node, format, args).C_STR());
 	va_end(args);
 
 }
@@ -445,21 +445,21 @@ DSAMXMLDocument::GetParArrayInfo(wxXmlNode * parArrayElement, UniParList *parLis
 	UniParList	*subParList;
 	wxXmlNode	*parListElement;
 
-	if (!parArrayElement->GetPropVal(DSAM_XML_NAME_ATTRIBUTE, &parName)) {
+	if (!parArrayElement->GetAttribute(DSAM_XML_NAME_ATTRIBUTE, &parName)) {
 		XMLNotifyError(parArrayElement, wxT("%s: Element must have a ")
 		  wxT("name."), funcName);
 		return(false);
 	}
 	subParList = parList;
-	if ((par = FindUniPar_UniParMgr(&subParList, (wxChar *) parName.C_STR(),
+	if ((par = FindUniPar_UniParMgr(&subParList, (const wxChar *) parName.C_STR(),
 	  UNIPAR_SEARCH_ABBR)) == NULL) {
 		XMLNotifyError(parArrayElement, wxT("%s: Parameter '%s' not ")
-		  wxT("found"), funcName, (wxChar *) parName.C_STR());
+		  wxT("found"), funcName, (const wxChar *) parName.C_STR());
 		return(false);
 	}
 	if ((parListElement = parArrayElement->GetChildren()) == NULL) {
 	  	XMLNotifyError(parArrayElement, wxT("%s: Could not find sub-")
-		  wxT("parameter list for '%s' par_array."), funcName, (wxChar *)
+		  wxT("parameter list for '%s' par_array."), funcName, (const wxChar *)
 		  parName.C_STR());
 		return(false);
 	}
@@ -579,35 +579,35 @@ DSAMXMLDocument::GetParInfo(wxXmlNode *parListElement, UniParList *parList)
 
 	for (child = parListElement->GetChildren(); child; child = child->GetNext())
 		if (child->GetName() == DSAM_XML_PAR_ELEMENT) {
-			if (!child->GetPropVal(DSAM_XML_NAME_ATTRIBUTE, &parName)) {
+			if (!child->GetAttribute(DSAM_XML_NAME_ATTRIBUTE, &parName)) {
 				XMLNotifyError(child, wxT("%s: Missing parameter '%s'."),
 				  funcName, DSAM_XML_NAME_ATTRIBUTE);
 				return(false);
 			}
-			if ((par = FindUniPar_UniParMgr(&parList, (wxChar *) parName.C_STR(),
+			if ((par = FindUniPar_UniParMgr(&parList, (const wxChar *) parName.C_STR(),
 			  UNIPAR_SEARCH_ABBR)) == NULL) {
 				XMLNotifyError(child, wxT("%s: Parameter '%s' not found."),
 				  funcName, parName.C_STR());
 				return(false);
 			}
-			if (!child->GetPropVal(DSAM_XML_VALUE_ATTRIBUTE, &parValue)) {
+			if (!child->GetAttribute(DSAM_XML_VALUE_ATTRIBUTE, &parValue)) {
 				XMLNotifyError(child, wxT("%s: Missing parameter '%s'."),
 				  funcName, DSAM_XML_VALUE_ATTRIBUTE);
 				return(false);
 			}
-			if (!SetParValue_UniParMgr(&parList, par->index, (wxChar *) parValue.
+			if (!SetParValue_UniParMgr(&parList, par->index, (const wxChar *) parValue.
 			  C_STR())) {
 				XMLNotifyError(child, wxT("%s: Could not set %s parameter to ")
 				  wxT("%s."), funcName, parName.C_STR(), parValue.C_STR());
 				return(false);
 			}
 		} else if (child->GetName() == DSAM_XML_PAR_LIST_ELEMENT) {
-			if (!child->GetPropVal(DSAM_XML_NAME_ATTRIBUTE, &parName)) {
+			if (!child->GetAttribute(DSAM_XML_NAME_ATTRIBUTE, &parName)) {
 				XMLNotifyError(child, wxT("%s: '%s' Sub-parameter ")
 				  wxT("must have a name."), funcName, DSAM_XML_PAR_LIST_ELEMENT);
 				return(false);
 			}
-			if ((par = FindUniPar_UniParMgr(&parList, (wxChar *) parName.C_STR(),
+			if ((par = FindUniPar_UniParMgr(&parList, (const wxChar *) parName.C_STR(),
 			  UNIPAR_SEARCH_ABBR)) == NULL) {
 				XMLNotifyError(child, wxT("%s: Sub-parameter list ")
 				  wxT("'%s' parameter '%s' not found"), funcName,
@@ -677,10 +677,10 @@ DSAMXMLDocument::GetApplicationInfo(wxXmlNode *appElement)
 	
 	if (!appElement || (appElement->GetName() != DSAM_XML_APPLICATION_ELEMENT))
 		return;
-	if (!appElement->GetPropVal(DSAM_XML_NAME_ATTRIBUTE, &appName))
+	if (!appElement->GetAttribute(DSAM_XML_NAME_ATTRIBUTE, &appName))
 		return;
 
-	if (!appElement->GetPropVal(DSAM_XML_VERSION_ATTRIBUTE, &appVersion) ||
+	if (!appElement->GetAttribute(DSAM_XML_VERSION_ATTRIBUTE, &appVersion) ||
 	  !ValidVersion(appVersion, GetPtr_AppInterface()->appVersion)) {
 		XMLNotifyWarning(appElement, wxT("%s: Invalid application version, ")
 		  wxT("element ignored."), funcName);
@@ -701,13 +701,13 @@ DSAMXMLDocument::GetConnectionInfo(wxXmlNode *connectionElement, DynaListPtr *p)
 	static const wxChar *funcName = wxT("DSAMXMLDocument::GetConnectionInfo");
 	wxString	label;
 
-	if (!connectionElement->GetPropVal(DSAM_XML_LABEL_ATTRIBUTE, &label)) {
+	if (!connectionElement->GetAttribute(DSAM_XML_LABEL_ATTRIBUTE, &label)) {
 		XMLNotifyError(connectionElement, wxT("%s: Connection has no label."),
 		  funcName);
 		return(false);
 	}
 	Append_Utility_DynaList(p, InstallSymbol_Utility_SSSymbols(
-	  &simScriptPtr->symList, (wxChar *) label.C_STR(), STRING)->name);
+	  &simScriptPtr->symList, (const wxChar *) label.C_STR(), STRING)->name);
 	return(true);
 
 }
@@ -724,40 +724,42 @@ DSAMXMLDocument::InstallProcess(wxXmlNode *objectElement)
 	DatumPtr	pc;
 	wxXmlNode	*node;
 
-	if (!objectElement->GetPropVal(DSAM_XML_NAME_ATTRIBUTE, &moduleName)) {
+	if (!objectElement->GetAttribute(DSAM_XML_NAME_ATTRIBUTE, &moduleName)) {
 		XMLNotifyError(objectElement, wxT("%s: Missing process name"),
 		  funcName);
 		return(NULL);
 	}
 	if ((pc = InstallInst(objectElement, PROCESS)) == NULL) {
 		XMLNotifyError(objectElement, wxT("%s: Could not initialise ")
-		  wxT("instruction for '%s'"), funcName, (wxChar *) moduleName.C_STR());
+		  wxT("instruction for '%s'"), funcName, (const wxChar *)
+		  moduleName.C_STR());
 		return(NULL);
 	}
-	pc->u.proc.moduleName = InitString_Utility_String((wxChar *) moduleName.
+	pc->u.proc.moduleName = InitString_Utility_String((const wxChar *) moduleName.
 	  C_STR());
 	if (!InitProcessInst_Utility_Datum(pc)) {
 		XMLNotifyError(objectElement, wxT("%s: Could not initialise process ")
-		  wxT("'%s'"), funcName, (wxChar *) moduleName.C_STR());
+		  wxT("'%s'"), funcName, (const wxChar *) moduleName.C_STR());
 		return(NULL);
 	}
-	if (objectElement->GetPropVal(DSAM_XML_ENABLED_ATTRIBUTE, &enabledStatus))
+	if (objectElement->GetAttribute(DSAM_XML_ENABLED_ATTRIBUTE, &enabledStatus))
 		EnableProcess_Utility_Datum(pc, DSAM_atoi(enabledStatus.C_STR()));
 	for (node = objectElement->GetChildren(); node; node = node->GetNext())
 		if ((node->GetName() == DSAM_XML_PAR_LIST_ELEMENT) &&
 		  !GetParListInfo(node, GetUniParListPtr_ModuleMgr(pc->data))) {
 			XMLNotifyError(objectElement, wxT("%s: Could not initialise '%s' ")
-			  wxT("module parameters"), funcName, (wxChar *) moduleName.C_STR());
+			  wxT("module parameters"), funcName, (const wxChar *)
+			  moduleName.C_STR());
 			return(NULL);
 		} else if ((node->GetName() == DSAM_XML_INPUT_ELEMENT) &&
 		  !GetConnectionInfo(node, &pc->u.proc.inputList)) {
 			XMLNotifyError(objectElement, wxT("%s: Could not find '%s' module input ")
-			  wxT("connections"), funcName, (wxChar *) moduleName.C_STR());
+			  wxT("connections"), funcName, (const wxChar *) moduleName.C_STR());
 			return(NULL);
 		} else if ((node->GetName() == DSAM_XML_OUTPUT_ELEMENT) &&
 		  !GetConnectionInfo(node, &pc->u.proc.outputList)) {
 			XMLNotifyError(objectElement, wxT("%s: Could not find '%s' module output ")
-			  wxT("connections"), funcName, (wxChar *) moduleName.C_STR());
+			  wxT("connections"), funcName, (const wxChar *) moduleName.C_STR());
 			return(NULL);
 		} else if (node->GetName() == DSAM_XML_SHAPE_ELEMENT)
 			GetShapeInfo(node, pc);
@@ -789,8 +791,8 @@ DSAMXMLDocument::InstallInst(wxXmlNode *objectElement, int type)
 		  wxT("instruction"), funcName);
 		return(NULL);
 	}
-	if (objectElement->GetPropVal(DSAM_XML_LABEL_ATTRIBUTE, &label))
-		pc->label = InitString_Utility_String((wxChar *) label.C_STR());
+	if (objectElement->GetAttribute(DSAM_XML_LABEL_ATTRIBUTE, &label))
+		pc->label = InitString_Utility_String((const wxChar *) label.C_STR());
 	return(pc);
 
 }
@@ -813,7 +815,7 @@ DSAMXMLDocument::InstallSimulationNodes(wxXmlNode *startSimElement)
 	for (objectElement = startSimElement; objectElement && (objectElement->
 	  GetName() == DSAM_XML_OBJECT_ELEMENT); objectElement = objectElement->
 	  GetNext()) {
-		if (!objectElement->GetPropVal(DSAM_XML_TYPE_ATTRIBUTE, &objectType)) {
+		if (!objectElement->GetAttribute(DSAM_XML_TYPE_ATTRIBUTE, &objectType)) {
 			XMLNotifyError(objectElement, wxT("%s: Missing object 'type' in ")
 			  wxT("simulation"), funcName);
 			return(false);
@@ -827,12 +829,12 @@ DSAMXMLDocument::InstallSimulationNodes(wxXmlNode *startSimElement)
 			}
 			GetShapeInfo(child, pc);
 		} else if ((sp = LookUpSymbol_Utility_SSSymbols(dSAMMainApp->GetSymList(
-		  ), (wxChar *) objectType.C_STR())) != NULL) {
+		  ), (const wxChar *) objectType.C_STR())) != NULL) {
 			switch (sp->type) {
 			case REPEAT:
 				if ((pc = InstallInst(objectElement, sp->type)) == NULL)
 					break;
-				if (!objectElement->GetPropVal(DSAM_XML_COUNT_ATTRIBUTE, &propVal)) {
+				if (!objectElement->GetAttribute(DSAM_XML_COUNT_ATTRIBUTE, &propVal)) {
 					XMLNotifyError(objectElement, wxT("%s: Could not find ")
 					  wxT("count."), funcName);
 					return(false);
@@ -850,12 +852,12 @@ DSAMXMLDocument::InstallSimulationNodes(wxXmlNode *startSimElement)
 			case RESET:
 				if ((pc = InstallInst(objectElement, sp->type)) == NULL)
 					break;
-				if (!objectElement->GetPropVal(DSAM_XML_OBJLABEL_ATTRIBUTE, &label)) {
+				if (!objectElement->GetAttribute(DSAM_XML_OBJLABEL_ATTRIBUTE, &label)) {
 					XMLNotifyError(objectElement, wxT("%s: reset process label ")
 					  wxT("missing"), funcName);
 					return(false);
 				}
-				pc->u.ref.string = InitString_Utility_String((wxChar *) label.
+				pc->u.ref.string = InitString_Utility_String((const wxChar *) label.
 				  C_STR());
 				GetShapeInfo(child, pc);
 				break;
@@ -948,7 +950,7 @@ DSAMXMLDocument::Translate(void)
 		  funcName);
 		return(false);
 	}
-	if (!GetRoot()->GetPropVal(DSAM_XML_VERSION_ATTRIBUTE, &docDSAMVersion)) {
+	if (!GetRoot()->GetAttribute(DSAM_XML_VERSION_ATTRIBUTE, &docDSAMVersion)) {
 		NotifyError(wxT("%s: Could not get DSAM version."), funcName);
 		return(false);
 	}

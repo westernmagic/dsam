@@ -1,0 +1,6 @@
+libdsam_la-IOAudioIn.lo: IOAudioIn.c /usr/include/stdc-predef.h \
+ ../../DSAMSetup.h
+
+/usr/include/stdc-predef.h:
+
+../../DSAMSetup.h:

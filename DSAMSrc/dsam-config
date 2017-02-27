@@ -1,0 +1,162 @@
+#!/bin/sh
+#######################
+##
+## File:		dsam-config.in
+## Purpose:		Configuration script
+## Comments:	
+## Author:		L. P. O'Mard
+## Created:		
+## Updated:
+## Copyright:	(c) 2010 Lowel P. O'Mard
+##
+#######################
+##
+##  This file is part of DSAM.
+##
+##  DSAM is free software: you can redistribute it and/or modify
+##  it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+##
+##  DSAM is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU General Public License for more details.
+##
+##  You should have received a copy of the GNU General Public License
+##  along with DSAM.  If not, see <http://www.gnu.org/licenses/>.
+##
+#######################
+
+
+prefix=/usr/local
+exec_prefix=${prefix}
+exec_prefix_set=no
+
+usage()
+{
+	cat <<EOF
+Usage: dsam-config [OPTIONS] [LIBRARIES]
+Options:
+	[--cflags]
+	[--debug]
+	[--exec-prefix[=DIR]]
+	[--gui]
+	[--libs]
+	[--prefix[=DIR]]
+	[--plugin]
+	[--rflags]
+	[--version]
+EOF
+	exit $1
+}
+
+if [ $# -eq 0 ]; then
+	usage 1 1>&2
+fi
+
+while [ $# -gt 0 ]; do
+	case "$1" in
+	-*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+	*) optarg= ;;
+	esac
+
+	case $1 in
+	--prefix=*)
+		prefix=$optarg
+		if [ $exec_prefix_set = no ]; then
+			exec_prefix=$optarg
+		fi
+		;;
+	--prefix)
+		echo_prefix=yes
+		;;
+	--exec-prefix=*)
+		exec_prefix=$optarg
+		exec_prefix_set=yes
+		;;
+	--exec-prefix)
+		echo_exec_prefix=yes
+		;;
+	--version)
+		echo 2.8.47
+		exit 0
+		;;
+	--cflags)
+		if [ "${prefix}/include" != /usr/include ]; then
+			includes="-I${prefix}/include"
+		fi
+		echo_cflags=yes
+		;;
+	--rflags)
+		echo_rflags=yes
+		;;
+	--libs)
+		echo_libs=yes
+		;;
+	--gui)
+		if [ -z "#" ]; then
+			echo Graphics support not installed.
+			exit 1
+		fi
+		use_gui=yes
+		;;
+	--plugin)
+		create_plugin=yes
+		;;
+	--debug)
+		use_debug=yes
+		;;
+	*)
+		usage 1 1>&2
+		;;
+	esac
+	shift
+done
+
+if [ "$echo_prefix" = "yes" ]; then
+	echo $prefix
+fi
+if [ "$echo_exec_prefix" = "yes" ]; then
+	echo $exec_prefix
+fi
+if test "$echo_cflags" = "yes"; then
+	cflags="-DHAVE_CONFIG_H  -DDSAM_VERSION_INT=2008047   -DDSAM_USE_UNICODE=1 -DEXTENSIONS_SUPPORT=1 -fPIC -DPIC -I${prefix}/include/dsam -pthread -I/usr/include/alsa  "
+	if [ "$use_debug" = "yes" ]; then
+		cflags="$cflags -ggdb3 -Wall -DDMALLOC"
+	fi
+	if [ "$use_gui" = "yes" ]; then
+		cflags="$cflags -DUSE_GUI -I/usr/lib64/wx/include/gtk3-unicode-3.0 -I/usr/include/wx-3.0 -D_FILE_OFFSET_BITS=64 -DWXUSINGDLL -D__WXGTK__ -pthread "
+	else
+		cflags="$cflags -I/usr/lib64/wx/include/gtk3-unicode-3.0 -I/usr/include/wx-3.0 -D_FILE_OFFSET_BITS=64 -DWXUSINGDLL -D__WXGTK__ -DwxUSE_GUI=0 -pthread"
+	fi
+	if [ "" = "yes" -a "$use_debug" != "yes" ]; then
+		cflags="$cflags -mwindows"
+	fi
+	echo $cflags
+fi
+if [ "$echo_rflags" = "yes" ]; then
+	rflags="--include-dir /usr/include       --include-dir /usr//include --include-dir ${prefix}/include"
+	echo $rflags
+fi
+if [ "$echo_libs" = "yes" ]; then
+	libs="-L${exec_prefix}/lib  -ldsam_ext -ldsam -lsndfile -lfftw3 -lportaudio -lasound -lm -lpthread -lasound"
+	if test "$use_debug" = "yes"; then
+		libs="$libs -ldmalloc"
+		if test "$use_gui" = "yes"; then
+			libs="$libs -ldmallocxx"
+		fi
+	fi
+	if test "$create_plugin" = "yes"; then
+		libs="$libs --shared"
+	fi
+	if [ "$use_gui" = "yes" ]; then
+		libs="-ldsam_g $libs -pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_gtk3u_ogl-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0  -pthread   -lwx_gtk3u_ogl-3.0 -lwx_baseu-3.0 "
+	else
+		libs="$libs -lm"
+		if [ -z "" ]; then
+			libs="$libs -pthread   -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0 "
+		fi
+	fi
+	echo $libs
+fi

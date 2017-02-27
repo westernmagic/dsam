@@ -74,9 +74,9 @@ DSAM_API int	fprintf_Utility_String(FILE *fp, const WChar *format, ...);
 
 WChar *	GetFileNameFPath_Utility_String(WChar *fileName);
 
-WChar *	GetSuffix_Utility_String(WChar *fileName);
+const WChar *	GetSuffix_Utility_String(const WChar *fileName);
 
-DSAM_API WChar *	InitString_Utility_String(WChar *string);
+DSAM_API WChar *	InitString_Utility_String(const WChar *string);
 
 WChar *	QuotedString_Utility_String(const WChar *string);
 

@@ -214,7 +214,7 @@ NameSpecifier *	DSAMFormatList_DataFile(int index);
 
 ChanLen	FileLength_DataFile(FILE *fp);
 
-FileFormatSpecifier		Format_DataFile(WChar *formatExtension);
+FileFormatSpecifier		Format_DataFile(const WChar *formatExtension);
 
 BOOLN	Free_DataFile(void);
 

@@ -730,7 +730,7 @@ SetEndian_DataFile(WChar *endian)
  */
 
 FileFormatSpecifier
-Format_DataFile(WChar *suffix)
+Format_DataFile(const WChar *suffix)
 {
 
 	return(dataFilePtr->type = Identify_NameSpecifier(suffix, dataFileSndFormatInfo.
