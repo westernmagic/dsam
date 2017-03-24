@@ -576,7 +576,7 @@ ParListInfo::SetParValue(ParControl *control)
 	}
 	if (pc)
 		SET_PARS_POINTER(pc->data);
-	if (SetParValue_UniParMgr(&parList, control->GetPar()->index, (wxChar *)
+	if (SetParValue_UniParMgr(&parList, control->GetPar()->index, (const wxChar *)
 	  value.c_str())) {
 		control->SetUpdateFlag(FALSE);
 		return(TRUE);

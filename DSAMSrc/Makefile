@@ -261,13 +261,13 @@ AUTOMAKE = ${SHELL} /home/lowel/git/dsam/DSAMSrc/CfgTools/missing automake-1.15
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -ggdb3 -Wall -Wstrict-prototypes
+CFLAGS = -g -O2
 CPP = gcc -E
 CPPFLAGS = 
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -ggdb3 -Wall
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -351,8 +351,8 @@ SNDFILE_LIBS = -lsndfile
 STRIP = strip
 VERSION = 2.8.47
 WXINC = -I/usr/lib64/wx/include/gtk3-unicode-3.0 -I/usr/include/wx-3.0 -D_FILE_OFFSET_BITS=64 -DWXUSINGDLL -D__WXGTK__ -pthread 
-WXLDLIBS = -pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_gtk3u_ogl-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0 
-WXOGLLIBS = -pthread   -lwx_gtk3u_ogl-3.0 -lwx_baseu-3.0 
+WXLDLIBS = -pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0 
+WXOGLLIBS = -L/usr/lib64 -logl3-2.4.2 -pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0 
 WXRESFLAGS = --include-dir /usr/include       --include-dir /usr//include
 WX_BASE_CXXFLAGS = -I/usr/lib64/wx/include/gtk3-unicode-3.0 -I/usr/include/wx-3.0 -D_FILE_OFFSET_BITS=64 -DWXUSINGDLL -D__WXGTK__ -DwxUSE_GUI=0 -pthread
 WX_BASE_LIBS = -pthread   -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0 

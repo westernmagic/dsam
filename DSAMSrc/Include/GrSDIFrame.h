@@ -127,7 +127,6 @@ class SDIFrame: public wxDocParentFrame
 	void	DeleteMainParDialog(void);
 	bool	LoadSimulation(void);
 	void	OnAbout(wxCommandEvent& event);
-	void	OnCloseWindow(wxCloseEvent& event);
 	void	OnDiagWindow(wxCommandEvent& event);
 	void	OnExecute(wxCommandEvent& event);
 	void	OnEditMainPars(wxCommandEvent& event);

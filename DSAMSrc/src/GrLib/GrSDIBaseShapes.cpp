@@ -103,18 +103,18 @@ SDIShape::AddPenInfo(DSAMXMLNode *parent)
 	DSAMXMLNode *penElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 	  SHAPE_XML_PEN_ELEMENT);
 	if (myPen->GetWidth() != 1)
-		penElement->AddProperty(SHAPE_XML_WIDTH_ATTRIBUTE,
+		penElement->MyAddAttribute(SHAPE_XML_WIDTH_ATTRIBUTE,
 		  myPen->GetWidth());
 	if ( myPen->GetStyle() != wxSOLID)
-		penElement->AddProperty(SHAPE_XML_STYLE_ATTRIBUTE,
+		penElement->MyAddAttribute(SHAPE_XML_STYLE_ATTRIBUTE,
 		  myPen->GetStyle());
 	wxString penColour = wxTheColourDatabase->FindName(myPen->GetColour());
 	if (penColour == wxEmptyString) {
 		wxString hex(oglColourToHex(myPen->GetColour()));
 		hex = wxString(wxT("#")) + hex;
-		penElement->AddProperty(SHAPE_XML_COLOUR_ATTRIBUTE, hex);
+		penElement->MyAddAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, hex);
 	} else if (penColour != wxT("BLACK"))
-		penElement->AddProperty(SHAPE_XML_COLOUR_ATTRIBUTE, penColour);
+		penElement->MyAddAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, penColour);
 	if (penElement->GetProperties())
 		parent->AddChild(penElement);
 	else
@@ -141,12 +141,12 @@ SDIShape::AddBrushInfo(DSAMXMLNode *parent)
 	if (brushColour == wxEmptyString) {
 		wxString hex(oglColourToHex(myBrush->GetColour()));
 		hex = wxString(wxT("#")) + hex;
-		brushElement->AddProperty(SHAPE_XML_COLOUR_ATTRIBUTE, hex);
+		brushElement->MyAddAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, hex);
 	} else if (brushColour != wxT("WHITE"))
-		brushElement->AddProperty(SHAPE_XML_COLOUR_ATTRIBUTE, brushColour);
+		brushElement->MyAddAttribute(SHAPE_XML_COLOUR_ATTRIBUTE, brushColour);
 
 	if (myBrush->GetStyle() != wxSOLID)
-		brushElement->AddProperty(SHAPE_XML_TYPE_ATTRIBUTE, myBrush->GetStyle());
+		brushElement->MyAddAttribute(SHAPE_XML_TYPE_ATTRIBUTE, myBrush->GetStyle());
 	if (brushElement->GetProperties())
 		parent->AddChild(brushElement);
 	else
@@ -170,7 +170,7 @@ SDIShape::AddLineInfo(DSAMXMLNode *parent)
 		DSAMXMLNode *lineElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 		  SHAPE_XML_LINE_ELEMENT);
 		wxShape *line = (wxShape *) node->GetData();
-		lineElement->AddProperty(DSAM_XML_ID_ATTRIBUTE, line->GetId());
+		lineElement->MyAddAttribute(DSAM_XML_ID_ATTRIBUTE, line->GetId());
 		arcsElement->AddChild(lineElement);
 		node = node->GetNext();
 	}
@@ -197,9 +197,9 @@ SDIShape::AddAttachmentsInfo(DSAMXMLNode *parent)
 		wxAttachmentPoint *point = (wxAttachmentPoint *)node->GetData();
 		DSAMXMLNode *pointElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 		  SHAPE_XML_POINT_ELEMENT);
-		pointElement->AddProperty(DSAM_XML_ID_ATTRIBUTE, point->m_id);
-		pointElement->AddProperty(SHAPE_XML_X_ATTRIBUTE, point->m_x);
-		pointElement->AddProperty(SHAPE_XML_Y_ATTRIBUTE, point->m_y);
+		pointElement->MyAddAttribute(DSAM_XML_ID_ATTRIBUTE, point->m_id);
+		pointElement->MyAddAttribute(SHAPE_XML_X_ATTRIBUTE, point->m_x);
+		pointElement->MyAddAttribute(SHAPE_XML_Y_ATTRIBUTE, point->m_y);
 		attachmentsElement->AddChild(pointElement);
 		node = node->GetNext();
 	}
@@ -220,13 +220,13 @@ SDIShape::AddFontInfo(DSAMXMLNode *parent, wxFont *font)
 	DSAMXMLNode *fontElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 	  SHAPE_XML_FONT_ELEMENT);
 
-	fontElement->AddProperty(SHAPE_XML_POINTSIZE_ATTRIBUTE, (font)?
+	fontElement->MyAddAttribute(SHAPE_XML_POINTSIZE_ATTRIBUTE, (font)?
 	  font->GetPointSize() : SHAPE_DEFAULT_FONT_POINTSIZE);
-	fontElement->AddProperty(SHAPE_XML_FAMILY_ATTRIBUTE, (font)?
+	fontElement->MyAddAttribute(SHAPE_XML_FAMILY_ATTRIBUTE, (font)?
 	  font->GetFamily() : wxDEFAULT);
-	fontElement->AddProperty(SHAPE_XML_STYLE_ATTRIBUTE, (font)?
+	fontElement->MyAddAttribute(SHAPE_XML_STYLE_ATTRIBUTE, (font)?
 	  font->GetStyle() : wxDEFAULT);
-	fontElement->AddProperty(SHAPE_XML_WEIGHT_ATTRIBUTE, (font)?
+	fontElement->MyAddAttribute(SHAPE_XML_WEIGHT_ATTRIBUTE, (font)?
 	  font->GetWeight() : wxNORMAL);
 	parent->AddChild(fontElement);
 
@@ -249,34 +249,34 @@ SDIShape::AddRegions(DSAMXMLNode *parent)
 		DSAMXMLNode *regionElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 		  SHAPE_XML_REGION_ELEMENT);
 
-		regionElement->AddProperty(SHAPE_XML_X_ATTRIBUTE, region->m_x);
-		regionElement->AddProperty(SHAPE_XML_Y_ATTRIBUTE, region->m_y);
-		regionElement->AddProperty(SHAPE_XML_WIDTH_ATTRIBUTE, region->
+		regionElement->MyAddAttribute(SHAPE_XML_X_ATTRIBUTE, region->m_x);
+		regionElement->MyAddAttribute(SHAPE_XML_Y_ATTRIBUTE, region->m_y);
+		regionElement->MyAddAttribute(SHAPE_XML_WIDTH_ATTRIBUTE, region->
 		  GetWidth());
-		regionElement->AddProperty(SHAPE_XML_HEIGHT_ATTRIBUTE, region->
+		regionElement->MyAddAttribute(SHAPE_XML_HEIGHT_ATTRIBUTE, region->
 		  GetHeight());
 
-		regionElement->AddProperty(SHAPE_XML_MIN_WIDTH_ATTRIBUTE, region->
+		regionElement->MyAddAttribute(SHAPE_XML_MIN_WIDTH_ATTRIBUTE, region->
 		  m_minWidth);
-		regionElement->AddProperty(SHAPE_XML_MIN_HEIGHT_ATTRIBUTE,
+		regionElement->MyAddAttribute(SHAPE_XML_MIN_HEIGHT_ATTRIBUTE,
 		  region->m_minHeight);
-		regionElement->AddProperty(SHAPE_XML_PROPORTION_X_ATTRIBUTE,
+		regionElement->MyAddAttribute(SHAPE_XML_PROPORTION_X_ATTRIBUTE,
 		  region->m_regionProportionX);
-		regionElement->AddProperty(SHAPE_XML_PROPORTION_Y_ATTRIBUTE,
+		regionElement->MyAddAttribute(SHAPE_XML_PROPORTION_Y_ATTRIBUTE,
 		  region->m_regionProportionY);
 
-		regionElement->AddProperty(SHAPE_XML_FORMAT_MODE_ATTRIBUTE, region->
+		regionElement->MyAddAttribute(SHAPE_XML_FORMAT_MODE_ATTRIBUTE, region->
 		  m_formatMode);
 
 		AddFontInfo(regionElement, region->m_font);
 
-		regionElement->AddProperty(SHAPE_XML_TEXT_COLOUR_ATTRIBUTE, region->
+		regionElement->MyAddAttribute(SHAPE_XML_TEXT_COLOUR_ATTRIBUTE, region->
 		  m_textColour);
 
 		// New members for pen colour/style
-		regionElement->AddProperty(SHAPE_XML_PEN_COLOUR_ATTRIBUTE, region->
+		regionElement->MyAddAttribute(SHAPE_XML_PEN_COLOUR_ATTRIBUTE, region->
 		  m_penColour);
-		regionElement->AddProperty(SHAPE_XML_PEN_STYLE_ATTRIBUTE, region->
+		regionElement->MyAddAttribute(SHAPE_XML_PEN_STYLE_ATTRIBUTE, region->
 		  m_penStyle);
 
 		// Formatted text:
@@ -287,8 +287,8 @@ SDIShape::AddRegions(DSAMXMLNode *parent)
 			DSAMXMLNode *textElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 			  SHAPE_XML_TEXT_ELEMENT);
 			wxShapeTextLine *line = (wxShapeTextLine *)textNode->GetData();
-			textElement->AddProperty(SHAPE_XML_X_ATTRIBUTE, line->GetX());
-			textElement->AddProperty(SHAPE_XML_Y_ATTRIBUTE, line->GetY());
+			textElement->MyAddAttribute(SHAPE_XML_X_ATTRIBUTE, line->GetX());
+			textElement->MyAddAttribute(SHAPE_XML_Y_ATTRIBUTE, line->GetY());
 			wxXmlNode *textElementText = new wxXmlNode(textElement,
 			  wxXML_TEXT_NODE, wxEmptyString, line->GetText());
 			regionElement->AddChild(textElement);
@@ -317,57 +317,57 @@ SDIShape::AddShapeInfo(DSAMXMLNode *parent)
 
 	DSAMXMLNode *shapeElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 	  SHAPE_XML_SHAPE_ELEMENT);
-	shapeElement->AddProperty(DSAM_XML_TYPE_ATTRIBUTE, GetClassInfo()->
+	shapeElement->MyAddAttribute(DSAM_XML_TYPE_ATTRIBUTE, GetClassInfo()->
 	  GetClassName());
-	shapeElement->AddProperty(DSAM_XML_ID_ATTRIBUTE, GetId());
-	shapeElement->AddProperty(SHAPE_XML_X_ATTRIBUTE, GetX());
-	shapeElement->AddProperty(SHAPE_XML_Y_ATTRIBUTE, GetY());
+	shapeElement->MyAddAttribute(DSAM_XML_ID_ATTRIBUTE, GetId());
+	shapeElement->MyAddAttribute(SHAPE_XML_X_ATTRIBUTE, GetX());
+	shapeElement->MyAddAttribute(SHAPE_XML_Y_ATTRIBUTE, GetY());
 	AddPenInfo(shapeElement);
 	AddBrushInfo(shapeElement);
 	AddLineInfo(shapeElement);
 
 	// Misc. attributes
 	if (m_attachmentMode != 0)
-		shapeElement->AddProperty(SHAPE_XML_USE_ATTACHMENTS_ATTRIBUTE,
+		shapeElement->MyAddAttribute(SHAPE_XML_USE_ATTACHMENTS_ATTRIBUTE,
 		  m_attachmentMode);
 	if (m_sensitivity != OP_ALL)
-		shapeElement->AddProperty(SHAPE_XML_SENSITIVITY_ATTRIBUTE,
+		shapeElement->MyAddAttribute(SHAPE_XML_SENSITIVITY_ATTRIBUTE,
 		  m_sensitivity);
 	if (!m_spaceAttachments)
-		shapeElement->AddProperty(SHAPE_XML_SPACE_ATTACHMENTS_ATTRIBUTE,
+		shapeElement->MyAddAttribute(SHAPE_XML_SPACE_ATTACHMENTS_ATTRIBUTE,
 		  m_spaceAttachments);
 	if (m_fixedWidth)
-		shapeElement->AddProperty(SHAPE_XML_FIXED_WIDTH_ATTRIBUTE,
+		shapeElement->MyAddAttribute(SHAPE_XML_FIXED_WIDTH_ATTRIBUTE,
 		  m_fixedWidth);
 	if (m_fixedHeight)
-		shapeElement->AddProperty(SHAPE_XML_FIXED_HEIGHT_ATTRIBUTE,
+		shapeElement->MyAddAttribute(SHAPE_XML_FIXED_HEIGHT_ATTRIBUTE,
 		  m_fixedHeight);
 	if (m_shadowMode != SHADOW_NONE)
-		shapeElement->AddProperty(SHAPE_XML_SHADOW_MODE_ATTRIBUTE,
+		shapeElement->MyAddAttribute(SHAPE_XML_SHADOW_MODE_ATTRIBUTE,
 		  m_shadowMode);
 	if (!m_centreResize)
-		shapeElement->AddProperty(SHAPE_XML_CENTRE_RESIZE_ATTRIBUTE, wxT("0"));
-	shapeElement->AddProperty(SHAPE_XML_MAINTAIN_ASPECT_RATIO_ATTRIBUTE,
+		shapeElement->MyAddAttribute(SHAPE_XML_CENTRE_RESIZE_ATTRIBUTE, wxT("0"));
+	shapeElement->MyAddAttribute(SHAPE_XML_MAINTAIN_ASPECT_RATIO_ATTRIBUTE,
 	  m_maintainAspectRatio);
 	if (m_highlighted)
-		shapeElement->AddProperty(SHAPE_XML_HILITE_ATTRIBUTE,
+		shapeElement->MyAddAttribute(SHAPE_XML_HILITE_ATTRIBUTE,
 		  m_highlighted);
 
 	if (m_parent) // For composite objects
-		shapeElement->AddProperty(SHAPE_XML_PARENT_ATTRIBUTE,
+		shapeElement->MyAddAttribute(SHAPE_XML_PARENT_ATTRIBUTE,
 		  m_parent->GetId());
 	if (m_rotation != 0.0)
-		shapeElement->AddProperty(SHAPE_XML_ROTATION_ATTRIBUTE,
+		shapeElement->MyAddAttribute(SHAPE_XML_ROTATION_ATTRIBUTE,
 		  m_rotation);
 
 	if (!IsKindOf(CLASSINFO(wxLineShape))) {
-		shapeElement->AddProperty(SHAPE_XML_NECK_LENGTH_ATTRIBUTE,
+		shapeElement->MyAddAttribute(SHAPE_XML_NECK_LENGTH_ATTRIBUTE,
 		  GetBranchNeckLength());
-		shapeElement->AddProperty(SHAPE_XML_STEM_LENGTH_ATTRIBUTE,
+		shapeElement->MyAddAttribute(SHAPE_XML_STEM_LENGTH_ATTRIBUTE,
 		  GetBranchStemLength());
-		shapeElement->AddProperty(SHAPE_XML_BRANCH_SPACING_ATTRIBUTE,
+		shapeElement->MyAddAttribute(SHAPE_XML_BRANCH_SPACING_ATTRIBUTE,
 		  GetBranchSpacing());
-		shapeElement->AddProperty(SHAPE_XML_BRANCH_STYLE_ATTRIBUTE,
+		shapeElement->MyAddAttribute(SHAPE_XML_BRANCH_STYLE_ATTRIBUTE,
 		  GetBranchStyle());
 	}
 
@@ -794,7 +794,7 @@ SDIPolygonShape::AddXMLInfo(DSAMXMLNode *parent)
 	wxObjectList::compatibility_iterator objectNode = GetPoints()->GetFirst();
 	DSAMXMLNode *pointListElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 	  SHAPE_XML_POINT_LIST_ELEMENT);
-	pointListElement->AddProperty(DSAM_XML_ID_ATTRIBUTE,
+	pointListElement->MyAddAttribute(DSAM_XML_ID_ATTRIBUTE,
 	  DSAM_XML_CURRENT_ATTRIBUTE_VALUE);
 	while (objectNode) {
 		wxRealPoint *point = (wxRealPoint *)objectNode->GetData();
@@ -804,7 +804,7 @@ SDIPolygonShape::AddXMLInfo(DSAMXMLNode *parent)
 	parent->AddChild(pointListElement);
 	DSAMXMLNode *originalPointListElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 	  SHAPE_XML_POINT_LIST_ELEMENT);
-	originalPointListElement->AddProperty(DSAM_XML_ID_ATTRIBUTE,
+	originalPointListElement->MyAddAttribute(DSAM_XML_ID_ATTRIBUTE,
 	  DSAM_XML_ORIGINAL_ATTRIBUTE_VALUE);
 	// Save the original (unscaled) points
 	objectNode = GetOriginalPoints()->GetFirst();
@@ -945,8 +945,8 @@ SDIEllipseShape::SDIEllipseShape(double width, double height): wxEllipseShape(
 void
 SDIEllipseShape::AddXMLInfo(DSAMXMLNode *node)
 {
-	node->AddProperty(SHAPE_XML_WIDTH_ATTRIBUTE, GetWidth());
-	node->AddProperty(SHAPE_XML_HEIGHT_ATTRIBUTE, GetHeight());
+	node->MyAddAttribute(SHAPE_XML_WIDTH_ATTRIBUTE, GetWidth());
+	node->MyAddAttribute(SHAPE_XML_HEIGHT_ATTRIBUTE, GetHeight());
 
 }
 
@@ -991,10 +991,10 @@ void
 SDIRectangleShape::AddXMLInfo(DSAMXMLNode *node)
 {
 
-	node->AddProperty(SHAPE_XML_WIDTH_ATTRIBUTE, GetWidth());
-	node->AddProperty(SHAPE_XML_HEIGHT_ATTRIBUTE, GetHeight());
+	node->MyAddAttribute(SHAPE_XML_WIDTH_ATTRIBUTE, GetWidth());
+	node->MyAddAttribute(SHAPE_XML_HEIGHT_ATTRIBUTE, GetHeight());
 	if (m_cornerRadius != 0.0)
-		node->AddProperty(SHAPE_XML_CORNER_ATTRIBUTE, m_cornerRadius);
+		node->MyAddAttribute(SHAPE_XML_CORNER_ATTRIBUTE, m_cornerRadius);
 
 }
 
@@ -1030,8 +1030,8 @@ AddPointInfo(DSAMXMLNode *parent, wxRealPoint *point)
 {
 	DSAMXMLNode *pointElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 	  SHAPE_XML_POINT_ELEMENT);
-	pointElement->AddProperty(SHAPE_XML_X_ATTRIBUTE, point->x);
-	pointElement->AddProperty(SHAPE_XML_Y_ATTRIBUTE, point->y);
+	pointElement->MyAddAttribute(SHAPE_XML_X_ATTRIBUTE, point->x);
+	pointElement->MyAddAttribute(SHAPE_XML_Y_ATTRIBUTE, point->y);
 	parent->AddChild(pointElement);
 
 }

@@ -336,18 +336,18 @@ SDILineShape::AddXMLArrowListInfo(DSAMXMLNode *node, wxNode *aNode)
 		wxArrowHead *head = (wxArrowHead *) aNode->GetData();
 		DSAMXMLNode *arrowElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 		  SHAPE_XML_ARROW_ELEMENT);
-		arrowElement->AddProperty(DSAM_XML_ID_ATTRIBUTE, head->GetId());
-		arrowElement->AddProperty(SHAPE_XML_NAME_ATTRIBUTE, head->
+		arrowElement->MyAddAttribute(DSAM_XML_ID_ATTRIBUTE, head->GetId());
+		arrowElement->MyAddAttribute(SHAPE_XML_NAME_ATTRIBUTE, head->
 		  GetName());
-		arrowElement->AddProperty(SHAPE_XML_TYPE_ATTRIBUTE, head->_GetType());
-		arrowElement->AddProperty(SHAPE_XML_END_ATTRIBUTE, head->GetArrowEnd());
-		arrowElement->AddProperty(SHAPE_XML_X_OFFSET_ATTRIBUTE, head->
+		arrowElement->MyAddAttribute(SHAPE_XML_TYPE_ATTRIBUTE, head->_GetType());
+		arrowElement->MyAddAttribute(SHAPE_XML_END_ATTRIBUTE, head->GetArrowEnd());
+		arrowElement->MyAddAttribute(SHAPE_XML_X_OFFSET_ATTRIBUTE, head->
 		  GetXOffset());
-		arrowElement->AddProperty(SHAPE_XML_Y_OFFSET_ATTRIBUTE, head->
+		arrowElement->MyAddAttribute(SHAPE_XML_Y_OFFSET_ATTRIBUTE, head->
 		  GetYOffset());
-		arrowElement->AddProperty(SHAPE_XML_SIZE_ATTRIBUTE, head->
+		arrowElement->MyAddAttribute(SHAPE_XML_SIZE_ATTRIBUTE, head->
 		  GetArrowSize());
-		arrowElement->AddProperty(SHAPE_XML_SPACING_ATTRIBUTE, head->
+		arrowElement->MyAddAttribute(SHAPE_XML_SPACING_ATTRIBUTE, head->
 		  GetSpacing());
 		myElement->AddChild(arrowElement);
 		aNode = aNode->GetNext();
@@ -364,22 +364,22 @@ SDILineShape::AddXMLInfo(DSAMXMLNode *node)
 	DSAMXMLNode *myElement = new DSAMXMLNode(wxXML_ELEMENT_NODE,
 	  SHAPE_XML_LINE_SHAPE_ELEMENT);
 	if (m_from)
-		myElement->AddProperty(SHAPE_XML_FROM_ATTRIBUTE, m_from->GetId());
+		myElement->MyAddAttribute(SHAPE_XML_FROM_ATTRIBUTE, m_from->GetId());
 	if (m_to)
-		myElement->AddProperty(SHAPE_XML_TO_ATTRIBUTE, m_to->GetId());
+		myElement->MyAddAttribute(SHAPE_XML_TO_ATTRIBUTE, m_to->GetId());
 	if (m_attachmentFrom)
-		myElement->AddProperty(SHAPE_XML_ATTACHMENT_FROM_ELEMENT,
+		myElement->MyAddAttribute(SHAPE_XML_ATTACHMENT_FROM_ELEMENT,
 		  m_attachmentFrom);
 	if (m_attachmentTo)
-		myElement->AddProperty(SHAPE_XML_ATTACHMENT_TO_ELEMENT, m_attachmentTo);
+		myElement->MyAddAttribute(SHAPE_XML_ATTACHMENT_TO_ELEMENT, m_attachmentTo);
 	if (m_alignmentStart)
-		myElement->AddProperty(SHAPE_XML_ALIGNMENT_START_ELEMENT,
+		myElement->MyAddAttribute(SHAPE_XML_ALIGNMENT_START_ELEMENT,
 		  m_alignmentStart);
 	if (m_alignmentEnd)
-		myElement->AddProperty(SHAPE_XML_ALIGNMENT_END_ELEMENT, m_alignmentEnd);
-	myElement->AddProperty(SHAPE_XML_IS_SPLINE_ATTRIBUTE, IsSpline());
+		myElement->MyAddAttribute(SHAPE_XML_ALIGNMENT_END_ELEMENT, m_alignmentEnd);
+	myElement->MyAddAttribute(SHAPE_XML_IS_SPLINE_ATTRIBUTE, IsSpline());
 	if (GetMaintainStraightLines())
-		myElement->AddProperty(SHAPE_XML_KEEP_LINES_STRAIGHT_ELEMENT,
+		myElement->MyAddAttribute(SHAPE_XML_KEEP_LINES_STRAIGHT_ELEMENT,
 		  GetMaintainStraightLines());
 	AddXMLControlPointsInfo(myElement, GetLineControlPoints()->GetFirst());
 	AddXMLArrowListInfo(myElement, GetArrows().GetFirst());

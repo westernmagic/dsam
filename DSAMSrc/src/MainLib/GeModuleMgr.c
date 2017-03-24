@@ -760,7 +760,7 @@ WriteSimParFile_ModuleMgr(WChar *fileName, EarObjectPtr data)
  */
 
 DSAM_API BOOLN
-WritePars_ModuleMgr(WChar *baseFileName, EarObjectPtr process)
+WritePars_ModuleMgr(const WChar *baseFileName, EarObjectPtr process)
 {
 	BOOLN	ok = TRUE, addExtension;
 	WChar	filePath[MAX_FILE_PATH];

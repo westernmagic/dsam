@@ -284,7 +284,7 @@ DSAM_API UniParPtr	FindUniPar_UniParMgr(UniParListPtr *parList,
 
 WChar *	FormatArrayString_UniParMgr(UniParPtr p, int index, WChar *suffix);
 
-DSAM_API WChar *	FormatPar_UniParMgr(UniParPtr p, WChar *suffix);
+DSAM_API WChar *	FormatPar_UniParMgr(UniParPtr p, const WChar *suffix);
 
 DSAM_API void	FreeList_UniParMgr(UniParListPtr *list);
 

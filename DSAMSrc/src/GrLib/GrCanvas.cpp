@@ -392,7 +392,7 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 {
 	static const char *funcName = "MyCanvas::DrawXAxis";
 	int		i, tickLength, yPos, xPos, xTitlePos, yTitlePos;
-	long int	stringWidth, stringHeight;
+	wxCoord	stringWidth, stringHeight;
 	double	tempXAdjust, tempYAdjust, xValue, outputTimeOffset;
 	ChanLen	displayLength;
 	wxString stringNum, label, space = wxT(" ");
@@ -457,7 +457,7 @@ MyCanvas::DrawXAxis(wxDC& dc, int theXOffset, int theYOffset)
 void
 MyCanvas::DrawExponent(wxDC& dc, wxFont *labelFont, int exponent, int x, int y)
 {
-	long int	stringWidth, stringHeight;
+	wxCoord		stringWidth, stringHeight;
 	wxString	string(wxT("10"));
 
 	dc.SetFont(*labelFont);
@@ -505,7 +505,7 @@ MyCanvas::DrawYScale(wxDC& dc, AxisScale &yAxisScale, wxRect *yAxisRect,
 	/* static const char *funcName = "MyCanvas::DrawYScale"; */
 	int		i, j, tickLength, xPos, yPos, top, xLabel;
 	int		leftMostLabel;
-	long int	stringWidth, stringHeight, charWidth;
+	wxCoord	stringWidth, stringHeight, charWidth;
 	double	tempXAdjust, tempYAdjust, chanSpacing, yOffset;
 	double	displayScale, chanDisplayScale, yValue;
 	wxString label, space = wxT(" ");
@@ -564,7 +564,7 @@ MyCanvas::DrawYAxis(wxDC& dc, int theXOffset, int theYOffset)
 {
 	static const char *funcName = "MyCanvas::DrawYAxis";
 	int		i, numDisplayedChans, tickLength, xPos, yPos;
-	long int	stringWidth, stringHeight, charWidth;
+	wxCoord	stringWidth, stringHeight, charWidth;
 	double	tempXAdjust, tempYAdjust, chanSpacing, yTickSpacing, yOffset, minY;
 	double	maxY;
 	wxString format, label, space = wxT(" ");
@@ -816,8 +816,7 @@ void
 MyCanvas::OnPreferences(wxCommandEvent& WXUNUSED(event))
 {
 	ModuleParDialog dialog(this, mySignalDispPtr->title, NULL, mySignalDispPtr->
-	  parList, NULL, 300, 300, 500, 500, wxDEFAULT_DIALOG_STYLE |
-	  wxDIALOG_MODAL);
+	  parList, NULL, 300, 300, 500, 500, wxDEFAULT_DIALOG_STYLE);
 
 	signalDispPtr = mySignalDispPtr;
 	if (dialog.ShowModal() == wxID_OK) {

@@ -80,10 +80,6 @@
 /****************************** Bitmaps ***************************************/
 /******************************************************************************/
 
-/******************************************************************************/
-/****************************** Bitmaps ***************************************/
-/******************************************************************************/
-
 #if USE_XPM_BITMAPS
 #	include "Bitmaps/dsam.xpm"
 #	include "Bitmaps/new.xpm"
@@ -116,7 +112,6 @@ BEGIN_EVENT_TABLE(SDIFrame, wxDocParentFrame)
 	EVT_MENU(SDIFRAME_STOP_SIMULATION, SDIFrame::OnStopSimulation)
 	EVT_MENU(SDIFRAME_EXECUTE, SDIFrame::OnExecute)
 	EVT_SIZE(SDIFrame::OnSize)
-	EVT_CLOSE(SDIFrame::OnCloseWindow)
 END_EVENT_TABLE()
 
 /******************************************************************************/
@@ -176,6 +171,8 @@ SDIFrame::~SDIFrame(void)
 	free(initStringPtrs);
 	MPI_Finalize();
 #	endif
+
+	wxOGLCleanUp();
 
 	DeleteMainParDialog();
 	wxGetApp().ExitMain();
@@ -645,19 +642,6 @@ SDIFrame::OnSize(wxSizeEvent& event)
 
 	}
 	canvas->SetSize(canvasX, canvasY, canvasW, canvasH);
-
-}
-
-/******************************************************************************/
-/*************************** OnCloseWindow ************************************/
-/******************************************************************************/
-
-void
-SDIFrame::OnCloseWindow(wxCloseEvent& event)
-{
-	wxDocParentFrame::OnCloseWindow(event);
-	if (!event.GetVeto())
-		wxOGLCleanUp();
 
 }
 

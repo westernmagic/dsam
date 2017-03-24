@@ -471,7 +471,7 @@ SetAltAbbreviation_UniParMgr(UniParPtr p, WChar *altAbbr)
  */
 
 DSAM_API WChar *
-FormatPar_UniParMgr(UniParPtr p, WChar *suffix)
+FormatPar_UniParMgr(UniParPtr p, const WChar *suffix)
 {
 	static WChar	string[MAXLINE];
 

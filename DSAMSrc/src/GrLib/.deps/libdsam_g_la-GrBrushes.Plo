@@ -17,9 +17,10 @@ libdsam_g_la-GrBrushes.lo: GrBrushes.cpp /usr/include/stdc-predef.h \
  /usr/include/sys/select.h /usr/include/bits/select.h \
  /usr/include/bits/sigset.h /usr/include/bits/time.h \
  /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h \
- /usr/include/alloca.h /usr/include/bits/stdlib-float.h \
- /usr/include/wx-3.0/wx/wxprec.h /usr/include/wx-3.0/wx/defs.h \
- /usr/include/wx-3.0/wx/platform.h /usr/include/wx-3.0/wx/compiler.h \
+ /usr/include/alloca.h /usr/include/bits/stdlib-bsearch.h \
+ /usr/include/bits/stdlib-float.h /usr/include/wx-3.0/wx/wxprec.h \
+ /usr/include/wx-3.0/wx/defs.h /usr/include/wx-3.0/wx/platform.h \
+ /usr/include/wx-3.0/wx/compiler.h \
  /usr/lib64/wx/include/gtk3-unicode-3.0/wx/setup.h \
  /usr/include/wx-3.0/wx/chkconf.h /usr/include/wx-3.0/wx/gtk/chkconf.h \
  /usr/include/wx-3.0/wx/unix/chkconf.h /usr/include/wx-3.0/wx/version.h \
@@ -37,8 +38,9 @@ libdsam_g_la-GrBrushes.lo: GrBrushes.cpp /usr/include/stdc-predef.h \
  /usr/include/wx-3.0/wx/features.h /usr/include/wx-3.0/wx/log.h \
  /usr/include/wx-3.0/wx/string.h /usr/include/string.h \
  /usr/include/libio.h /usr/include/_G_config.h \
- /usr/include/bits/sys_errlist.h /usr/include/wx-3.0/wx/wxcrtbase.h \
- /usr/include/ctype.h /usr/include/wctype.h /usr/include/bits/timex.h \
+ /usr/include/bits/sys_errlist.h /usr/include/bits/stdio.h \
+ /usr/include/wx-3.0/wx/wxcrtbase.h /usr/include/ctype.h \
+ /usr/include/wctype.h /usr/include/bits/timex.h \
  /usr/include/wx-3.0/wx/strvararg.h /usr/include/wx-3.0/wx/strconv.h \
  /usr/include/wx-3.0/wx/buffer.h /usr/include/wx-3.0/wx/fontenc.h \
  /usr/include/wx-3.0/wx/unichar.h /usr/include/wx-3.0/wx/stringimpl.h \
@@ -144,9 +146,9 @@ libdsam_g_la-GrBrushes.lo: GrBrushes.cpp /usr/include/stdc-predef.h \
  /usr/include/bits/huge_val.h /usr/include/bits/huge_valf.h \
  /usr/include/bits/huge_vall.h /usr/include/bits/inf.h \
  /usr/include/bits/nan.h /usr/include/bits/mathdef.h \
- /usr/include/bits/mathcalls.h /usr/include/wx-3.0/wx/utils.h \
- /usr/include/wx-3.0/wx/filefn.h /usr/include/sys/stat.h \
- /usr/include/bits/stat.h /usr/include/unistd.h \
+ /usr/include/bits/mathcalls.h /usr/include/bits/mathinline.h \
+ /usr/include/wx-3.0/wx/utils.h /usr/include/wx-3.0/wx/filefn.h \
+ /usr/include/sys/stat.h /usr/include/bits/stat.h /usr/include/unistd.h \
  /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
  /usr/include/bits/confname.h /usr/include/getopt.h /usr/include/dirent.h \
  /usr/include/bits/dirent.h /usr/include/fcntl.h \
@@ -240,6 +242,8 @@ libdsam_g_la-GrBrushes.lo: GrBrushes.cpp /usr/include/stdc-predef.h \
 
 /usr/include/alloca.h:
 
+/usr/include/bits/stdlib-bsearch.h:
+
 /usr/include/bits/stdlib-float.h:
 
 /usr/include/wx-3.0/wx/wxprec.h:
@@ -311,6 +315,8 @@ libdsam_g_la-GrBrushes.lo: GrBrushes.cpp /usr/include/stdc-predef.h \
 /usr/include/_G_config.h:
 
 /usr/include/bits/sys_errlist.h:
+
+/usr/include/bits/stdio.h:
 
 /usr/include/wx-3.0/wx/wxcrtbase.h:
 
@@ -615,6 +621,8 @@ libdsam_g_la-GrBrushes.lo: GrBrushes.cpp /usr/include/stdc-predef.h \
 /usr/include/bits/mathdef.h:
 
 /usr/include/bits/mathcalls.h:
+
+/usr/include/bits/mathinline.h:
 
 /usr/include/wx-3.0/wx/utils.h:
 

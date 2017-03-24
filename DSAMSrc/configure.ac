@@ -60,9 +60,9 @@ dnl AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 #         better
 # CURRENT: REVISION : AGE
 #
-DSAM_MAJOR_VERSION=2
-DSAM_MINOR_VERSION=8
-DSAM_MICRO_VERSION=47
+DSAM_MAJOR_VERSION=`echo $PACKAGE_VERSION | awk -F . '{print $1}'`
+DSAM_MINOR_VERSION=`echo $PACKAGE_VERSION | awk -F . '{print $2}'`
+DSAM_MICRO_VERSION=`echo $PACKAGE_VERSION | awk -F . '{print $3}'`
 DSAM_INTERFACE_AGE=47
 DSAM_BINARY_AGE=47
 DSAM_RPM_AGE=1
@@ -113,6 +113,7 @@ dnl 'Global' variable declaration
 dnl ============================================================================
 
 WX_CONFIG=wx-config
+OGL_CONFIG=ogl-config
 
 dnl ============================================================================
 dnl Configure ENABLE options
@@ -177,7 +178,7 @@ AC_ARG_WITH(wx_ogl-headers,
 
 AC_ARG_WITH(wx_ogl-lib,
    [  --with-wx_ogl-lib=DIR      wx OGL Library location],
-   [WX_OLIBSAGS="-L$withval"] 
+   [WX_OGL_LDFLAGS="-L$withval"] 
 )
 
 dnl ============================================================================
@@ -467,11 +468,9 @@ dnl ----------------------------------------------------------------------------
 if test x$gui = xyes -a x$wxwinAvailable = xyes; then
     AC_MSG_CHECKING([for wxWidgets GUI support])
     CXXFLAGS_save=$CXXFLAGS
-    #CXXFLAGS="`$WX_CONFIG --cxxflags` $lt_cv_prog_compiler_pic"
     WXINC="`$WX_CONFIG --cxxflags` $lt_cv_prog_compiler_pic"
     CXXFLAGS=$WXINC
     LIBS_save=$LIBS
-    #LIBS=`$WX_CONFIG --libs html,adv,core,base,net,xml`
     WXLDLIBS="`$WX_CONFIG --libs html,adv,core,base,net,xml`"
     LIBS=$WXLDLIBS
     AC_LINK_IFELSE(
@@ -510,19 +509,41 @@ dnl ----------------------------------------------------------------------------
 dnl wx OGL library
 dnl ----------------------------------------------------------------------------
 
+wxOglAvailable=no
+if test x$gui = xyes; then
+    AC_MSG_CHECKING([for OGL configuration shell script ($OGL_CONFIG)])
+    if eval "$OGL_CONFIG --version 2> config.log > /dev/null"; then
+        wxOglAvailable=yes
+        wxOgl_version=`$OGL_CONFIG --version | cut -d. -f 1-2`
+    fi
+    AC_MSG_RESULT($wxOglAvailable)
+fi
+
+# For OGL given cppflags and ldflags will have priority.
+if test x$wxOglAvailable = xyes; then
+	if test -z "$WX_OGL_CPPFLAGS"; then
+		WX_OGL_CPPFLAGS=`$OGL_CONFIG --cflags`
+	fi
+	if test -z "$WX_OGL_LDFLAGS"; then
+		WX_OGL_LDFLAGS=`$OGL_CONFIG --libs`
+	fi
+else
+	WX_OGL_LDFLAGS=`$WX_CONFIG --libs ogl`
+fi
+
 if test x$WX_OGL = xyes -a x$using_wxWidgets_gui = xyes; then
     AC_MSG_CHECKING([for wxWidgets OGL support])
     CXXFLAGS_save=$CXXFLAGS
-    if test -n $WX_OGL_CPPFLAGS; then
+    if test -n "$WX_OGL_CPPFLAGS"; then
     	CXXFLAGS="$WX_OGL_CPPFLAGS $WXINC"
     else
     	CXXFLAGS=$WXINC
     fi
     LIBS_save=$LIBS
-    if test -n "$WX_OLIBSAGS"; then
-    	LIBS="$WX_OLIBSAGS $WXLDLIBS"
+    if test -n "$WX_OGL_LDFLAGS"; then
+    	LIBS="$WX_OGL_LDFLAGS $WXLDLIBS"
     else
-   		LIBS=$WXLDLIBS
+    	LIBS="`$WX_CONFIG --libs ogl` $WXLDLIBS"
    	fi
     AC_LINK_IFELSE(
         [
@@ -654,7 +675,7 @@ AM_CONDITIONAL(DSAM_EXTENSIONS, test x$wx_base_available = xyes)
 
 if test x$using_wxWidgets_ogl = xyes; then
     AC_DEFINE(USE_WX_OGL, 1, [Use wxWidgets OGL Support])
-    WXOGLLIBS="`$WX_CONFIG --libs ogl`"
+    WXOGLLIBS="$WX_OGL_LDFLAGS $WXLDLIBS"
     AC_SUBST(WXOGLLIBS)
 fi
 
@@ -672,7 +693,7 @@ AM_CONDITIONAL(DSAM_GRAPHICS, test x$using_wxWidgets_gui = xyes)
 if  test x$using_wxWidgets_gui = xyes -o x$using_wxWidgets_ogl = xyes; then
     WXINC="`$WX_CONFIG --cxxflags` "
     AC_SUBST(WXINC)
-    WXLDLIBS="`$WX_CONFIG --libs html,adv,core,base,ogl,net,xml`"
+    WXLDLIBS="`$WX_CONFIG --libs html,adv,core,base,net,xml`"
     AC_SUBST(WXLDLIBS)
 fi
 

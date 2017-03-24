@@ -668,7 +668,7 @@ GetParsFileFPath_Common(const WChar *parFile)
 		NotifyWarning(wxT("%s: file path is too long, truncating to '%s'"),
 		  funcName, myParFile);
 	} else
-		DSAM_strcpy(filePath, parFile);
+		DSAM_strcpy(myParFile, parFile);
 	if (!dSAM.parsFilePath) {
 		DSAM_strcpy(filePath, myParFile);
 		return(filePath);

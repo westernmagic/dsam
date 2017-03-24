@@ -71,8 +71,7 @@ class AxisScale
 	wxString	GetFormatString(wxChar formatChar);
 	int		GetNumTicks(void)		{ return numTicks; }
 	bool	GetSettingsChanged()	{ return settingsChanged; }
-	wxChar *	GetOutputFormatString(void)	{ return (wxChar *) outputFormat.
-				  GetData(); }
+	const wxChar *	GetOutputFormatString(void)	{ return outputFormat.GetData(); }
 	double	GetTickValue(int i);
 	int		GetTickPosition(double tickValue);
 	double	GetValueScale(void)			{ return valueScale; }

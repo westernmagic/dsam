@@ -531,7 +531,7 @@ SDICommand::Undo(void)
 
 		wxString	oldLabel;
 		oldLabel = (wxChar *) fromPc->u.ref.string;
-		fromPc->u.ref.string = (wxChar *) shapeLabel.c_str();
+		fromPc->u.ref.string = (const wxChar *) shapeLabel.c_str();
 		shapeLabel = oldLabel;
 
 		DatumPtr	oldPc = fromPc;

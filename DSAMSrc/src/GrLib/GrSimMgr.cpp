@@ -607,7 +607,7 @@ MyApp::SetConfiguration(UniParListPtr parList)
 				parValue = pConfig->Read(indexedName, wxT(""));
 				if (parValue.Len() != 0) {
 					indexedParValue.Printf(wxT("%d:%s"), j, parValue.c_str());
-					SetParValue_UniParMgr(&parList, i, (wxChar *) 
+					SetParValue_UniParMgr(&parList, i, (const wxChar *)
 					  indexedParValue.c_str());
 				}
 			}
@@ -615,7 +615,7 @@ MyApp::SetConfiguration(UniParListPtr parList)
 		default:
 			parValue = pConfig->Read((wxChar *) p->abbr, wxT(""));
 			if (parValue.Len() != 0)
-				SetParValue_UniParMgr(&parList, i, (wxChar *) parValue.c_str());
+				SetParValue_UniParMgr(&parList, i, (const wxChar *) parValue.c_str());
 		}
 	}
 	SetSimulationFileFlag_AppInterface(FALSE); //Don't use sim file name
@@ -643,7 +643,7 @@ MyApp::SaveConfiguration(UniParListPtr parList, const wxString& processSuffix)
 
 	for (i = 0; i < parList->numPars; i++) {
 		p = &parList->pars[i];
-		name = FormatPar_UniParMgr(p, (wxChar *) processSuffix.c_str());
+		name = FormatPar_UniParMgr(p, (const wxChar *) processSuffix.c_str());
 		switch (p->type) {
 		case UNIPAR_PARLIST:
 			if (p->valuePtr.parList.process)

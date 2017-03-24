@@ -1,73 +1,40 @@
-configure:18553: result: yes
-configure:18563: checking for wxWidgets base support for threaded extensions
-configure:18590: g++ -o conftest -I/usr/lib64/wx/include/gtk3-unicode-3.0 -I/usr/include/wx-3.0 -D_FILE_OFFSET_BITS=64 -DWXUSINGDLL -D__WXGTK__ -DwxUSE_GUI=0 -pthread -fPIC -DPIC   conftest.cpp -pthread   -lwx_baseu-3.0  >&5
-configure:18590: $? = 0
-configure:18602: result: yes
-configure:18610: checking for wxWidgets GUI support
-configure:18641: g++ -o conftest -I/usr/lib64/wx/include/gtk3-unicode-3.0 -I/usr/include/wx-3.0 -D_FILE_OFFSET_BITS=64 -DWXUSINGDLL -D__WXGTK__ -pthread -fPIC -DPIC   conftest.cpp -pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0  >&5
-configure:18641: $? = 0
-configure:18653: result: yes
-configure:18661: checking for wxWidgets OGL support
-configure:18698: g++ -o conftest -I/home/lowel/git/dsam/SupportLibs/ogl/include -I/usr/lib64/wx/include/gtk3-unicode-3.0 -I/usr/include/wx-3.0 -D_FILE_OFFSET_BITS=64 -DWXUSINGDLL -D__WXGTK__ -pthread -fPIC -DPIC   conftest.cpp -L/home/lowel/git/dsam/SupportLibs/ogl/src/.libs -logl -pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0  >&5
-In file included from /home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/ogl.h:25:0,
-                 from conftest.cpp:33:
-/home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/basicp.h:39:23: warning: type attributes ignored after type is already defined [-Wattributes]
- class WXDLLIMPEXP_OGL wxShape;
-                       ^~~~~~~
-/home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/basicp.h:44:31: warning: type attributes ignored after type is already defined [-Wattributes]
-  friend class WXDLLIMPEXP_OGL wxShapeEvtHandler;
-                               ^~~~~~~~~~~~~~~~~
-/home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/basicp.h:45:31: warning: type attributes ignored after type is already defined [-Wattributes]
-  friend class WXDLLIMPEXP_OGL wxShape;
-                               ^~~~~~~
-/home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/basicp.h:87:23: warning: type attributes ignored after type is already defined [-Wattributes]
- class WXDLLIMPEXP_OGL wxPolygonShape;
-                       ^~~~~~~~~~~~~~
-/home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/basicp.h:91:32: warning: type attributes ignored after type is already defined [-Wattributes]
-   friend class WXDLLIMPEXP_OGL wxPolygonShape;
-                                ^~~~~~~~~~~~~~
-In file included from /home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/ogl.h:27:0,
-                 from conftest.cpp:33:
-/home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/linesp.h:16:23: warning: type attributes ignored after type is already defined [-Wattributes]
- class WXDLLIMPEXP_OGL wxLineShape;
-                       ^~~~~~~~~~~
-/home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/linesp.h:20:32: warning: type attributes ignored after type is already defined [-Wattributes]
-   friend class WXDLLIMPEXP_OGL wxLineShape;
-                                ^~~~~~~~~~~
-configure:18698: $? = 0
-configure:18710: result: yes
-configure:18773: checking for pkg-config
-configure:18791: found /usr/bin/pkg-config
-configure:18803: result: /usr/bin/pkg-config
-configure:18828: checking pkg-config is at least version 0.9.0
-configure:18831: result: yes
-configure:18841: checking for PORTAUDIO
-configure:18848: $PKG_CONFIG --exists --print-errors "portaudio-2.0 >= 19"
-configure:18851: $? = 0
-configure:18865: $PKG_CONFIG --exists --print-errors "portaudio-2.0 >= 19"
-configure:18868: $? = 0
-configure:18906: result: yes
-configure:18923: checking for SNDFILE
-configure:18930: $PKG_CONFIG --exists --print-errors "sndfile >= 1.0.2"
-configure:18933: $? = 0
-configure:18947: $PKG_CONFIG --exists --print-errors "sndfile >= 1.0.2"
-configure:18950: $? = 0
-configure:18988: result: yes
-configure:19011: checking for FFTW3
-configure:19018: $PKG_CONFIG --exists --print-errors "$FFTW3LIB >= 3.0.0"
-configure:19021: $? = 0
-configure:19035: $PKG_CONFIG --exists --print-errors "$FFTW3LIB >= 3.0.0"
-configure:19038: $? = 0
-configure:19076: result: yes
-configure:19240: checking for C++ compiler version
-configure:19249: g++ --version >&5
+configure:18667: result: yes
+configure:18684: checking for wxWidgets OGL support
+configure:18721: g++ -o conftest -DHAVE_CONFIG_H -DUSE_WX_OGL=1 -I/usr/include -I/usr/lib64/wx/include/gtk3-unicode-3.0 -I/usr/include/wx-3.0 -D_FILE_OFFSET_BITS=64 -DWXUSINGDLL -D__WXGTK__ -pthread -fPIC -DPIC   conftest.cpp -L/usr/lib64 -logl3-2.4.2 -pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0  >&5
+configure:18721: $? = 0
+configure:18733: result: yes
+configure:18796: checking for pkg-config
+configure:18814: found /usr/bin/pkg-config
+configure:18826: result: /usr/bin/pkg-config
+configure:18851: checking pkg-config is at least version 0.9.0
+configure:18854: result: yes
+configure:18864: checking for PORTAUDIO
+configure:18871: $PKG_CONFIG --exists --print-errors "portaudio-2.0 >= 19"
+configure:18874: $? = 0
+configure:18888: $PKG_CONFIG --exists --print-errors "portaudio-2.0 >= 19"
+configure:18891: $? = 0
+configure:18929: result: yes
+configure:18946: checking for SNDFILE
+configure:18953: $PKG_CONFIG --exists --print-errors "sndfile >= 1.0.2"
+configure:18956: $? = 0
+configure:18970: $PKG_CONFIG --exists --print-errors "sndfile >= 1.0.2"
+configure:18973: $? = 0
+configure:19011: result: yes
+configure:19034: checking for FFTW3
+configure:19041: $PKG_CONFIG --exists --print-errors "$FFTW3LIB >= 3.0.0"
+configure:19044: $? = 0
+configure:19058: $PKG_CONFIG --exists --print-errors "$FFTW3LIB >= 3.0.0"
+configure:19061: $? = 0
+configure:19099: result: yes
+configure:19263: checking for C++ compiler version
+configure:19272: g++ --version >&5
 g++ (GCC) 6.3.1 20161221 (Red Hat 6.3.1-1)
 Copyright (C) 2016 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-configure:19260: $? = 0
-configure:19249: g++ -v >&5
+configure:19283: $? = 0
+configure:19272: g++ -v >&5
 Using built-in specs.
 COLLECT_GCC=g++
 COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/6.3.1/lto-wrapper
@@ -75,33 +42,33 @@ Target: x86_64-redhat-linux
 Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,objc,obj-c++,fortran,ada,go,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --disable-libgcj --with-isl --enable-libmpx --enable-gnu-indirect-function --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
 Thread model: posix
 gcc version 6.3.1 20161221 (Red Hat 6.3.1-1) (GCC) 
-configure:19260: $? = 0
-configure:19249: g++ -V >&5
+configure:19283: $? = 0
+configure:19272: g++ -V >&5
 g++: error: unrecognized command line option '-V'
 g++: fatal error: no input files
 compilation terminated.
-configure:19260: $? = 1
-configure:19249: g++ -qversion >&5
+configure:19283: $? = 1
+configure:19272: g++ -qversion >&5
 g++: error: unrecognized command line option '-qversion'; did you mean '--version'?
 g++: fatal error: no input files
 compilation terminated.
-configure:19260: $? = 1
-configure:19264: checking whether we are using the GNU C++ compiler
-configure:19292: result: yes
-configure:19301: checking whether g++ accepts -g
-configure:19362: result: yes
-configure:19387: checking dependency style of g++
-configure:19498: result: gcc3
-configure:19518: checking how to run the C++ preprocessor
-configure:19584: result: g++ -E
-configure:19604: g++ -E  conftest.cpp
-configure:19604: $? = 0
-configure:19618: g++ -E  conftest.cpp
+configure:19283: $? = 1
+configure:19287: checking whether we are using the GNU C++ compiler
+configure:19315: result: yes
+configure:19324: checking whether g++ accepts -g
+configure:19385: result: yes
+configure:19410: checking dependency style of g++
+configure:19521: result: gcc3
+configure:19541: checking how to run the C++ preprocessor
+configure:19607: result: g++ -E
+configure:19627: g++ -E  conftest.cpp
+configure:19627: $? = 0
+configure:19641: g++ -E  conftest.cpp
 conftest.cpp:34:28: fatal error: ac_nonexistent.h: No such file or directory
  #include <ac_nonexistent.h>
                             ^
 compilation terminated.
-configure:19618: $? = 1
+configure:19641: $? = 1
 configure: failed program was:
 | /* confdefs.h */
 | #define PACKAGE_NAME "DSAM"
@@ -137,11 +104,11 @@ configure: failed program was:
 | #define DSAM_USE_UNICODE 1
 | /* end confdefs.h.  */
 | #include <ac_nonexistent.h>
-configure:19745: checking for long file names
-configure:19777: result: yes
-configure:19912: checking that generated files are newer than configure
-configure:19918: result: done
-configure:19985: creating ./config.status
+configure:19768: checking for long file names
+configure:19800: result: yes
+configure:19935: checking that generated files are newer than configure
+configure:19941: result: done
+configure:20008: creating ./config.status
 
 ## ---------------------- ##
 ## Running config.status. ##
@@ -158,28 +125,28 @@ generated by GNU Autoconf 2.69.  Invocation command line was
 
 on luthien
 
-config.status:1245: creating dsam.spec
-config.status:1245: creating manpage.xml
-config.status:1245: creating CfgTools/Makefile
-config.status:1245: creating Makefile
-config.status:1245: creating Include/Makefile
-config.status:1245: creating src/Makefile
-config.status:1245: creating src/MainLib/Makefile
-config.status:1245: creating src/ExtLib/Makefile
-config.status:1245: creating src/GrLib/Makefile
-config.status:1245: creating src/GrLib/Bitmaps/Makefile
-config.status:1245: creating ModuleSpecs/Makefile
-config.status:1245: creating Examples/Makefile
-config.status:1245: creating dsam-config
-config.status:1245: creating MSVC/Makefile
-config.status:1245: creating MSVC/DSAM/Makefile
-config.status:1245: creating MSVC/DSAM_ext/Makefile
-config.status:1245: creating MSVC/DSAM_g/Makefile
-config.status:1245: creating NSIS/Makefile
-config.status:1245: creating debian/Makefile
-config.status:1245: creating DSAMSetup.h
-config.status:1474: executing depfiles commands
-config.status:1474: executing libtool commands
+config.status:1246: creating dsam.spec
+config.status:1246: creating manpage.xml
+config.status:1246: creating CfgTools/Makefile
+config.status:1246: creating Makefile
+config.status:1246: creating Include/Makefile
+config.status:1246: creating src/Makefile
+config.status:1246: creating src/MainLib/Makefile
+config.status:1246: creating src/ExtLib/Makefile
+config.status:1246: creating src/GrLib/Makefile
+config.status:1246: creating src/GrLib/Bitmaps/Makefile
+config.status:1246: creating ModuleSpecs/Makefile
+config.status:1246: creating Examples/Makefile
+config.status:1246: creating dsam-config
+config.status:1246: creating MSVC/Makefile
+config.status:1246: creating MSVC/DSAM/Makefile
+config.status:1246: creating MSVC/DSAM_ext/Makefile
+config.status:1246: creating MSVC/DSAM_g/Makefile
+config.status:1246: creating NSIS/Makefile
+config.status:1246: creating debian/Makefile
+config.status:1246: creating DSAMSetup.h
+config.status:1475: executing depfiles commands
+config.status:1475: executing libtool commands
 
 ## ---------------- ##
 ## Cache variables. ##
@@ -361,13 +328,13 @@ AUTOMAKE='${SHELL} /home/lowel/git/dsam/DSAMSrc/CfgTools/missing automake-1.15'
 AWK='gawk'
 CC='gcc'
 CCDEPMODE='depmode=gcc3'
-CFLAGS='-ggdb3 -Wall -Wstrict-prototypes'
+CFLAGS='-g -O2'
 CPP='gcc -E'
 CPPFLAGS=''
 CXX='g++'
 CXXCPP='g++ -E'
 CXXDEPMODE='depmode=gcc3'
-CXXFLAGS='-ggdb3 -Wall'
+CXXFLAGS='-g -O2'
 CYGPATH_W='echo'
 DEFS='-DHAVE_CONFIG_H'
 DEPDIR='.deps'
@@ -466,8 +433,8 @@ USE_PORTAUDIO_FALSE=''
 USE_PORTAUDIO_TRUE='#'
 VERSION='2.8.47'
 WXINC='-I/usr/lib64/wx/include/gtk3-unicode-3.0 -I/usr/include/wx-3.0 -D_FILE_OFFSET_BITS=64 -DWXUSINGDLL -D__WXGTK__ -pthread '
-WXLDLIBS='-pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_gtk3u_ogl-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0 '
-WXOGLLIBS='-pthread   -lwx_gtk3u_ogl-3.0 -lwx_baseu-3.0 '
+WXLDLIBS='-pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0 '
+WXOGLLIBS='-L/usr/lib64 -logl3-2.4.2 -pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0 '
 WXRESFLAGS='--include-dir /usr/include       --include-dir /usr//include'
 WX_BASE_CXXFLAGS='-I/usr/lib64/wx/include/gtk3-unicode-3.0 -I/usr/include/wx-3.0 -D_FILE_OFFSET_BITS=64 -DWXUSINGDLL -D__WXGTK__ -DwxUSE_GUI=0 -pthread'
 WX_BASE_LIBS='-pthread   -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0 '

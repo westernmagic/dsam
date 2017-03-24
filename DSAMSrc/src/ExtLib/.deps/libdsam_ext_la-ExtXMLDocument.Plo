@@ -8,7 +8,8 @@ libdsam_ext_la-ExtXMLDocument.lo: ExtXMLDocument.cpp \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  /usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/stdarg.h \
  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
- /usr/include/c++/6.3.1/stdlib.h /usr/include/c++/6.3.1/cstdlib \
+ /usr/include/bits/stdio.h /usr/include/c++/6.3.1/stdlib.h \
+ /usr/include/c++/6.3.1/cstdlib \
  /usr/include/c++/6.3.1/x86_64-redhat-linux/bits/c++config.h \
  /usr/include/c++/6.3.1/x86_64-redhat-linux/bits/os_defines.h \
  /usr/include/c++/6.3.1/x86_64-redhat-linux/bits/cpu_defines.h \
@@ -20,9 +21,10 @@ libdsam_ext_la-ExtXMLDocument.lo: ExtXMLDocument.cpp \
  /usr/include/bits/select.h /usr/include/bits/sigset.h \
  /usr/include/bits/time.h /usr/include/sys/sysmacros.h \
  /usr/include/bits/pthreadtypes.h /usr/include/alloca.h \
- /usr/include/bits/stdlib-float.h ../../Include/ExtCommon.h \
- /usr/include/wx-3.0/wx/wxprec.h /usr/include/wx-3.0/wx/defs.h \
- /usr/include/wx-3.0/wx/platform.h /usr/include/wx-3.0/wx/compiler.h \
+ /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
+ ../../Include/ExtCommon.h /usr/include/wx-3.0/wx/wxprec.h \
+ /usr/include/wx-3.0/wx/defs.h /usr/include/wx-3.0/wx/platform.h \
+ /usr/include/wx-3.0/wx/compiler.h \
  /usr/lib64/wx/include/gtk3-unicode-3.0/wx/setup.h \
  /usr/include/wx-3.0/wx/chkconf.h /usr/include/wx-3.0/wx/gtk/chkconf.h \
  /usr/include/wx-3.0/wx/unix/chkconf.h /usr/include/wx-3.0/wx/version.h \
@@ -164,10 +166,11 @@ libdsam_ext_la-ExtXMLDocument.lo: ExtXMLDocument.cpp \
  /usr/include/bits/huge_val.h /usr/include/bits/huge_valf.h \
  /usr/include/bits/huge_vall.h /usr/include/bits/inf.h \
  /usr/include/bits/nan.h /usr/include/bits/mathdef.h \
- /usr/include/bits/mathcalls.h /usr/include/wx-3.0/wx/stopwatch.h \
- /usr/include/wx-3.0/wx/time.h /usr/include/wx-3.0/wx/timer.h \
- /usr/include/wx-3.0/wx/module.h /usr/include/wx-3.0/wx/dynlib.h \
- /usr/include/dlfcn.h /usr/include/bits/dlfcn.h ../../Include/GeCommon.h \
+ /usr/include/bits/mathcalls.h /usr/include/bits/mathinline.h \
+ /usr/include/wx-3.0/wx/stopwatch.h /usr/include/wx-3.0/wx/time.h \
+ /usr/include/wx-3.0/wx/timer.h /usr/include/wx-3.0/wx/module.h \
+ /usr/include/wx-3.0/wx/dynlib.h /usr/include/dlfcn.h \
+ /usr/include/bits/dlfcn.h ../../Include/GeCommon.h \
  /usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/float.h \
  ../../Include/GeSignalData.h ../../Include/UtNameSpecs.h \
  ../../Include/GeEarObject.h ../../Include/GeSignalData.h \
@@ -221,6 +224,8 @@ libdsam_ext_la-ExtXMLDocument.lo: ExtXMLDocument.cpp \
 
 /usr/include/bits/sys_errlist.h:
 
+/usr/include/bits/stdio.h:
+
 /usr/include/c++/6.3.1/stdlib.h:
 
 /usr/include/c++/6.3.1/cstdlib:
@@ -264,6 +269,8 @@ libdsam_ext_la-ExtXMLDocument.lo: ExtXMLDocument.cpp \
 /usr/include/bits/pthreadtypes.h:
 
 /usr/include/alloca.h:
+
+/usr/include/bits/stdlib-bsearch.h:
 
 /usr/include/bits/stdlib-float.h:
 
@@ -710,6 +717,8 @@ libdsam_ext_la-ExtXMLDocument.lo: ExtXMLDocument.cpp \
 /usr/include/bits/mathdef.h:
 
 /usr/include/bits/mathcalls.h:
+
+/usr/include/bits/mathinline.h:
 
 /usr/include/wx-3.0/wx/stopwatch.h:
 

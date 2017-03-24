@@ -151,7 +151,7 @@ if [ "$echo_libs" = "yes" ]; then
 		libs="$libs --shared"
 	fi
 	if [ "$use_gui" = "yes" ]; then
-		libs="-ldsam_g $libs -pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_gtk3u_ogl-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0  -pthread   -lwx_gtk3u_ogl-3.0 -lwx_baseu-3.0 "
+		libs="-ldsam_g $libs -pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0  -L/usr/lib64 -logl3-2.4.2 -pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0 "
 	else
 		libs="$libs -lm"
 		if [ -z "" ]; then

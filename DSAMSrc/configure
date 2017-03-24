@@ -2942,9 +2942,9 @@ DSAM_DEFS=
 #         better
 # CURRENT: REVISION : AGE
 #
-DSAM_MAJOR_VERSION=2
-DSAM_MINOR_VERSION=8
-DSAM_MICRO_VERSION=47
+DSAM_MAJOR_VERSION=`echo $PACKAGE_VERSION | awk -F . '{print $1}'`
+DSAM_MINOR_VERSION=`echo $PACKAGE_VERSION | awk -F . '{print $2}'`
+DSAM_MICRO_VERSION=`echo $PACKAGE_VERSION | awk -F . '{print $3}'`
 DSAM_INTERFACE_AGE=47
 DSAM_BINARY_AGE=47
 DSAM_RPM_AGE=1
@@ -3580,6 +3580,7 @@ ac_config_headers="$ac_config_headers DSAMSetup.h:DSAMSetup.hin"
 
 
 WX_CONFIG=wx-config
+OGL_CONFIG=ogl-config
 
 
 # Check whether --enable-dsam_extensions was given.
@@ -3666,7 +3667,7 @@ fi
 
 # Check whether --with-wx_ogl-lib was given.
 if test "${with_wx_ogl_lib+set}" = set; then :
-  withval=$with_wx_ogl_lib; WX_OLIBSAGS="-L$withval"
+  withval=$with_wx_ogl_lib; WX_OGL_LDFLAGS="-L$withval"
 
 fi
 
@@ -18610,11 +18611,9 @@ if test x$gui = xyes -a x$wxwinAvailable = xyes; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for wxWidgets GUI support" >&5
 $as_echo_n "checking for wxWidgets GUI support... " >&6; }
     CXXFLAGS_save=$CXXFLAGS
-    #CXXFLAGS="`$WX_CONFIG --cxxflags` $lt_cv_prog_compiler_pic"
     WXINC="`$WX_CONFIG --cxxflags` $lt_cv_prog_compiler_pic"
     CXXFLAGS=$WXINC
     LIBS_save=$LIBS
-    #LIBS=`$WX_CONFIG --libs html,adv,core,base,net,xml`
     WXLDLIBS="`$WX_CONFIG --libs html,adv,core,base,net,xml`"
     LIBS=$WXLDLIBS
     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -18657,20 +18656,44 @@ $as_echo "$using_wxWidgets_gui" >&6; };
 fi
 
 
+wxOglAvailable=no
+if test x$gui = xyes; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for OGL configuration shell script ($OGL_CONFIG)" >&5
+$as_echo_n "checking for OGL configuration shell script ($OGL_CONFIG)... " >&6; }
+    if eval "$OGL_CONFIG --version 2> config.log > /dev/null"; then
+        wxOglAvailable=yes
+        wxOgl_version=`$OGL_CONFIG --version | cut -d. -f 1-2`
+    fi
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $wxOglAvailable" >&5
+$as_echo "$wxOglAvailable" >&6; }
+fi
+
+# For OGL given cppflags and ldflags will have priority.
+if test x$wxOglAvailable = xyes; then
+	if test -z "$WX_OGL_CPPFLAGS"; then
+		WX_OGL_CPPFLAGS=`$OGL_CONFIG --cflags`
+	fi
+	if test -z "$WX_OGL_LDFLAGS"; then
+		WX_OGL_LDFLAGS=`$OGL_CONFIG --libs`
+	fi
+else
+	WX_OGL_LDFLAGS=`$WX_CONFIG --libs ogl`
+fi
+
 if test x$WX_OGL = xyes -a x$using_wxWidgets_gui = xyes; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for wxWidgets OGL support" >&5
 $as_echo_n "checking for wxWidgets OGL support... " >&6; }
     CXXFLAGS_save=$CXXFLAGS
-    if test -n $WX_OGL_CPPFLAGS; then
+    if test -n "$WX_OGL_CPPFLAGS"; then
     	CXXFLAGS="$WX_OGL_CPPFLAGS $WXINC"
     else
     	CXXFLAGS=$WXINC
     fi
     LIBS_save=$LIBS
-    if test -n "$WX_OLIBSAGS"; then
-    	LIBS="$WX_OLIBSAGS $WXLDLIBS"
+    if test -n "$WX_OGL_LDFLAGS"; then
+    	LIBS="$WX_OGL_LDFLAGS $WXLDLIBS"
     else
-   		LIBS=$WXLDLIBS
+    	LIBS="`$WX_CONFIG --libs ogl` $WXLDLIBS"
    	fi
     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -19670,7 +19693,7 @@ if test x$using_wxWidgets_ogl = xyes; then
 
 $as_echo "#define USE_WX_OGL 1" >>confdefs.h
 
-    WXOGLLIBS="`$WX_CONFIG --libs ogl`"
+    WXOGLLIBS="$WX_OGL_LDFLAGS $WXLDLIBS"
 
 fi
 
@@ -19697,7 +19720,7 @@ fi
 if  test x$using_wxWidgets_gui = xyes -o x$using_wxWidgets_ogl = xyes; then
     WXINC="`$WX_CONFIG --cxxflags` "
 
-    WXLDLIBS="`$WX_CONFIG --libs html,adv,core,base,ogl,net,xml`"
+    WXLDLIBS="`$WX_CONFIG --libs html,adv,core,base,net,xml`"
 
 fi
 

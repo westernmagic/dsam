@@ -104,7 +104,7 @@ SDIDocument::SetSimWorkingDirectory(const wxString &directory)
 {
 	SET_PARS_POINTER(GetPtr_AppInterface()->audModel);
 	SetProcessSimPtr_Utility_SimScript(GetPtr_AppInterface()->audModel);
-	SetWorkingDirectory_AppInterface((wxChar *) directory.c_str());
+	SetWorkingDirectory_AppInterface((const wxChar *) directory.c_str());
 	SetParsFilePath_Utility_SimScript(GetPtr_AppInterface()->workingDirectory);
 
 }
@@ -218,14 +218,14 @@ SDIDocument::SaveObject(SDI_DOC_OSTREAM& stream)
 
 	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
 	if (fileName.GetExt().IsSameAs(SDI_DOCUMENT_SIM_FILE_EXT, FALSE)) {
-		WriteParFiles_Datum((wxChar *) fileName.GetPath().c_str(),
+		WriteParFiles_Datum((const wxChar *) fileName.GetPath().c_str(),
 		  GetSimulation_AppInterface());
-		WriteSimScript_Datum((wxChar *)tempFileName.GetFullPath().c_str(),
+		WriteSimScript_Datum((const wxChar *)tempFileName.GetFullPath().c_str(),
 		  GetSimulation_AppInterface());
 	} else {
 		FILE *oldFp = GetDSAMPtr_Common()->parsFile;
 		SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
-		SetParsFile_Common((wxChar * )tempFileName.GetFullPath().c_str(),
+		SetParsFile_Common((const wxChar * )tempFileName.GetFullPath().c_str(),
 		  OVERWRITE);
 		ListParameters_AppInterface();
 		fclose(GetDSAMPtr_Common()->parsFile);
@@ -255,7 +255,7 @@ SDIDocument::LoadObject(SDI_DOC_ISTREAM& stream)
 
 	diagram.DeleteAllShapes();
 	ResetStepCount_Utility_Datum();
-	if ((isXMLFile = (GetSimFileType_Utility_SimScript((wxChar *) fileName.
+	if ((isXMLFile = (GetSimFileType_Utility_SimScript((const wxChar *) fileName.
 	  GetExt().c_str()) == UTILITY_SIMSCRIPT_XML_FILE)) == true) {
 		wxGetApp().GetGrMainApp()->SetSimulationFile(fileName);
 		if (!wxGetApp().GetGrMainApp()->LoadXMLDocument()) {

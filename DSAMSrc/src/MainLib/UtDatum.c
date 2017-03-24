@@ -1766,7 +1766,7 @@ SetDefaultProcessFileName_Utility_Datum(DatumPtr pc)
  */
 
 DSAM_API BOOLN
-WriteParFiles_Datum(WChar *filePath, DatumPtr start)
+WriteParFiles_Datum(const WChar *filePath, DatumPtr start)
 {
 	static const WChar *funcName = wxT("WriteParFiles_Datum");
 	WChar	fileName[MAX_FILE_PATH];
@@ -1820,7 +1820,7 @@ WriteParFiles_Datum(WChar *filePath, DatumPtr start)
  */
 
 DSAM_API BOOLN
-WriteSimScript_Datum(WChar *fileName, DatumPtr start)
+WriteSimScript_Datum(const WChar *fileName, DatumPtr start)
 {
 	static const WChar *funcName = wxT("WriteSimScript_Datum");
 	FILE *oldFp = GetDSAMPtr_Common()->parsFile;

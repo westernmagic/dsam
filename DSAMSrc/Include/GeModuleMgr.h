@@ -286,7 +286,7 @@ void *	TrueFunction_ModuleMgr(void);
 
 BOOLN	WriteSimParFile_ModuleMgr(WChar *fileName, EarObjectPtr data);
 
-DSAM_API BOOLN	WritePars_ModuleMgr(WChar *baseFileName, EarObjectPtr process);
+DSAM_API BOOLN	WritePars_ModuleMgr(const WChar *baseFileName, EarObjectPtr process);
 
 __END_DECLS
 

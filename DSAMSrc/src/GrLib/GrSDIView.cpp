@@ -436,7 +436,7 @@ SDIView::OnReadParFile(wxCommandEvent& WXUNUSED(event))
 	if (dialog.ShowModal() != wxID_OK)
 		return;
 	wxFileName fileName = dialog.GetPath();
-	if (!ReadPars_ModuleMgr(myHandler->pc->data, (wxChar *) fileName.
+	if (!ReadPars_ModuleMgr(myHandler->pc->data, (const wxChar *) fileName.
 	  GetFullPath().c_str()))
 		NotifyWarning(wxT("%s: Could not read parameters from file '%s'."),
 		  funcName, fileName.GetFullPath().c_str());
@@ -456,14 +456,14 @@ SDIView::OnWriteParFile(wxCommandEvent& WXUNUSED(event))
 	SDIEvtHandler *myHandler = (SDIEvtHandler *) shape->GetEventHandler();
 
 	wxFileDialog dialog(shape->GetCanvas(), wxT("Save a file"), wxGetCwd(),
-	  wxT(""), wxT("*.par"), wxSAVE);
+	  wxT(""), wxT("*.par"), wxFD_SAVE);
 	if (dialog.ShowModal() != wxID_OK)
 		return;
 	wxFileName fileName = dialog.GetPath();
 
 	DiagModeSpecifier	oldDiagMode = GetDSAMPtr_Common()->diagMode;
 	SetDiagMode(COMMON_CONSOLE_DIAG_MODE);
-	if (!WritePars_ModuleMgr((wxChar *) fileName.GetFullPath().c_str(),
+	if (!WritePars_ModuleMgr((const wxChar *) fileName.GetFullPath().c_str(),
 	  myHandler->pc->data))
 		NotifyWarning(wxT("%s: Could not write parameters to file '%s'."),
 		  funcName, fileName.GetFullPath().c_str());

@@ -165,10 +165,10 @@ SDIEvtHandler::InitInstruction(void)
 	switch (processType) {
 	case CONTROL_MODULE_CLASS: {
 		SymbolPtr sp = LookUpSymbol_Utility_SSSymbols(wxGetApp().GetGrMainApp(
-		  )->GetSymList(), (wxChar *) label.c_str());
+		  )->GetSymList(), (const wxChar *) label.c_str());
 		if ((pc = InitInst_Utility_Datum(sp->type)) == NULL) {
 			NotifyError(wxT("%s: Could not create '%s' control intruction for ")
-			  wxT("process '%s'."), funcName, (wxChar *) label.c_str());
+			  wxT("process '%s'."), funcName, (const wxChar *) label.c_str());
 			return(false);
 		}
 		break; }
@@ -182,7 +182,7 @@ SDIEvtHandler::InitInstruction(void)
 	case UTILITY_MODULE_CLASS:
 		if ((pc = InitInst_Utility_Datum(PROCESS)) == NULL) {
 			NotifyError(wxT("%s: Could not create new intruction for process ")
-			  wxT("'%s'."), funcName, (wxChar *) label.c_str());
+			  wxT("'%s'."), funcName, (const wxChar *) label.c_str());
 			return(false);
 		}
 		break;
@@ -247,7 +247,7 @@ SDIEvtHandler::EditInstruction(void)
 	case UTILITY_MODULE_CLASS:
 		if (*pc->u.proc.moduleName != '\0')
 			free(pc->u.proc.moduleName);
-		pc->u.proc.moduleName = InitString_Utility_String((wxChar *) label.
+		pc->u.proc.moduleName = InitString_Utility_String((const wxChar *) label.
 		  c_str());
 		if (!pc->data)
 			InitProcessInst_Utility_Datum(pc);

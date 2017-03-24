@@ -98,7 +98,7 @@ typedef struct Datum {
 			int				count;
 		} loop;
 		struct {
-			WChar			*string;
+			const WChar		*string;
 			struct Datum	*pc;
 		} ref;
 	} u;
@@ -259,9 +259,9 @@ BOOLN	SetOutputConnections_Utility_Datum(DatumPtr pc, DynaBListPtr
 DSAM_API BOOLN	SetUniParValue_Utility_Datum(DatumPtr start, const WChar *parName,
 				  const WChar *parValue);
 
-DSAM_API BOOLN	WriteParFiles_Datum(WChar *filePath, DatumPtr start);
+DSAM_API BOOLN	WriteParFiles_Datum(const WChar *filePath, DatumPtr start);
 
-DSAM_API BOOLN	WriteSimScript_Datum(WChar *fileName, DatumPtr start);
+DSAM_API BOOLN	WriteSimScript_Datum(const WChar *fileName, DatumPtr start);
 
 __END_DECLS
 
