@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurations>
 <configuration id="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1075320225">
-<option id="configure" value="configure --enable-debug --with-wx_ogl-headers=/home/lowel/git/dsam/SupportLibs/ogl/include --with-wx_ogl-lib=/home/lowel/git/dsam/SupportLibs/ogl/src/.libs"/>
+<option id="configure" value="configure --enable-debug --with-wx_ogl-headers=/home/lowel/git/dsam/SupportLibs/ogl/include --with-wx_ogl-lib=&quot;/home/lowel/git/dsam/SupportLibs/ogl/src/.libs -logl3-2.4.2&quot;"/>
 <option id="configdir" value=""/>
 <option id="cache-file" value=""/>
 <option id="help" value="false"/>

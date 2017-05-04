@@ -1,6 +1,31 @@
 configure:18667: result: yes
 configure:18684: checking for wxWidgets OGL support
-configure:18721: g++ -o conftest -DHAVE_CONFIG_H -DUSE_WX_OGL=1 -I/usr/include -I/usr/lib64/wx/include/gtk3-unicode-3.0 -I/usr/include/wx-3.0 -D_FILE_OFFSET_BITS=64 -DWXUSINGDLL -D__WXGTK__ -pthread -fPIC -DPIC   conftest.cpp -L/usr/lib64 -logl3-2.4.2 -pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0  >&5
+configure:18721: g++ -o conftest -I/home/lowel/git/dsam/SupportLibs/ogl/include -I/usr/lib64/wx/include/gtk3-unicode-3.0 -I/usr/include/wx-3.0 -D_FILE_OFFSET_BITS=64 -DWXUSINGDLL -D__WXGTK__ -pthread -fPIC -DPIC   conftest.cpp -L/home/lowel/git/dsam/SupportLibs/ogl/src/.libs -logl3-2.4.2 -pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0  >&5
+In file included from /home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/ogl.h:25:0,
+                 from conftest.cpp:33:
+/home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/basicp.h:39:23: warning: type attributes ignored after type is already defined [-Wattributes]
+ class WXDLLIMPEXP_OGL wxShape;
+                       ^~~~~~~
+/home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/basicp.h:44:31: warning: type attributes ignored after type is already defined [-Wattributes]
+  friend class WXDLLIMPEXP_OGL wxShapeEvtHandler;
+                               ^~~~~~~~~~~~~~~~~
+/home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/basicp.h:45:31: warning: type attributes ignored after type is already defined [-Wattributes]
+  friend class WXDLLIMPEXP_OGL wxShape;
+                               ^~~~~~~
+/home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/basicp.h:87:23: warning: type attributes ignored after type is already defined [-Wattributes]
+ class WXDLLIMPEXP_OGL wxPolygonShape;
+                       ^~~~~~~~~~~~~~
+/home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/basicp.h:91:32: warning: type attributes ignored after type is already defined [-Wattributes]
+   friend class WXDLLIMPEXP_OGL wxPolygonShape;
+                                ^~~~~~~~~~~~~~
+In file included from /home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/ogl.h:27:0,
+                 from conftest.cpp:33:
+/home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/linesp.h:16:23: warning: type attributes ignored after type is already defined [-Wattributes]
+ class WXDLLIMPEXP_OGL wxLineShape;
+                       ^~~~~~~~~~~
+/home/lowel/git/dsam/SupportLibs/ogl/include/wx/ogl/linesp.h:20:32: warning: type attributes ignored after type is already defined [-Wattributes]
+   friend class WXDLLIMPEXP_OGL wxLineShape;
+                                ^~~~~~~~~~~
 configure:18721: $? = 0
 configure:18733: result: yes
 configure:18796: checking for pkg-config
@@ -328,13 +353,13 @@ AUTOMAKE='${SHELL} /home/lowel/git/dsam/DSAMSrc/CfgTools/missing automake-1.15'
 AWK='gawk'
 CC='gcc'
 CCDEPMODE='depmode=gcc3'
-CFLAGS='-g -O2'
+CFLAGS='-ggdb3 -Wall -Wstrict-prototypes'
 CPP='gcc -E'
 CPPFLAGS=''
 CXX='g++'
 CXXCPP='g++ -E'
 CXXDEPMODE='depmode=gcc3'
-CXXFLAGS='-g -O2'
+CXXFLAGS='-ggdb3 -Wall'
 CYGPATH_W='echo'
 DEFS='-DHAVE_CONFIG_H'
 DEPDIR='.deps'
@@ -434,7 +459,7 @@ USE_PORTAUDIO_TRUE='#'
 VERSION='2.8.47'
 WXINC='-I/usr/lib64/wx/include/gtk3-unicode-3.0 -I/usr/include/wx-3.0 -D_FILE_OFFSET_BITS=64 -DWXUSINGDLL -D__WXGTK__ -pthread '
 WXLDLIBS='-pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0 '
-WXOGLLIBS='-L/usr/lib64 -logl3-2.4.2 -pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0 '
+WXOGLLIBS='-L/home/lowel/git/dsam/SupportLibs/ogl/src/.libs -logl3-2.4.2 -pthread   -lwx_gtk3u_html-3.0 -lwx_gtk3u_adv-3.0 -lwx_gtk3u_core-3.0 -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0 '
 WXRESFLAGS='--include-dir /usr/include       --include-dir /usr//include'
 WX_BASE_CXXFLAGS='-I/usr/lib64/wx/include/gtk3-unicode-3.0 -I/usr/include/wx-3.0 -D_FILE_OFFSET_BITS=64 -DWXUSINGDLL -D__WXGTK__ -DwxUSE_GUI=0 -pthread'
 WX_BASE_LIBS='-pthread   -lwx_baseu-3.0 -lwx_baseu_net-3.0 -lwx_baseu_xml-3.0 '

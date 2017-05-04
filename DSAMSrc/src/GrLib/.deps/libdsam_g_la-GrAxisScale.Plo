@@ -7,8 +7,7 @@ libdsam_g_la-GrAxisScale.lo: GrAxisScale.cpp /usr/include/stdc-predef.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  /usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/stdarg.h \
  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
- /usr/include/bits/stdio.h /usr/include/c++/6.3.1/math.h \
- /usr/include/c++/6.3.1/cmath \
+ /usr/include/c++/6.3.1/math.h /usr/include/c++/6.3.1/cmath \
  /usr/include/c++/6.3.1/x86_64-redhat-linux/bits/c++config.h \
  /usr/include/c++/6.3.1/x86_64-redhat-linux/bits/os_defines.h \
  /usr/include/c++/6.3.1/x86_64-redhat-linux/bits/cpu_defines.h \
@@ -18,7 +17,7 @@ libdsam_g_la-GrAxisScale.lo: GrAxisScale.cpp /usr/include/stdc-predef.h \
  /usr/include/bits/huge_val.h /usr/include/bits/huge_valf.h \
  /usr/include/bits/huge_vall.h /usr/include/bits/inf.h \
  /usr/include/bits/nan.h /usr/include/bits/mathdef.h \
- /usr/include/bits/mathcalls.h /usr/include/bits/mathinline.h \
+ /usr/include/bits/mathcalls.h \
  /usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/float.h \
  /usr/include/wx-3.0/wx/wxprec.h /usr/include/wx-3.0/wx/defs.h \
  /usr/include/wx-3.0/wx/platform.h /usr/include/wx-3.0/wx/compiler.h \
@@ -45,9 +44,9 @@ libdsam_g_la-GrAxisScale.lo: GrAxisScale.cpp /usr/include/stdc-predef.h \
  /usr/include/string.h /usr/include/c++/6.3.1/stdlib.h \
  /usr/include/c++/6.3.1/cstdlib /usr/include/stdlib.h \
  /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
- /usr/include/alloca.h /usr/include/bits/stdlib-bsearch.h \
- /usr/include/bits/stdlib-float.h /usr/include/wx-3.0/wx/wxcrtbase.h \
- /usr/include/ctype.h /usr/include/wctype.h /usr/include/bits/timex.h \
+ /usr/include/alloca.h /usr/include/bits/stdlib-float.h \
+ /usr/include/wx-3.0/wx/wxcrtbase.h /usr/include/ctype.h \
+ /usr/include/wctype.h /usr/include/bits/timex.h \
  /usr/include/wx-3.0/wx/strvararg.h /usr/include/wx-3.0/wx/strconv.h \
  /usr/include/wx-3.0/wx/buffer.h /usr/include/wx-3.0/wx/fontenc.h \
  /usr/include/wx-3.0/wx/unichar.h /usr/include/wx-3.0/wx/stringimpl.h \
@@ -284,8 +283,6 @@ libdsam_g_la-GrAxisScale.lo: GrAxisScale.cpp /usr/include/stdc-predef.h \
 
 /usr/include/bits/sys_errlist.h:
 
-/usr/include/bits/stdio.h:
-
 /usr/include/c++/6.3.1/math.h:
 
 /usr/include/c++/6.3.1/cmath:
@@ -319,8 +316,6 @@ libdsam_g_la-GrAxisScale.lo: GrAxisScale.cpp /usr/include/stdc-predef.h \
 /usr/include/bits/mathdef.h:
 
 /usr/include/bits/mathcalls.h:
-
-/usr/include/bits/mathinline.h:
 
 /usr/lib/gcc/x86_64-redhat-linux/6.3.1/include/float.h:
 
@@ -421,8 +416,6 @@ libdsam_g_la-GrAxisScale.lo: GrAxisScale.cpp /usr/include/stdc-predef.h \
 /usr/include/bits/waitstatus.h:
 
 /usr/include/alloca.h:
-
-/usr/include/bits/stdlib-bsearch.h:
 
 /usr/include/bits/stdlib-float.h:
 

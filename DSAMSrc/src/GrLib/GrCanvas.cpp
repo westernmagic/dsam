@@ -174,6 +174,7 @@ MyCanvas::CreateBackingBitmap(void)
 	parent->GetClientSize(&bitmapWidth, &bitmapHeight);
 	memBmp = new wxBitmap(bitmapWidth, bitmapHeight);
 	memDC.SelectObject(*memBmp);
+	memDC.SetBackground(*wxWHITE);
 	memDC.Clear();
 
 }
