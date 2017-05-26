@@ -244,7 +244,9 @@ ShowSignal_DisplayS(EarObjectPtr data)
 {
 
 	static const WChar *funcName = wxT("ShowSignal_DisplayS");
+#	if !defined(linux)
 	time_t	startTime;
+#	endif
 	BOOLN	notReady;
 	int		i, numWindowFrames;
 	SignalDataPtr	outSignal;
@@ -274,7 +276,12 @@ ShowSignal_DisplayS(EarObjectPtr data)
 	outSignal = _OutSig_EarObject(data);
 	numWindowFrames = (GetDSAMPtr_Common()->segmentedMode)? 1: outSignal->
 	  numWindowFrames;
-	for (i = 0, startTime = time(NULL); i < numWindowFrames; i++) {
+
+#	if !defined(linux)
+	startTime = time(NULL)
+#	endif
+
+	for (i = 0; i < numWindowFrames; i++) {
 		if (signalDispPtr->buffer)
 			ProcessBuffer_SignalDisp(outSignal, signalDispPtr->buffer, i);
 #		if !defined(linux)
