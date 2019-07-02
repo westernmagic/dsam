@@ -1,8 +1,0 @@
-<?xml version="1.0" ?>
-
-<!-- RCS-ID: $Id: Bakefiles.bkgen,v 1.8 2007/03/04 08:57:20 frm Exp $ -->
-
-<bakefile-gen>
-    <include file="../../../build/bakefiles/presets/wxcode.bkgen"/>
-    <input>applet.bkl</input>
-</bakefile-gen>

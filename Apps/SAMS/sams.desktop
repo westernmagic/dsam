@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=SAMS
-Comment=Simple Auditory Model Simulator
-Icon=sams
-Exec=sams
-Terminal=false
-Type=Application
-StartupNotify=true
-Categories=Education;GTK;Science;
