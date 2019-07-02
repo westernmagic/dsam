@@ -264,7 +264,7 @@ dnl ----------------------------------------------------------------------------
 dnl Matlab development environment.
 dnl ----------------------------------------------------------------------------
 
-MATCOMPILE="mex"
+MATCOMPILE="matlab"
 
 AC_MSG_CHECKING([Matlab Development environment ($MATCOMPILE)])
 if eval "$MATCOMPILE -help 2>> config.log > /dev/null"; then

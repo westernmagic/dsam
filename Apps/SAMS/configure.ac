@@ -270,7 +270,7 @@ int main(void)
 }
 _DSAM_EOF
 
-$CXX get_port.$ac_ext `$DSAM_CONFIG  --cflags --libs` -DHEADER_ONLY
+$CXX $CPPFLAGS $LDFLAGS get_port.$ac_ext `$DSAM_CONFIG  --cflags --libs` -DHEADER_ONLY
 SERVER_PORT=`./a.out`
 AC_MSG_RESULT($SERVER_PORT)
 rm -f get_port.$ac_ext a.out

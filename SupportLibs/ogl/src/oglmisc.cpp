@@ -383,7 +383,7 @@ wxStringList *oglFormatText(wxDC& dc, const wxString& text, double width, double
   bool end_word = false; bool new_line = false;
   while (i < len)
   {
-    switch (text[i])
+    switch ((wchar_t) text[i])
     {
       case wxT('%'):
       {

@@ -11,6 +11,6 @@ RunDSAMSim_SOURCES	= RunDSAMSim.cpp
 
 CXXLINK = $(DLLCOMPILE) -o RunDSAMSim$(EXEEXT)
 
-LDADD	= $(DSAMLDFLAGS) -L$(MATLIB_DIR)/.libs -ldsam_matlib
+LDADD	= $(LDFLAGS) $(DSAMLDFLAGS) -L$(MATLIB_DIR)/.libs -ldsam_matlib
 
 EXTRA_DIST			= RunDSAMSim.rc RunDSAMSim.def RunDSAMSim.m

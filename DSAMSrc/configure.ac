@@ -528,7 +528,9 @@ if test x$wxOglAvailable = xyes; then
 		WX_OGL_LDFLAGS=`$OGL_CONFIG --libs`
 	fi
 else
-	WX_OGL_LDFLAGS=`$WX_CONFIG --libs ogl`
+	if test -z "$WX_OGL_LDFLAGS"; then
+		WX_OGL_LDFLAGS=`$WX_CONFIG --libs ogl`
+	fi
 fi
 
 if test x$WX_OGL = xyes -a x$using_wxWidgets_gui = xyes; then
